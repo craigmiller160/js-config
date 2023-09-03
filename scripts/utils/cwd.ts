@@ -4,9 +4,10 @@ import {parsePackageJson} from './PackageJson';
 import {either, function as func, option} from 'fp-ts';
 import { match } from 'ts-pattern';
 
-type CheckPathResult = 'js-config' | 'node_modules' | 'target-project' | 'invalid';
+type CheckPathResult = 'js-config' | 'node_modules' | 'target-project' | 'pnpm-child' | 'pnpm' | 'invalid';
 
-export const JS_CONFIG_NAME = '@craigmiller160/js-config';
+const JS_CONFIG_NAME = '@craigmiller160/js-config';
+const JS_CONFIG_PNPM_REGEX = /^.*@craigmiller160\+js-config$/;
 
 const performPathCheck = (theDirectoryPath: string): CheckPathResult => {
     const packageJsonPath = path.join(theDirectoryPath, 'package.json');
@@ -32,6 +33,14 @@ const performPathCheck = (theDirectoryPath: string): CheckPathResult => {
         return 'node_modules';
     }
 
+    if (path.basename(theDirectoryPath) === '.pnpm') {
+        return 'pnpm';
+    }
+
+    if (JS_CONFIG_PNPM_REGEX.test(path.basename(theDirectoryPath))) {
+        return 'pnpm-child';
+    }
+
     return 'invalid';
 };
 
@@ -41,6 +50,8 @@ export const checkPath = (theDirectoryPath: string): either.Either<Error, string
         .with('target-project', () => either.right(theDirectoryPath))
         .with('js-config', () => checkPath(path.join(theDirectoryPath, '..', '..')))
         .with('node_modules', () => checkPath(path.join(theDirectoryPath, '..')))
+        .with('pnpm-child', () => checkPath(path.join(theDirectoryPath, '..')))
+        .with('pnpm', () => checkPath(path.join(theDirectoryPath, '..')))
         .with('invalid', () => either.left(new Error(`Path is invalid: ${theDirectoryPath}`)))
         .exhaustive();
 };
