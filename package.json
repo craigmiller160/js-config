@@ -18,7 +18,8 @@
   ],
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
-    "@types/node": "^20.5.8"
+    "@types/node": "^20.5.8",
+    "vitest": "^0.34.3"
   },
   "dependencies": {
     "@swc/cli": "^0.1.62",
