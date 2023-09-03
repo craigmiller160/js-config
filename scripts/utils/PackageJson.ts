@@ -1,15 +1,15 @@
-import ioTs, {Errors} from 'io-ts';
+import * as t from 'io-ts';
 import { either, json, function as func } from 'fp-ts';
 import {unknownToError} from './unknownToError';
 import fs from 'fs';
 
-export const packageJsonCodec = ioTs.readonly(ioTs.type({
-    name: ioTs.string
+export const packageJsonCodec = t.readonly(t.type({
+    name: t.string
 }));
 
-export type PackageJson = ioTs.TypeOf<typeof packageJsonCodec>;
+export type PackageJson = t.TypeOf<typeof packageJsonCodec>;
 
-const combineErrors = (errors: Errors): Error => {
+const combineErrors = (errors: t.Errors): Error => {
     const allMessages = errors.map((error) => error.message)
         .join('; ');
     return new Error(`Type validation errors: ${allMessages}`);

@@ -46,4 +46,9 @@ export const checkPath = (theDirectoryPath: string): either.Either<Error, string
 };
 
 export const findCwd = (process: NodeJS.Process): either.Either<Error, string> =>
-    checkPath(process.cwd());
+    func.pipe(
+        checkPath(process.cwd()),
+        either.mapLeft((error) => new Error(`Error finding matching path for starting CWD: ${process.cwd()}`, {
+            cause: error
+        }))
+    )
