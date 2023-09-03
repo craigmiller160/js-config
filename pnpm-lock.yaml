@@ -17,6 +17,9 @@ dependencies:
   io-ts:
     specifier: ^2.2.20
     version: 2.2.20(fp-ts@2.16.1)
+  ts-pattern:
+    specifier: ^5.0.5
+    version: 5.0.5
 
 devDependencies:
   '@types/node':
@@ -898,6 +901,10 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       escape-string-regexp: 5.0.0
+    dev: false
+
+  /ts-pattern@5.0.5:
+    resolution: {integrity: sha512-tL0w8U/pgaacOmkb9fRlYzWEUDCfVjjv9dD4wHTgZ61MjhuMt46VNWTG747NqW6vRzoWIKABVhFSOJ82FvXrfA==}
     dev: false
 
   /util-deprecate@1.0.2:
