@@ -3,8 +3,11 @@
   "version": "1.0.0-beta",
   "author": "craigmiller160",
   "license": "GPL",
+  "bin": {
+    "c-init": "./build/bin/c-init.js"
+  },
   "scripts": {
-    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type commonjs -d build",
+    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
     "build": "npm run forceBuild"
   },
