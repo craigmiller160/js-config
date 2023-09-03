@@ -1,7 +1,18 @@
-import fs from 'fs';
-import path from 'path';
+import {findCwd} from './utils/cwd';
+import { function as func, either } from 'fp-ts';
+
+const performInitialization = (process: NodeJS.Process) => (cwd: string) => {
+
+};
 
 export const execute = (process: NodeJS.Process) => {
-    const theFilePath = path.join(process.cwd(), 'foo.txt');
-    fs.writeFileSync(theFilePath, 'Hello World 4');
+    func.pipe(
+        findCwd(process),
+        either.fold(
+            (error) => {
+                throw error
+            },
+            performInitialization(process)
+        )
+    );
 };
