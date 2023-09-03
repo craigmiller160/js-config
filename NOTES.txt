@@ -6,3 +6,8 @@ c-dev = starts the vite dev server
 c-compile = uses SWC to just compile the code. "node" vs "browser" determines output target (ie, modules)
 c-lint = runs eslint/prettier.
 c-pre-commit = The pre-commit hook.
+
+
+TODO
+
+1. Get full file extension piece from work config
