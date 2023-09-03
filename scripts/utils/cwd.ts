@@ -1,18 +1,21 @@
 import path from 'path';
 import fs from 'fs';
-import {PackageJson} from './PackageJson';
+import {parsePackageJson} from './PackageJson';
+import {either, function as func} from 'fp-ts';
 
 export const JS_CONFIG_NAME = '@craigmiller160/js-config';
-
-const getPackageJsonName = (packageJsonPath: string): string => {
-    const packageJson = JSON.parse(fs.readFileSync(localPackageJsonPath, 'utf8')) as PackageJson;
-    return packageJson.name;
-}
 
 export const findCwd = (process: NodeJS.Process): string => {
     const localPackageJsonPath = path.join(process.cwd(), 'package.json');
 
-    if (fs.existsSync(localPackageJsonPath) && !getPackageJsonName(localPackageJsonPath) === JS_CONFIG_NAME) {
+    if (fs.existsSync(localPackageJsonPath)) {
+        const name = func.pipe(
+            parsePackageJson(localPackageJsonPath),
+            either.fold(
+                () => '',
+                (packageJson) => packageJson.name
+            )
+        );
 
     }
 };
