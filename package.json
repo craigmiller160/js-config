@@ -5,5 +5,8 @@
   "license": "GPL",
   "files": [
     "configs"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^20.5.8"
+  }
 }
