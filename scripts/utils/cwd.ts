@@ -52,10 +52,16 @@ export const checkPath = (theDirectoryPath: string): either.Either<Error, string
         .exhaustive();
 };
 
-export const findCwd = (process: NodeJS.Process): either.Either<Error, string> =>
-    func.pipe(
+export const findCwd = (process: NodeJS.Process): either.Either<Error, string> => {
+    logger.info(`Attempting to find project CWD. Starting CWD: ${process.cwd()}`);
+    return func.pipe(
         checkPath(process.cwd()),
         either.mapLeft((error) => new Error(`Error finding matching path for starting CWD: ${process.cwd()}`, {
             cause: error
-        }))
-    )
+        })),
+        either.map((cwd) => {
+            logger.info(`Found project CWD: ${cwd}`);
+            return cwd;
+        })
+    );
+}
