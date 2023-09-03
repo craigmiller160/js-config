@@ -2,5 +2,8 @@
   "name": "@craigmiller160/js-config",
   "version": "1.0.0-beta",
   "author": "craigmiller160",
-  "license": "GPL"
+  "license": "GPL",
+  "files": [
+    "configs"
+  ]
 }
