@@ -11,3 +11,4 @@ c-pre-commit = The pre-commit hook.
 TODO
 
 1. Get full file extension piece from work config
+2. Explore external helpers, does it really require extra lib?

@@ -10,7 +10,7 @@
     "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
     "build": "npm run forceBuild",
-    "postinstall": "echo 'Hello World'"
+    "postinstall": "node ./build/bin/c-init.js"
   },
   "files": [
     "configs",
