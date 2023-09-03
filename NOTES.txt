@@ -1,0 +1,8 @@
+SCRIPTS
+
+c-init = sets up the project, runs post-install. Sets up pre-commit hook, installs husky, and sets up general config files.
+c-bundle = Uses vite to bundle the output
+c-dev = starts the vite dev server
+c-compile = uses SWC to just compile the code. "node" vs "browser" determines output target (ie, modules)
+c-lint = runs eslint/prettier.
+c-pre-commit = The pre-commit hook.
