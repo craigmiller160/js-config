@@ -4,12 +4,13 @@
   "author": "craigmiller160",
   "license": "GPL",
   "scripts": {
-    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type commonjs",
+    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type commonjs -d build",
     "forceBuild": "npm run buildScripts",
     "build": "npm run forceBuild"
   },
   "files": [
-    "configs"
+    "configs",
+    "build"
   ],
   "devDependencies": {
     "@types/node": "^20.5.8"

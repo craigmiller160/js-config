@@ -17,7 +17,7 @@
         "importMeta": true
       },
       "target": "es2018",
-      "loose": "false",
+      "loose": false,
       "externalHelpers": true
     }
   },
@@ -32,7 +32,7 @@
         "dynamicImport": true
       },
       "target": "es2018",
-      "loose": "false",
+      "loose": false,
       "externalHelpers": true
     }
   }
