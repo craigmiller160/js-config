@@ -13,7 +13,7 @@ const combineErrors = (errors: t.Errors): Error => {
     const allMessages = errors.map((error) => error.message)
         .join('; ');
     return new Error(`Type validation errors: ${allMessages}`);
-}
+};
 
 export const parsePackageJson = (packageJsonPath: string): either.Either<Error, PackageJson> =>
     func.pipe(
