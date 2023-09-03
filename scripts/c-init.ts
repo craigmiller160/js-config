@@ -6,8 +6,10 @@ import {logger} from './logger';
 import {terminate} from './utils/terminate';
 
 const performInitialization = (process: NodeJS.Process) => (cwd: string) => {
-    const theFile = path.join(cwd, 'foo.txt');
-    fs.writeFileSync(theFile, 'Hello World 123');
+    if (cwd === '') {
+        logger.debug('Blank CWD found, aborting initialization');
+        process.exit(0);
+    }
 };
 
 export const execute = (process: NodeJS.Process) => {

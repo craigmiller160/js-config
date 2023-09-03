@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import {parsePackageJson} from './PackageJson';
 import {either, function as func, option} from 'fp-ts';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import {logger} from '../logger';
 
 type CheckPathResult = 'js-config' | 'node_modules' | 'target-project' | 'pnpm-child' | 'pnpm' | 'invalid';
@@ -40,28 +40,58 @@ const performPathCheck = (theDirectoryPath: string): CheckPathResult => {
     return result;
 };
 
-export const checkPath = (theDirectoryPath: string): either.Either<Error, string> => {
+class InvalidCwdPathError extends Error {
+    name = 'InvalidCwdPathError';
+    constructor(public pathResults: ReadonlyArray<PathAndResult>) {
+        super('Unable to find valid path');
+    }
+}
+
+type PathAndResult = Readonly<{
+    path: string;
+    result: string;
+}>
+
+export const checkPath = (theDirectoryPath: string, previousPathResults: ReadonlyArray<PathAndResult> = []): either.Either<Error, string> => {
     const result = performPathCheck(theDirectoryPath);
+    const pathAndResult: PathAndResult = {
+        path: theDirectoryPath,
+        result
+    };
+    const newPathResults: ReadonlyArray<PathAndResult> = [
+        ...previousPathResults,
+        pathAndResult
+    ];
     return match(result)
         .with('target-project', () => either.right(theDirectoryPath))
-        .with('js-config', () => checkPath(path.join(theDirectoryPath, '..', '..')))
-        .with('node_modules', () => checkPath(path.join(theDirectoryPath, '..')))
-        .with('pnpm-child', () => checkPath(path.join(theDirectoryPath, '..')))
-        .with('pnpm', () => checkPath(path.join(theDirectoryPath, '..')))
-        .with('invalid', () => either.left(new Error(`Path is invalid: ${theDirectoryPath}`)))
+        .with('js-config', () => checkPath(path.join(theDirectoryPath, '..', '..'), newPathResults))
+        .with('node_modules', () => checkPath(path.join(theDirectoryPath, '..'), newPathResults))
+        .with('pnpm-child', () => checkPath(path.join(theDirectoryPath, '..'), newPathResults))
+        .with('pnpm', () => checkPath(path.join(theDirectoryPath, '..'), newPathResults))
+        .with('invalid', () => either.left(new InvalidCwdPathError(newPathResults)))
         .exhaustive();
 };
+
+const handleError = (error: Error): either.Either<Error, string> => {
+    if (error instanceof InvalidCwdPathError && error.pathResults.length === 2) {
+        return either.right('');
+    }
+
+    return either.left(new Error(`Error finding matching path for starting CWD: ${process.cwd()}`, {
+        cause: error
+    }));
+}
 
 export const findCwd = (process: NodeJS.Process): either.Either<Error, string> => {
     logger.info(`Attempting to find project CWD. Starting CWD: ${process.cwd()}`);
     return func.pipe(
         checkPath(process.cwd()),
-        either.mapLeft((error) => new Error(`Error finding matching path for starting CWD: ${process.cwd()}`, {
-            cause: error
-        })),
-        either.map((cwd) => {
-            logger.info(`Found project CWD: ${cwd}`);
-            return cwd;
-        })
+        either.fold(
+            handleError,
+            (cwd) => {
+                logger.info(`Found project CWD: ${cwd}`);
+                return either.right(cwd);
+            }
+        )
     );
 }
