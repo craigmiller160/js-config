@@ -17,6 +17,7 @@
     "build"
   ],
   "devDependencies": {
+    "@relmify/jest-fp-ts": "^2.1.1",
     "@types/node": "^20.5.8"
   },
   "dependencies": {
