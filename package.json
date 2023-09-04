@@ -9,7 +9,7 @@
   "scripts": {
     "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
-    "test": "vitest",
+    "test": "vitest run",
     "build": "npm run test && npm run forceBuild",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
     "postinstall": "node ./build/bin/c-init.js"
