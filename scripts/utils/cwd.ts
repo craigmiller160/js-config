@@ -8,7 +8,7 @@ import {logger} from '../logger';
 type CheckPathResult = 'js-config' | 'node_modules' | 'target-project' | 'pnpm-child' | 'pnpm' | 'invalid';
 
 const JS_CONFIG_NAME = '@craigmiller160/js-config';
-const JS_CONFIG_PNPM_REGEX = /^.*@craigmiller160\+js-config$/;
+const JS_CONFIG_PNPM_REGEX = /^.*@craigmiller160\+js-config.*$/;
 
 const performPathCheck = (theDirectoryPath: string): CheckPathResult => {
     const packageJsonPath = path.join(theDirectoryPath, 'package.json');

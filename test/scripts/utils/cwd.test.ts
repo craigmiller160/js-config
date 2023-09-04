@@ -18,7 +18,7 @@ describe('cwd', () => {
        });
 
        it('is added directly to project', () => {
-           const cwd = path.join(WORKING_DIR_ROOT, 'direct-to-project', 'node_modules', 'js-config');
+           const cwd = path.join(WORKING_DIR_ROOT, 'direct-to-project', 'node_modules', '@craigmiller160', 'js-config');
            const result = findCwd(newProcess(cwd));
            expect(result).toEqualRight(path.join(WORKING_DIR_ROOT, 'direct-to-project'));
        });
