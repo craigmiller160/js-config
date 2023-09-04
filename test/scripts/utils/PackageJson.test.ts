@@ -15,6 +15,6 @@ describe('PackageJson', () => {
 
     it('returns errors for invalid package.json', () => {
         const result = parsePackageJson(path.join(packageJsonDirectory, 'invalid.json'));
-        expect(result).toEqualLeft(new Error());
+        expect(result).toEqualLeft(new Error('Expecting string at name but instead got: 12; Expecting string at version but instead got: 13'));
     });
 });
