@@ -1,11 +1,11 @@
 {
   "extends": "./configs/typescript/tsconfig.json",
   "include": [
-    "scripts/**/*"
+    "scripts/**/*",
+    "vitest.config.mts"
   ],
   "exclude": [
     "node_modules",
-    "build",
-    "vitest.config.mts"
+    "build"
   ]
 }
