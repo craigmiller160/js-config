@@ -30,7 +30,8 @@ describe('cwd', () => {
        });
 
        it('is invalid', () => {
-           throw new Error();
+           const result = findCwd(newProcess(WORKING_DIR_ROOT));
+           expect(result).toEqualLeft(new Error(`Error finding matching path for starting CWD: ${WORKING_DIR_ROOT}`));
        });
     });
 });
