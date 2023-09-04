@@ -14,7 +14,7 @@ const ADDITIONAL_FILES = [
     'vitest.config.cts'
 ];
 
-const resetWorkingDirectory = () => {
+const resetWorkingDirectory = () =>
     fs.readdirSync(WORKING_DIR_PATH)
         .filter((fileName) => !['.gitignore', '.gitkeep'].includes(fileName))
         .forEach((fileName) => {
@@ -24,7 +24,6 @@ const resetWorkingDirectory = () => {
                 force: true
             });
         });
-};
 
 describe('setupTypescript', () => {
     beforeEach(() => {
