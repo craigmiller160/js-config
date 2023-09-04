@@ -7,12 +7,12 @@ const WORKING_DIR = path.join(process.cwd(), 'test', '__working_directories__', 
 describe('library', () => {
     describe('isLibraryPresent', () => {
         it('is present, using the CWD and string', () => {
-            const result = isLibraryPresent(path.join(WORKING_DIR, 'package.json'), 'my-lib');
+            const result = isLibraryPresent(WORKING_DIR, 'my-lib');
             expect(result).toEqual(true);
         })
 
         it('is not present, using the CWD and string', () => {
-            const result = isLibraryPresent(path.join(WORKING_DIR, 'package.json'), 'my-lib2');
+            const result = isLibraryPresent(WORKING_DIR, 'my-lib2');
             expect(result).toEqual(false);
         })
 

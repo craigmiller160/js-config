@@ -31,7 +31,7 @@ export const isLibraryPresent = (cwdOrPackageJson: string | PackageJson, depende
         either.map((contents) => isDependencyPresent(dependency, contents.dependencies, contents.devDependencies)),
         either.fold(
             (error) => {
-                logger.error(`Error checking for the presence of dependency ${dependency}`);
+                logger.error(`Error checking for the presence of dependency ${dependency} ${error}`);
                 return false;
             },
             (result) => {
