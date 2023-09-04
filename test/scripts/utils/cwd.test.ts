@@ -1,9 +1,20 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import {findCwd} from '../../../scripts/utils/cwd';
+import path from 'path';
+
+const WORKING_DIR_ROOT = path.join(process.cwd(), 'test', '__working_directories__', 'env');
+
+const newProcess = (cwd: string): NodeJS.Process => ({
+    ...process,
+    cwd: () => cwd
+});
 
 describe('cwd', () => {
     describe('findCwd', () => {
        it('is js-config library itself', () => {
-           throw new Error();
+           const cwd = path.join(WORKING_DIR_ROOT, 'js-config');
+           const result = findCwd(newProcess(cwd));
+           expect(result).toEqualRight('');
        });
 
        it('is added directly to project', () => {
