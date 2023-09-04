@@ -24,7 +24,9 @@ describe('cwd', () => {
        });
 
        it('is added directly to project via pnpm', () => {
-           throw new Error();
+           const cwd = path.join(WORKING_DIR_ROOT, 'pnpm-to-project', 'node_modules', '.pnpm', '@craigmiller160+js-config');
+           const result = findCwd(newProcess(cwd));
+           expect(result).toEqualRight(path.join(WORKING_DIR_ROOT, 'pnpm-to-project'));
        });
 
        it('is invalid', () => {
