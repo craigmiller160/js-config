@@ -2,7 +2,7 @@ import {describe, it, expect, beforeEach, vi, MockedFunction} from 'vitest';
 import {setupTypescript} from '../../scripts/init/setupTypescript';
 import {findCwd} from '../../scripts/utils/cwd';
 import {terminate} from '../../scripts/utils/terminate';
-import { either } from 'fp-ts';
+import { either, function as func } from 'fp-ts';
 import {execute} from '../../scripts/c-init';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
@@ -31,6 +31,7 @@ describe('c-init', () => {
     it('performs full initialization successfully', () => {
         const cwd = 'cwd';
         findCwdMock.mockReturnValue(either.right(cwd));
+        setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
         execute(process);
         expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
         expect(terminate).toHaveBeenCalledWith(undefined);
