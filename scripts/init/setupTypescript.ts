@@ -4,6 +4,8 @@ import path from 'path';
 import {unknownToError} from '../utils/unknownToError';
 import {parseTsConfig, TsConfig} from '../utils/TsConfig';
 import {logger} from '../logger';
+import {PackageJson} from '../utils/PackageJson';
+import {isLibraryPresent} from '../utils/library';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
     /^vite\.config\.[cm]?ts$/,

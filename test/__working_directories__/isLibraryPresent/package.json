@@ -1,0 +1,7 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "dependencies": {
+    "my-lib": "1.0.0"
+  }
+}

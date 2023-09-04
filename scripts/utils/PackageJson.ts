@@ -1,13 +1,21 @@
 import * as t from 'io-ts';
 import { either, json, function as func } from 'fp-ts';
 import {unknownToError} from './unknownToError';
-import { formatValidationErrors } from 'io-ts-reporters';
 import fs from 'fs';
 import {decode} from './decode';
 
+const dependenciesCodec = t.union([
+    t.readonly(t.record(t.string, t.string)),
+    t.undefined
+]);
+
+export type PackageJsonDependencies = t.TypeOf<typeof dependenciesCodec>;
+
 export const packageJsonCodec = t.readonly(t.type({
     name: t.string,
-    version: t.string
+    version: t.string,
+    dependencies: dependenciesCodec,
+    devDependencies: dependenciesCodec
 }));
 
 export type PackageJson = t.TypeOf<typeof packageJsonCodec>;

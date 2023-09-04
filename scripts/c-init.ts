@@ -3,14 +3,20 @@ import { function as func, either } from 'fp-ts';
 import {logger} from './logger';
 import {terminate} from './utils/terminate';
 import {setupTypescript} from './init/setupTypescript';
+import {parsePackageJson} from './utils/PackageJson';
+import path from 'path';
 
-const performInitialization = (process: NodeJS.Process) => (cwd: string): either.Either<Error, void> => {
+const performInitialization = (process: NodeJS.Process) => (cwd: string): either.Either<Error, unknown> => {
     if (cwd === '') {
         logger.debug('Blank CWD found, aborting initialization');
         return either.right(func.constVoid());
     }
 
-    return setupTypescript(cwd);
+    return func.pipe(
+        parsePackageJson(path.join(cwd, 'package.json')),
+        either.bindTo('packageJson'),
+        either.chainFirst(({ packageJson }) => setupTypescript(cwd))
+    );
 };
 
 export const execute = (process: NodeJS.Process) => {
