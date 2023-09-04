@@ -4,6 +4,7 @@ import path from 'path';
 import {unknownToError} from '../utils/unknownToError';
 import {parseTsConfig, TsConfig} from '../utils/TsConfig';
 import {logger} from '../logger';
+import {PackageJson} from '../utils/PackageJson';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
     /^vite\.config\.[cm]?ts$/,
@@ -23,7 +24,7 @@ const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
         readonlyArray.filter(isAdditionalFile)
     );
 
-export const setupTypescript = (cwd: string): either.Either<Error, void> => {
+export const setupTypescript = (cwd: string, packageJson: PackageJson): either.Either<Error, void> => {
     logger.info('Setting up TypeScript');
     const additionalFiles: ReadonlyArray<string> = func.pipe(
         either.tryCatch(() => findAdditionalFiles(cwd), unknownToError),
