@@ -6,8 +6,8 @@ import {parseTsConfig, TsConfig} from '../utils/TsConfig';
 import {logger} from '../logger';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
-    /^vite\.config\.[cm]?ts$/,
-    /^vitest\.config\.[cm]?ts$/
+    /^vite\.config\.[cm]?[jt]s$/,
+    /^vitest\.config\.[cm]?[jt]s$/
 ];
 
 const isAdditionalFile = (file: string): boolean =>
