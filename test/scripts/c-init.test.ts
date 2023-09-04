@@ -25,7 +25,7 @@ describe('c-init', () => {
         findCwdMock.mockReturnValue(either.right(''));
         execute(process);
         expect(setupTypescriptMock).not.toHaveBeenCalled();
-        expect(terminate).toHaveBeenCalledWith();
+        expect(terminate).toHaveBeenCalledWith(undefined);
     });
 
     it('performs full initialization successfully', () => {

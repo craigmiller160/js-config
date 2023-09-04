@@ -7,7 +7,7 @@ import {setupTypescript} from './init/setupTypescript';
 const performInitialization = (process: NodeJS.Process) => (cwd: string): either.Either<Error, void> => {
     if (cwd === '') {
         logger.debug('Blank CWD found, aborting initialization');
-        process.exit(0);
+        return either.right(func.constVoid());
     }
 
     return setupTypescript(cwd);
