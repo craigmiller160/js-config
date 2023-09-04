@@ -12,6 +12,6 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "declaration": false,
-    "module": "es2022"
+    "module": "Node16"
   }
 }
