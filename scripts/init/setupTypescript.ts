@@ -2,9 +2,11 @@ import fs from 'fs';
 import { readonlyArray, function as func, either } from 'fp-ts';
 import path from 'path';
 import {unknownToError} from '../utils/unknownToError';
+import {undefined} from 'io-ts';
 
 type TsConfig = Readonly<{
     extends: string;
+    compilerOptions?: Readonly<{}>;
     include: ReadonlyArray<string>;
     exclude: ReadonlyArray<string>;
 }>;
@@ -30,8 +32,15 @@ const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
 export const setupTypescript = (cwd: string): either.Either<Error, void> =>
     either.tryCatch(() => {
         const additionalFiles = findAdditionalFiles(cwd);
+        const rootTsConfigPath = path.join(cwd, 'tsconfig.json');
+        let existingRootTsConfig: TsConfig | null = null;
+        if (fs.existsSync(rootTsConfigPath)) {
+            existingRootTsConfig = JSON.parse(fs.readFileSync(rootTsConfigPath, 'utf8')) as TsConfig;
+        }
+
         const rootTsConfig: TsConfig = {
-            extends: '@craigmiller160/js-config/config/typescript/tsconfig.json',
+            extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
+            compilerOptions: existingRootTsConfig?.compilerOptions,
             include: [
                 'src/**/*',
                 ...additionalFiles
@@ -42,6 +51,6 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> =>
                 'lib'
             ]
         };
-        const rootTsConfigPath = path.join(cwd, 'tsconfig.json');
-        fs.writeFileSync(rootTsConfigPath, JSON.stringify(rootTsConfigPath, null, 2));
+
+        fs.writeFileSync(rootTsConfigPath, JSON.stringify(rootTsConfig, null, 2));
     }, unknownToError);
