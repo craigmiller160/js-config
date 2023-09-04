@@ -29,11 +29,18 @@ describe('c-init', () => {
     });
 
     it('performs full initialization successfully', () => {
-        throw new Error();
+        const cwd = 'cwd';
+        findCwdMock.mockReturnValue(either.right(cwd));
+        execute(process);
+        expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
+        expect(terminate).toHaveBeenCalledWith(undefined);
     });
 
     it('handles initialization error', () => {
-        throw new Error();
+        findCwdMock.mockReturnValue(either.left(new Error('Dying')));
+        execute(process);
+        expect(setupTypescriptMock).not.toHaveBeenCalled();
+        expect(terminate).toHaveBeenCalledWith(new Error('Dying'));
     });
 })
 
