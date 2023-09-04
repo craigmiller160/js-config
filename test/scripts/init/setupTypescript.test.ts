@@ -78,6 +78,29 @@ describe('setupTypescript', () => {
     });
 
     it('writes tsconfig.json, preserving compilerOptions from existing one', () => {
-        throw new Error();
+        const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
+        fs.writeFileSync(tsConfigPath, JSON.stringify({
+            compilerOptions: {
+                module: 'es2020'
+            }
+        }));
+
+        const result = setupTypescript(WORKING_DIR_PATH);
+        expect(result).toBeRight();
+        expect(fs.existsSync(tsConfigPath)).toEqual(true);
+        expect(JSON.parse(fs.readFileSync(tsConfigPath, 'utf8'))).toEqual({
+            extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
+            compilerOptions: {
+                module: 'es2020'
+            },
+            include: [
+                'src/**/*'
+            ],
+            exclude: [
+                'node_modules',
+                'build',
+                'lib'
+            ]
+        });
     });
 });
