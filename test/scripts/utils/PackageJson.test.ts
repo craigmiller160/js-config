@@ -1,17 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import {packageJsonCodec} from '../../../scripts/utils/PackageJson';
+import {packageJsonCodec, parsePackageJson} from '../../../scripts/utils/PackageJson';
+import path from 'path';
+
+const packageJsonDirectory = path.join(process.cwd(), 'test', '__working_directories__', 'PackageJson');
 
 describe('PackageJson', () => {
     it('parses a valid package.json', () => {
-        const json = {
+        const result = parsePackageJson(path.join(packageJsonDirectory, 'valid.json'));
+        expect(result).toEqualRight({
             name: 'TheName',
             version: '1.0.0'
-        }
-        const result = packageJsonCodec.decode(json);
-        expect(result).toEqualRight(json);
+        });
     });
 
     it('returns errors for invalid package.json', () => {
-        throw new Error();
+        const result = parsePackageJson(path.join(packageJsonDirectory, 'invalid.json'));
+        expect(result).toEqualLeft(new Error());
     });
 });
