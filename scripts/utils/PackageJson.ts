@@ -4,7 +4,8 @@ import {unknownToError} from './unknownToError';
 import fs from 'fs';
 
 export const packageJsonCodec = t.readonly(t.type({
-    name: t.string
+    name: t.string,
+    version: t.string
 }));
 
 export type PackageJson = t.TypeOf<typeof packageJsonCodec>;
