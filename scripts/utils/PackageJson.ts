@@ -1,6 +1,7 @@
 import * as t from 'io-ts';
 import { either, json, function as func } from 'fp-ts';
 import {unknownToError} from './unknownToError';
+import { formatValidationErrors } from 'io-ts-reporters';
 import fs from 'fs';
 
 export const packageJsonCodec = t.readonly(t.type({
@@ -11,7 +12,9 @@ export const packageJsonCodec = t.readonly(t.type({
 export type PackageJson = t.TypeOf<typeof packageJsonCodec>;
 
 const combineErrors = (errors: t.Errors): Error => {
-    const allMessages = errors.map((error) => error.message)
+    const allMessages = errors.map((error) => {
+
+    })
         .join('; ');
     return new Error(`Type validation errors: ${allMessages}`);
 };
@@ -23,6 +26,7 @@ export const parsePackageJson = (packageJsonPath: string): either.Either<Error, 
         either.mapLeft(unknownToError),
         either.chain(func.flow(
             packageJsonCodec.decode,
-            either.mapLeft(combineErrors)
+            either.mapLeft(formatValidationErrors),
+            either.mapLeft((errors) => new Error(errors.join('; ')))
         ))
     );
