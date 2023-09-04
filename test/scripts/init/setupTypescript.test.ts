@@ -1,7 +1,8 @@
-import {afterEach, beforeEach, describe, it} from 'vitest';
+import {afterEach, beforeEach, describe, it, expect} from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import {isUtf8} from 'buffer';
+import {setupTypescript} from '../../../scripts/init/setupTypescript';
 
 const WORKING_DIR_PATH = path.join(process.cwd(), 'test', '__working_directories__', 'typescript');
 
@@ -27,7 +28,21 @@ describe('setupTypescript', () => {
     });
 
     it('writes tsconfig.json to a project without one', () => {
-        throw new Error();
+        const result = setupTypescript(WORKING_DIR_PATH);
+        expect(result).toBeRight();
+        const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
+        expect(fs.existsSync(tsConfigPath)).toEqual(true);
+        expect(JSON.parse(fs.readFileSync(tsConfigPath, 'utf8'))).toEqual({
+            extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
+            include: [
+                'src/**/*'
+            ],
+            exclude: [
+                'node_modules',
+                'build',
+                'lib'
+            ]
+        });
     });
 
     it('writes tsconfig.json to a project without one, adding additional files', () => {
