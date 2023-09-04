@@ -1,6 +1,6 @@
 [
   {
-    "test": "^.*\\.jsx?",
+    "test": "^.*\\.[cm]jsx?",
     "$schema": "https://json.schemastore.org/swcrc",
     "jsc": {
       "parser": {
@@ -22,7 +22,7 @@
     }
   },
   {
-    "test": "^.*\\.tsx?",
+    "test": "^.*\\.[cm]tsx?",
     "$schema": "https://json.schemastore.org/swcrc",
     "jsc": {
       "parser": {
