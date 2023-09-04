@@ -11,13 +11,7 @@ const ADDITIONAL_FILES = [
     'vite.config.cts',
     'vitest.config.ts',
     'vitest.config.mts',
-    'vitest.config.cts',
-    'vite.config.js',
-    'vite.config.cjs',
-    'vite.config.mjs',
-    'vitest.config.js',
-    'vitest.config.mjs',
-    'vitest.config.cjs'
+    'vitest.config.cts'
 ];
 
 const resetWorkingDirectory = () => {
