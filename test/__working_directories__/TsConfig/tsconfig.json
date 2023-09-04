@@ -1,0 +1,14 @@
+{
+  "extends": "./configs/typescript/tsconfig.json",
+  "compilerOptions": {
+    "module": "es2020"
+  },
+  "include": [
+    "scripts/**/*",
+    "vitest.config.mts"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}
