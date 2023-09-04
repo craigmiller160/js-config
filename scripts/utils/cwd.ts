@@ -72,7 +72,7 @@ export const checkPath = (theDirectoryPath: string, previousPathResults: Readonl
         .exhaustive();
 };
 
-const handleError = (error: Error): either.Either<Error, string> => {
+const handleError = (process: NodeJS.Process) => (error: Error): either.Either<Error, string> => {
     if (error instanceof InvalidCwdPathError && error.pathResults.length === 2) {
         return either.right('');
     }
@@ -87,7 +87,7 @@ export const findCwd = (process: NodeJS.Process): either.Either<Error, string> =
     return func.pipe(
         checkPath(process.cwd()),
         either.fold(
-            handleError,
+            handleError(process),
             (cwd) => {
                 logger.info(`Found project CWD: ${cwd}`);
                 return either.right(cwd);
