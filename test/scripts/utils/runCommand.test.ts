@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import {runCommandSync} from '../../../scripts/utils/runCommand';
+import {either} from 'fp-ts';
 
 describe('runCommand', () => {
     describe('runCommandSync', () => {
@@ -12,7 +13,9 @@ describe('runCommand', () => {
             const result = runCommandSync('ls -l package.json', {
                 stdio: 'pipe'
             });
-            expect(result).toEqualRight('-rw-r--r--@ 1 craigmiller  staff  935 Sep  3 23:14 package.json\n');
+            expect(result).toBeRight();
+            const value = (result as either.Right<string>).right;
+            expect(value.trim().endsWith('package.json')).toEqual(true);
         });
 
         it('runs command with error with default options', () => {
