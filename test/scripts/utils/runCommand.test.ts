@@ -19,11 +19,15 @@ describe('runCommand', () => {
         });
 
         it('runs command with error with default options', () => {
-            throw new Error();
+            const result = runCommandSync('ls -l package.json2');
+            expect(result).toEqualLeft(new Error(`Command failed. Status: 1 Message: `));
         })
 
         it('runs command with error and returns output', () => {
-            throw new Error();
+            const result = runCommandSync('ls -l package.json2', {
+                stdio: 'pipe'
+            });
+            expect(result).toEqualLeft(new Error(`Command failed. Status: 1 Message: ls: package.json2: No such file or directory\n`));
         })
     })
 })
