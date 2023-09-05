@@ -9,7 +9,7 @@ export const runCommandSync = (command: string, options?: SpawnOptions): either.
         stdio: options?.stdio ?? 'inherit'
     });
     if (result.status === 0) {
-        return either.right(result.stdout.toString('utf8'));
+        return either.right(result.stdout?.toString('utf8') ?? '');
     }
-    return either.left(new Error(`Command failed. Status: ${result.status} Message: ${result.stderr.toString('utf8')}`));
+    return either.left(new Error(`Command failed. Status: ${result.status} Message: ${result.stderr?.toString('utf8') ?? ''}`));
 };
