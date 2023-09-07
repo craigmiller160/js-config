@@ -14,7 +14,7 @@
     "test": "vitest run",
     "build": "npm run typeCheck && npm run test && npm run forceBuild",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
-    "postinstall": "node ./build/bin/c-init.js"
+    "postinstall": "if test -d scripts; then echo 'No Post-Install Needed'; else node ./build/bin/c-init.js; fi"
   },
   "files": [
     "configs",
