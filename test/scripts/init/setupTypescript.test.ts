@@ -173,9 +173,10 @@ describe('setupTypescript', () => {
             expect(tsconfig).toEqual({
                 extends: '../tsconfig.json',
                 compilerOptions: {
-                    types: ['cypress', 'node']
+                    types: ['node', 'cypress']
                 },
                 include: [
+                    '../src/**/*',
                     '**/*'
                 ]
             });
@@ -208,6 +209,7 @@ describe('setupTypescript', () => {
                     module: 'es2020'
                 },
                 include: [
+                    '../src/**/*',
                     '**/*'
                 ]
             });
