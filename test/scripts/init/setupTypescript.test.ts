@@ -13,6 +13,7 @@ const ADDITIONAL_FILES = [
     'vitest.config.mts',
     'vitest.config.cts'
 ];
+const TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.json');
 const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
 const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
 const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
@@ -42,9 +43,8 @@ describe('setupTypescript', () => {
         it('writes tsconfig.json to a project without one, and nothing else', () => {
             const result = setupTypescript(WORKING_DIR_PATH);
             expect(result).toBeRight();
-            const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
-            expect(fs.existsSync(tsConfigPath)).toEqual(true);
-            expect(JSON.parse(fs.readFileSync(tsConfigPath, 'utf8'))).toEqual({
+            expect(fs.existsSync(TSCONFIG)).toEqual(true);
+            expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
                 extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
                 include: [
                     'src/**/*'
@@ -68,9 +68,8 @@ describe('setupTypescript', () => {
             const result = setupTypescript(WORKING_DIR_PATH);
             expect(result).toBeRight();
 
-            const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
-            expect(fs.existsSync(tsConfigPath)).toEqual(true);
-            expect(JSON.parse(fs.readFileSync(tsConfigPath, 'utf8'))).toEqual({
+            expect(fs.existsSync(TSCONFIG)).toEqual(true);
+            expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
                 extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
                 include: [
                     'src/**/*',
@@ -85,8 +84,7 @@ describe('setupTypescript', () => {
         });
 
         it('writes tsconfig.json, preserving compilerOptions from existing one', () => {
-            const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
-            fs.writeFileSync(tsConfigPath, JSON.stringify({
+            fs.writeFileSync(TSCONFIG, JSON.stringify({
                 compilerOptions: {
                     module: 'es2020'
                 }
@@ -94,8 +92,8 @@ describe('setupTypescript', () => {
 
             const result = setupTypescript(WORKING_DIR_PATH);
             expect(result).toBeRight();
-            expect(fs.existsSync(tsConfigPath)).toEqual(true);
-            expect(JSON.parse(fs.readFileSync(tsConfigPath, 'utf8'))).toEqual({
+            expect(fs.existsSync(TSCONFIG)).toEqual(true);
+            expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
                 extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
                 compilerOptions: {
                     module: 'es2020'
@@ -115,7 +113,7 @@ describe('setupTypescript', () => {
     describe('test tsconfig.json', () => {
         beforeEach(() => {
             fs.mkdirSync(TEST_DIR);
-        })
+        });
 
         it('writes test/tsconfig.json to project without one', () => {
             const result = setupTypescript(WORKING_DIR_PATH);
@@ -130,6 +128,9 @@ describe('setupTypescript', () => {
                     '**/*'
                 ]
             });
+
+            expect(fs.existsSync(TSCONFIG)).toEqual(true);
+            expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(false);
         });
 
         it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
@@ -159,8 +160,28 @@ describe('setupTypescript', () => {
     });
 
     describe('cypress tsconfig.json', () => {
+        beforeEach(() => {
+            fs.mkdirSync(CYPRESS_DIR);
+        });
+
         it('writes cypress/tsconfig.json to project without one', () => {
-            throw new Error();
+            const result = setupTypescript(WORKING_DIR_PATH);
+            expect(result).toBeRight();
+
+            expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(true);
+            const tsconfig = JSON.parse(fs.readFileSync(CYPRESS_TSCONFIG, 'utf8'));
+            expect(tsconfig).toEqual({
+                extends: '../tsconfig.json',
+                compilerOptions: {
+                    types: ['cypress', 'node']
+                },
+                include: [
+                    '**/*'
+                ]
+            });
+
+            expect(fs.existsSync(TSCONFIG)).toEqual(true);
+            expect(fs.existsSync(TEST_TSCONFIG)).toEqual(false);
         });
 
         it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
