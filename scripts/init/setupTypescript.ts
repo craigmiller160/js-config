@@ -21,7 +21,7 @@ const isAdditionalFile = (file: string): boolean =>
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
-const createRootTsConfig = (additionalFiles: ReadonlyArray<string>, existingTsConfig?: TsConfig): TsConfig => ({
+const createRootTsConfig = (additionalFiles: ReadonlyArray<string>) => (existingTsConfig?: TsConfig): TsConfig => ({
     extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
     compilerOptions: existingTsConfig?.compilerOptions,
     include: [
@@ -83,44 +83,15 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
         )
     );
 
-    const rootTsConfigPath = path.join(cwd, 'tsconfig.json');
-    let existingRootTsConfig: TsConfig | undefined = undefined;
-    if (fs.existsSync(rootTsConfigPath)) {
-        existingRootTsConfig = func.pipe(
-            parseTsConfig(rootTsConfigPath),
-            either.fold(
-                (error): TsConfig | undefined => {
-                    logger.error(`Error parsing root tsconfig.json: ${error}`);
-                    return undefined;
-                },
-                func.identity
-            )
-        );
-    }
-
-    const rootTsConfig: TsConfig = createRootTsConfig(additionalFiles, existingRootTsConfig);
-    either.tryCatch(() => fs.writeFileSync(rootTsConfigPath, JSON.stringify(rootTsConfig, null, 2)), unknownToError);
-
     const testDirPath = path.join(cwd, 'test');
-    if (fs.existsSync(testDirPath)) {
-        const testTsConfigPath = path.join(testDirPath, 'tsconfig.json');
-        let existingTestTsConfig: TsConfig | undefined = undefined;
-        if (fs.existsSync(testTsConfigPath)) {
-            existingTestTsConfig = func.pipe(
-                parseTsConfig(testTsConfigPath),
-                either.fold(
-                    (error): TsConfig | undefined => {
-                        logger.error(`Error parsing test tsconfig.json: ${error}`);
-                        return undefined
-                    },
-                    func.identity
-                )
-            );
-        }
 
-        const testTsConfig: TsConfig = createTestTsConfig(existingTestTsConfig);
-        either.tryCatch(() => fs.writeFileSync(rootTsConfigPath, JSON.stringify(testTsConfig, null, 2)), unknownToError);
-    }
-
-    throw new Error();
+    return func.pipe(
+        createTsConfig(cwd, createRootTsConfig(additionalFiles)),
+        either.chain(() => {
+            if (fs.existsSync(testDirPath)) {
+                return createTsConfig(testDirPath, createTestTsConfig);
+            }
+            return either.right(func.constVoid());
+        })
+    );
 };
