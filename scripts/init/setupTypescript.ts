@@ -39,7 +39,7 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
     extends: '../tsconfig.json',
     compilerOptions: existingTsConfig?.compilerOptions,
     include: [
-        'src/**/*',
+        '../src/**/*',
         '**/*'
     ]
 });
