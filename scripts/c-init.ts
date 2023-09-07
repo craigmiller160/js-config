@@ -3,7 +3,7 @@ import { function as func, either } from 'fp-ts';
 import {logger} from './logger';
 import {terminate} from './utils/terminate';
 import {setupTypescript} from './init/setupTypescript';
-import {parsePackageJson} from './utils/PackageJson';
+import {parsePackageJson} from './files/PackageJson';
 import path from 'path';
 
 const performInitialization = (process: NodeJS.Process) => (cwd: string): either.Either<Error, unknown> => {

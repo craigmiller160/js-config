@@ -2,9 +2,9 @@ import fs from 'fs';
 import { readonlyArray, function as func, either } from 'fp-ts';
 import path from 'path';
 import {unknownToError} from '../utils/unknownToError';
-import {parseTsConfig, TsConfig} from '../utils/TsConfig';
+import {parseTsConfig, TsConfig} from '../files/TsConfig';
 import {logger} from '../logger';
-import {PackageJson} from '../utils/PackageJson';
+import {PackageJson} from '../files/PackageJson';
 import {isLibraryPresent} from '../utils/library';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [

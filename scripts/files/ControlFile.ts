@@ -1,8 +1,8 @@
 import * as t from 'io-ts';
 import {either, function as func, json} from 'fp-ts';
 import fs from 'fs';
-import {unknownToError} from './unknownToError';
-import {decode} from './decode';
+import {unknownToError} from '../utils/unknownToError';
+import {decode} from '../utils/decode';
 import path from 'path';
 
 export const controlFileCodec = t.readonly(t.type({

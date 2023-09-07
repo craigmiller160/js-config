@@ -1,4 +1,4 @@
-import {ControlFile, getControlFilePath} from '../utils/ControlFile';
+import {ControlFile, getControlFilePath} from '../files/ControlFile';
 import fs from 'fs';
 import { either } from 'fp-ts';
 import {unknownToError} from '../utils/unknownToError';

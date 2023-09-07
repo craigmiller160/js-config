@@ -1,4 +1,4 @@
-import {PackageJson, PackageJsonDependencies, parsePackageJson} from './PackageJson';
+import {PackageJson, PackageJsonDependencies, parsePackageJson} from '../files/PackageJson';
 import path from 'path';
 import { either, function as func } from 'fp-ts';
 import {logger} from '../logger';
