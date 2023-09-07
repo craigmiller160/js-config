@@ -11,11 +11,11 @@ export const controlFileCodec = t.readonly(t.type({
 
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
-export const getControlFilePath = (theProcess: NodeJS.Process = process) => path.join(theProcess.cwd(), 'control-file.json');
+export const getControlFilePath = (process: NodeJS.Process) => path.join(process.cwd(), 'control-file.json');
 
-export const parseControlFile = (theProcess: NodeJS.Process = process): either.Either<Error, ControlFile> =>
+export const parseControlFile = (process: NodeJS.Process): either.Either<Error, ControlFile> =>
     func.pipe(
-        either.tryCatch(() => fs.readFileSync(getControlFilePath(theProcess), 'utf8'), unknownToError),
+        either.tryCatch(() => fs.readFileSync(getControlFilePath(process), 'utf8'), unknownToError),
         either.chain(json.parse),
         either.mapLeft(unknownToError),
         either.chain(decode(controlFileCodec))

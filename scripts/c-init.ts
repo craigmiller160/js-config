@@ -5,6 +5,7 @@ import {terminate} from './utils/terminate';
 import {setupTypescript} from './init/setupTypescript';
 import {parsePackageJson} from './files/PackageJson';
 import path from 'path';
+import {generateControlFile} from './init/generateControlFile';
 
 const performInitialization = (process: NodeJS.Process) => (cwd: string): either.Either<Error, unknown> => {
     if (cwd === '') {
@@ -15,7 +16,8 @@ const performInitialization = (process: NodeJS.Process) => (cwd: string): either
     return func.pipe(
         parsePackageJson(path.join(cwd, 'package.json')),
         either.bindTo('packageJson'),
-        either.chainFirst(() => setupTypescript(cwd))
+        either.chainFirst(() => setupTypescript(cwd)),
+        either.chainFirst(() => generateControlFile(cwd, process))
     );
 };
 
