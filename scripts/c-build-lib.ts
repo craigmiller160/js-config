@@ -5,6 +5,7 @@ import {runCommandSync} from './utils/runCommand';
 import { function as func, either } from 'fp-ts';
 import {terminate} from './utils/terminate';
 import {findCommand} from './utils/command';
+import {SWC, TSC} from './commandPaths';
 
 
 export const execute = (process: NodeJS.Process) => {
@@ -24,9 +25,9 @@ export const execute = (process: NodeJS.Process) => {
     const configPath = path.join(__dirname, '..', 'configs', 'swc', '.swcrc');
 
     func.pipe(
-        findCommand(process, '@swc/cli/bin/swc.js'),
+        findCommand(process, SWC),
         either.bindTo('swcCommand'),
-        either.bind('tscCommand', () => findCommand(process, 'typescript/bin/tsc')),
+        either.bind('tscCommand', () => findCommand(process, TSC)),
         either.chainFirst(({ swcCommand }) => runCommandSync(`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`)),
         either.chainFirst(({ swcCommand }) => runCommandSync(`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=commonjs`)),
         either.chainFirst(({ tscCommand }) => runCommandSync(`${tscCommand} --declaration --emitDeclarationOnly --outDir ${typesDir}`)),

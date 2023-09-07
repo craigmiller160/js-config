@@ -5,6 +5,7 @@ import {logger} from './logger';
 import {terminate} from './utils/terminate';
 import {either, function as func} from 'fp-ts';
 import {findCommand} from './utils/command';
+import {TSC} from './commandPaths';
 
 const runRootTypeCheck = (process: NodeJS.Process, command: string): either.Either<Error, unknown> => {
     const testTsconfigPath = path.join(process.cwd(), 'test', 'tsconfig.json');
@@ -32,7 +33,7 @@ export const execute = (process: NodeJS.Process) => {
     logger.info('Performing typescript type check');
 
     func.pipe(
-        findCommand(process, 'typescript/bin/tsc'),
+        findCommand(process, TSC),
         either.bindTo('command'),
         either.chainFirst(({ command }) => runRootTypeCheck(process, command)),
         either.chainFirst(({ command }) => runCypressTypeCheck(process, command)),
