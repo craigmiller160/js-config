@@ -6,7 +6,7 @@ import {terminate} from './utils/terminate';
 import {either, function as func} from 'fp-ts';
 import {findCommand} from './utils/command';
 
-const runRootTypeCheck = (command: string): either.Either<Error, unknown> => {
+const runRootTypeCheck = (process: NodeJS.Process, command: string): either.Either<Error, unknown> => {
     const testTsconfigPath = path.join(process.cwd(), 'test', 'tsconfig.json');
     if (fs.existsSync(testTsconfigPath)) {
         logger.debug('Using test tsconfig.json for type check');
@@ -17,7 +17,7 @@ const runRootTypeCheck = (command: string): either.Either<Error, unknown> => {
     return runCommandSync('tsc --noEmit');
 };
 
-const runCypressTypeCheck = (command: string): either.Either<Error, unknown> => {
+const runCypressTypeCheck = (process: NodeJS.Process, command: string): either.Either<Error, unknown> => {
     const cypressTsconfigPath = path.join(process.cwd(), 'cypress', 'tsconfig.json');
     if (fs.existsSync(cypressTsconfigPath)) {
         logger.debug('Cypress detected, performing cypress type check');
@@ -34,8 +34,8 @@ export const execute = (process: NodeJS.Process) => {
     func.pipe(
         findCommand(process, 'typescript/bin/tsc'),
         either.bindTo('command'),
-        either.chainFirst(({ command }) => runRootTypeCheck(command)),
-        either.chainFirst(({ command }) => runCypressTypeCheck(command)),
+        either.chainFirst(({ command }) => runRootTypeCheck(process, command)),
+        either.chainFirst(({ command }) => runCypressTypeCheck(process, command)),
         either.fold(
             terminate,
             terminate
