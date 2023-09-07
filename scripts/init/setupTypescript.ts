@@ -19,6 +19,8 @@ const isAdditionalFile = (file: string): boolean =>
         readonlyArray.size
     ) >= 1;
 
+type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
+
 const createRootTsConfig = (additionalFiles: ReadonlyArray<string>, existingTsConfig?: TsConfig): TsConfig => ({
     extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
     compilerOptions: existingTsConfig?.compilerOptions,
@@ -47,6 +49,26 @@ const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
         fs.readdirSync(cwd),
         readonlyArray.filter(isAdditionalFile)
     );
+
+const createTsConfig = (dirPath: string, creator: TsConfigCreator): either.Either<Error, void> => {
+    const tsConfigPath = path.join(dirPath, 'tsconfig.json');
+    let existingTsConfig: TsConfig | undefined = undefined;
+    if (fs.existsSync(tsConfigPath)) {
+        existingTsConfig = func.pipe(
+            parseTsConfig(tsConfigPath),
+            either.fold(
+                (error): TsConfig | undefined => {
+                    logger.error(`Error parsing ${tsConfigPath}`);
+                    return undefined;
+                },
+                func.identity
+            )
+        );
+    }
+
+    const tsConfig = creator(existingTsConfig);
+    return either.tryCatch(() => fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2)), unknownToError);
+};
 
 export const setupTypescript = (cwd: string): either.Either<Error, void> => {
     logger.info('Setting up TypeScript');
