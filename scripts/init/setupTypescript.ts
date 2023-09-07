@@ -17,7 +17,30 @@ const isAdditionalFile = (file: string): boolean =>
         ADDITIONAL_FILES,
         readonlyArray.filter((regex) => regex.test(file)),
         readonlyArray.size
-    ) >= 1
+    ) >= 1;
+
+const createRootTsConfig = (additionalFiles: ReadonlyArray<string>, existingTsConfig?: TsConfig): TsConfig => ({
+    extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
+    compilerOptions: existingTsConfig?.compilerOptions,
+    include: [
+        'src/**/*',
+        ...additionalFiles
+    ],
+    exclude: [
+        'node_modules',
+        'build',
+        'lib'
+    ]
+});
+
+const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
+    extends: '../tsconfig.json',
+    compilerOptions: existingTsConfig?.compilerOptions,
+    include: [
+        'src/**/*',
+        '**/*'
+    ]
+});
 
 const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
     func.pipe(
@@ -53,19 +76,29 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
         );
     }
 
-    const rootTsConfig: TsConfig = {
-        extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
-        compilerOptions: existingRootTsConfig?.compilerOptions,
-        include: [
-            'src/**/*',
-            ...additionalFiles
-        ],
-        exclude: [
-            'node_modules',
-            'build',
-            'lib'
-        ]
-    };
+    const rootTsConfig: TsConfig = createRootTsConfig(additionalFiles, existingRootTsConfig);
+    either.tryCatch(() => fs.writeFileSync(rootTsConfigPath, JSON.stringify(rootTsConfig, null, 2)), unknownToError);
 
-    return either.tryCatch(() => fs.writeFileSync(rootTsConfigPath, JSON.stringify(rootTsConfig, null, 2)), unknownToError);
+    const testDirPath = path.join(cwd, 'test');
+    if (fs.existsSync(testDirPath)) {
+        const testTsConfigPath = path.join(testDirPath, 'tsconfig.json');
+        let existingTestTsConfig: TsConfig | undefined = undefined;
+        if (fs.existsSync(testTsConfigPath)) {
+            existingTestTsConfig = func.pipe(
+                parseTsConfig(testTsConfigPath),
+                either.fold(
+                    (error): TsConfig | undefined => {
+                        logger.error(`Error parsing test tsconfig.json: ${error}`);
+                        return undefined
+                    },
+                    func.identity
+                )
+            );
+        }
+
+        const testTsConfig: TsConfig = createTestTsConfig(existingTestTsConfig);
+        either.tryCatch(() => fs.writeFileSync(rootTsConfigPath, JSON.stringify(testTsConfig, null, 2)), unknownToError);
+    }
+
+    throw new Error();
 };
