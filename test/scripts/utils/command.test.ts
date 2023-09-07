@@ -25,7 +25,7 @@ describe('command', () => {
                     NODE_PATH
                 }
             }, 'typescript/bin/tsc');
-            expect(result).toEqualRight(path.join(NODE_PATH[3], 'typescript/bin/tsc'));
+            expect(result).toEqualRight(path.join(NODE_PATH.split(':')[3], 'typescript/bin/tsc'));
         });
 
         it('cannot find command from NODE_PATH', () => {
