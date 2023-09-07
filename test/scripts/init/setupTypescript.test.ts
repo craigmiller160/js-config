@@ -113,5 +113,15 @@ describe('setupTypescript', () => {
         it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
             throw new Error();
         });
+    });
+
+    describe('cypress tsconfig.json', () => {
+        it('writes cypress/tsconfig.json to project without one', () => {
+            throw new Error();
+        });
+
+        it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
+            throw new Error();
+        });
     })
 });
