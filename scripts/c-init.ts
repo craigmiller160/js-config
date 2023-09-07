@@ -15,7 +15,7 @@ const performInitialization = (process: NodeJS.Process) => (cwd: string): either
     return func.pipe(
         parsePackageJson(path.join(cwd, 'package.json')),
         either.bindTo('packageJson'),
-        either.chainFirst(({ packageJson }) => setupTypescript(cwd))
+        either.chainFirst(() => setupTypescript(cwd))
     );
 };
 
