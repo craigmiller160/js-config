@@ -6,11 +6,13 @@ import { either, function as func } from 'fp-ts';
 import {execute} from '../../scripts/c-init';
 import { parsePackageJson } from '../../scripts/files/PackageJson';
 import path from 'path';
+import {generateControlFile} from '../../scripts/init/generateControlFile';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<typeof setupTypescript>;
 const terminateMock = terminate as MockedFunction<typeof terminate>;
 const parsePackageJsonMock = parsePackageJson as MockedFunction<typeof parsePackageJson>;
+const generateControlFileMock = generateControlFile as MockedFunction<typeof generateControlFile>;
 
 vi.mock('../../scripts/init/setupTypescript', () => ({
     setupTypescript: vi.fn()
@@ -18,8 +20,11 @@ vi.mock('../../scripts/init/setupTypescript', () => ({
 vi.mock('../../scripts/utils/cwd', () => ({
     findCwd: vi.fn()
 }));
-vi.mock('../../scripts/utils/PackageJson', () => ({
+vi.mock('../../scripts/files/PackageJson', () => ({
     parsePackageJson: vi.fn()
+}));
+vi.mock('../../scripts/init/generateControlFile', () => ({
+    generateControlFile: vi.fn()
 }));
 
 describe('c-init', () => {
@@ -38,6 +43,7 @@ describe('c-init', () => {
         const cwd = 'cwd';
         findCwdMock.mockReturnValue(either.right(cwd));
         setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
+        generateControlFileMock.mockReturnValue(either.right(func.constVoid()));
         parsePackageJsonMock.mockReturnValue(either.right({
             name: '',
             version: '',
@@ -47,6 +53,7 @@ describe('c-init', () => {
         execute(process);
         expect(parsePackageJsonMock).toHaveBeenCalledWith(path.join(cwd, 'package.json'));
         expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
+        expect(generateControlFileMock).toHaveBeenCalledWith(cwd, process);
         expect(terminate).toHaveBeenCalled();
     });
 
