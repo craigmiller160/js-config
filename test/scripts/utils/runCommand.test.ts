@@ -1,6 +1,8 @@
-import {describe, it, expect} from 'vitest';
+import {describe, it, expect, vi} from 'vitest';
 import {runCommandSync} from '../../../scripts/utils/runCommand';
 import {either} from 'fp-ts';
+
+vi.unmock('../../../scripts/utils/runCommand');
 
 describe('runCommand', () => {
     describe('runCommandSync', () => {
