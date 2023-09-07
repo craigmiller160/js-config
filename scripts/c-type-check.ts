@@ -14,7 +14,7 @@ const runRootTypeCheck = (process: NodeJS.Process, command: string): either.Eith
     }
 
     logger.debug('Using base tsconfig.json for type check');
-    return runCommandSync('tsc --noEmit');
+    return runCommandSync(`${command} --noEmit`);
 };
 
 const runCypressTypeCheck = (process: NodeJS.Process, command: string): either.Either<Error, unknown> => {
