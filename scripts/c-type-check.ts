@@ -29,7 +29,7 @@ const runCypressTypeCheck = (): either.Either<Error, unknown> => {
 
 export const execute = (process: NodeJS.Process) => {
     logger.info('Performing typescript type check');
-    return func.pipe(
+    func.pipe(
         runRootTypeCheck(),
         either.chain(() => runCypressTypeCheck()),
         either.fold(
