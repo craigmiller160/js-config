@@ -13,6 +13,10 @@ const ADDITIONAL_FILES = [
     'vitest.config.mts',
     'vitest.config.cts'
 ];
+const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
+const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
+const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
+const CYPRESS_TSCONFIG = path.join(CYPRESS_DIR, 'tsconfig.json');
 
 const resetWorkingDirectory = () =>
     fs.readdirSync(WORKING_DIR_PATH)
@@ -35,7 +39,7 @@ describe('setupTypescript', () => {
     });
 
     describe('base tsconfig.json', () => {
-        it('writes tsconfig.json to a project without one', () => {
+        it('writes tsconfig.json to a project without one, and nothing else', () => {
             const result = setupTypescript(WORKING_DIR_PATH);
             expect(result).toBeRight();
             const tsConfigPath = path.join(WORKING_DIR_PATH, 'tsconfig.json');
@@ -51,6 +55,9 @@ describe('setupTypescript', () => {
                     'lib'
                 ]
             });
+
+            expect(fs.existsSync(TEST_TSCONFIG)).toEqual(false);
+            expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(false);
         });
 
         it('writes tsconfig.json to a project without one, adding additional files', () => {
@@ -106,12 +113,48 @@ describe('setupTypescript', () => {
     });
 
     describe('test tsconfig.json', () => {
+        beforeEach(() => {
+            fs.mkdirSync(TEST_DIR);
+        })
+
         it('writes test/tsconfig.json to project without one', () => {
-            throw new Error();
+            const result = setupTypescript(WORKING_DIR_PATH);
+            expect(result).toBeRight();
+
+            expect(fs.existsSync(TEST_TSCONFIG)).toEqual(true);
+            const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+            expect(tsconfig).toEqual({
+                extends: '../tsconfig.json',
+                include: [
+                    '../src/**/*',
+                    '**/*'
+                ]
+            });
         });
 
         it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
-            throw new Error();
+            const baseConfig = {
+                compilerOptions: {
+                    module: 'es2020'
+                }
+            };
+            fs.writeFileSync(TEST_TSCONFIG, JSON.stringify(baseConfig));
+
+            const result = setupTypescript(WORKING_DIR_PATH);
+            expect(result).toBeRight();
+
+            expect(fs.existsSync(TEST_TSCONFIG)).toEqual(true);
+            const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+            expect(tsconfig).toEqual({
+                extends: '../tsconfig.json',
+                compilerOptions: {
+                    module: 'es2020'
+                },
+                include: [
+                    '../src/**/*',
+                    '**/*'
+                ]
+            });
         });
     });
 
