@@ -6,7 +6,9 @@ import {decode} from './decode';
 
 export const tsConfigCodec = t.readonly(t.partial({
     extends: t.string,
-    compilerOptions: t.readonly(t.partial({})),
+    compilerOptions: t.readonly(t.partial({
+        types: t.readonlyArray(t.string)
+    })),
     include: t.readonlyArray(t.string),
     exclude: t.readonlyArray(t.string)
 }));

@@ -4,7 +4,8 @@
   "author": "craigmiller160",
   "license": "GPL",
   "bin": {
-    "c-init": "./build/bin/c-init.js"
+    "c-init": "./build/bin/c-init.js",
+    "c-type-check": "./build/bin/c-type-check.js"
   },
   "scripts": {
     "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
