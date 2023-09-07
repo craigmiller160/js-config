@@ -100,12 +100,19 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
     );
 
     const testDirPath = path.join(cwd, 'test');
+    const cypressDirPath = path.join(cwd, 'cypress');
 
     return func.pipe(
         createTsConfig(cwd, createRootTsConfig(additionalFiles)),
         either.chain(() => {
             if (fs.existsSync(testDirPath)) {
                 return createTsConfig(testDirPath, createTestTsConfig);
+            }
+            return either.right(func.constVoid());
+        }),
+        either.chain(() => {
+            if (fs.existsSync(cypressDirPath)) {
+                return createTsConfig(cypressDirPath, createCypressTsConfig);
             }
             return either.right(func.constVoid());
         })
