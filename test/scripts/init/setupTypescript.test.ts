@@ -187,7 +187,11 @@ describe('setupTypescript', () => {
         it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
             const baseConfig = {
                 compilerOptions: {
-                    module: 'es2020'
+                    module: 'es2020',
+                    types: [
+                        'node',
+                        'foo'
+                    ]
                 }
             };
             fs.writeFileSync(CYPRESS_TSCONFIG, JSON.stringify(baseConfig));
@@ -200,7 +204,7 @@ describe('setupTypescript', () => {
             expect(tsconfig).toEqual({
                 extends: '../tsconfig.json',
                 compilerOptions: {
-                    types: ['cypress', 'node'],
+                    types: ['foo', 'node', 'cypress'],
                     module: 'es2020'
                 },
                 include: [

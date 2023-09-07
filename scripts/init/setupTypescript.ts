@@ -44,6 +44,22 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
     ]
 });
 
+const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
+    extends: '../tsconfig.json',
+    compilerOptions: {
+        ...(existingTsConfig?.compilerOptions ?? {}),
+        types: [
+            ...(existingTsConfig?.compilerOptions?.types?.filter((theType) => !['node', 'cypress'].includes(theType)) ?? []),
+            'node',
+            'cypress'
+        ]
+    },
+    include: [
+        '../src/**/*',
+        '**/*'
+    ]
+})
+
 const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
     func.pipe(
         fs.readdirSync(cwd),
