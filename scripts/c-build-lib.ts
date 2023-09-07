@@ -6,6 +6,7 @@ import {runCommandSync} from './utils/runCommand';
 
 export const execute = (process: NodeJS.Process) => {
     logger.info('Performing library build');
+    const srcDir = path.join(process.cwd(), 'src');
     const libDir = path.join(process.cwd(), 'lib');
     if (fs.existsSync(libDir)) {
         fs.rmSync(libDir, {
@@ -14,5 +15,8 @@ export const execute = (process: NodeJS.Process) => {
         });
     }
 
-    runCommandSync('')
+    const esModuleDir = path.join(libDir, 'es');
+    const configPath = path.join(__dirname, '..', 'configs', 'swc', '.swcrc');
+
+    runCommandSync(`swc ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`);
 };
