@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import {parseTsConfig} from '../../../scripts/utils/TsConfig';
+import {parseTsConfig} from '../../../scripts/files/TsConfig';
 
 describe('TsConfig', () => {
     it('parses tsconfig.json', () => {

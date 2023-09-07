@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import path from 'path';
 import {isLibraryPresent} from '../../../scripts/utils/library';
-import {PackageJson} from '../../../scripts/utils/PackageJson';
+import {PackageJson} from '../../../scripts/files/PackageJson';
 
 const WORKING_DIR = path.join(process.cwd(), 'test', '__working_directories__', 'isLibraryPresent');
 
