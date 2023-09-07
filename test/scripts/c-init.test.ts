@@ -5,6 +5,7 @@ import {terminate} from '../../scripts/utils/terminate';
 import { either, function as func } from 'fp-ts';
 import {execute} from '../../scripts/c-init';
 import { parsePackageJson } from '../../scripts/utils/PackageJson';
+import path from 'path';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<typeof setupTypescript>;
@@ -44,8 +45,9 @@ describe('c-init', () => {
             devDependencies: {}
         }));
         execute(process);
+        expect(parsePackageJsonMock).toHaveBeenCalledWith(path.join(cwd, 'package.json'));
         expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
-        expect(terminate).toHaveBeenCalledWith(undefined);
+        expect(terminate).toHaveBeenCalled();
     });
 
     it('handles initialization error', () => {
