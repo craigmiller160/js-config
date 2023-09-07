@@ -7,5 +7,5 @@ export const generateControlFile = (cwd: string, process: NodeJS.Process): eithe
     const controlFile: ControlFile = {
         workingDirectoryPath: cwd
     };
-    return either.tryCatch(() => fs.writeFileSync(getControlFilePath(process), JSON.stringify(controlFile, null, 2)), unknownToError);
+    return either.tryCatch(() => fs.writeFileSync(getControlFilePath(process.cwd()), JSON.stringify(controlFile, null, 2)), unknownToError);
 };
