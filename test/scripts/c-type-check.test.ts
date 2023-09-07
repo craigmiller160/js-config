@@ -21,10 +21,23 @@ describe('c-type-check', () => {
     })
 
     it('runs the type check once using the test config', () => {
-        throw new Error();
+        const cwd = path.join(WORKING_DIR, 'testOnly');
+        execute({
+            ...process,
+            cwd: () => cwd
+        });
+        expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
+        expect(runCommandSyncMock).toHaveBeenNthCalledWith(1, 'tsc --noEmit --project ./test/tsconfig.json');
     });
 
     it('runs the type check twice, using the base config and cypress config', () => {
-        throw new Error();
+        const cwd = path.join(WORKING_DIR, 'baseAndCypress');
+        execute({
+            ...process,
+            cwd: () => cwd
+        });
+        expect(runCommandSyncMock).toHaveBeenCalledTimes(2);
+        expect(runCommandSyncMock).toHaveBeenNthCalledWith(1, 'tsc --noEmit');
+        expect(runCommandSyncMock).toHaveBeenNthCalledWith(2, 'tsc --noEmit --project ./cypress/tsconfig.json');
     })
 });
