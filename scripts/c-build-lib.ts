@@ -18,13 +18,18 @@ export const execute = (process: NodeJS.Process) => {
         });
     }
 
-    const esModuleDir = path.join(libDir, 'es');
+    const esModuleDir = path.join(libDir, 'esm');
+    const commonjsModuleDir = path.join(libDir, 'cjs');
+    const typesDir = path.join(libDir, 'types');
     const configPath = path.join(__dirname, '..', 'configs', 'swc', '.swcrc');
 
     func.pipe(
         findCommand(process, '@swc/cli/bin/swc.js'),
-        either.bindTo('command'),
-        either.chainFirst(({ command }) => runCommandSync(`${command} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`)),
+        either.bindTo('swcCommand'),
+        either.bind('tscCommand', () => findCommand(process, 'typescript/bin/tsc')),
+        either.chainFirst(({ swcCommand }) => runCommandSync(`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`)),
+        either.chainFirst(({ swcCommand }) => runCommandSync(`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=commonjs`)),
+        either.chainFirst(({ tscCommand }) => runCommandSync(`${tscCommand} --declaration --emitDeclarationOnly --outDir ${typesDir}`)),
         either.fold(
             terminate,
             terminate
