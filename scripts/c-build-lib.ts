@@ -4,6 +4,7 @@ import {logger} from './logger';
 import {runCommandSync} from './utils/runCommand';
 import { function as func, either } from 'fp-ts';
 import {terminate} from './utils/terminate';
+import {findCommand} from './utils/command';
 
 
 export const execute = (process: NodeJS.Process) => {
@@ -21,7 +22,9 @@ export const execute = (process: NodeJS.Process) => {
     const configPath = path.join(__dirname, '..', 'configs', 'swc', '.swcrc');
 
     func.pipe(
-        runCommandSync(`swc ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`),
+        findCommand(process, '@swc/cli/bin/swc.js'),
+        either.bindTo('command'),
+        either.chainFirst(({ command }) => runCommandSync(`${command} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`)),
         either.fold(
             terminate,
             terminate
