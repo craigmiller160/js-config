@@ -185,7 +185,28 @@ describe('setupTypescript', () => {
         });
 
         it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
-            throw new Error();
+            const baseConfig = {
+                compilerOptions: {
+                    module: 'es2020'
+                }
+            };
+            fs.writeFileSync(CYPRESS_TSCONFIG, JSON.stringify(baseConfig));
+
+            const result = setupTypescript(WORKING_DIR_PATH);
+            expect(result).toBeRight();
+
+            expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(true);
+            const tsconfig = JSON.parse(fs.readFileSync(CYPRESS_TSCONFIG, 'utf8'));
+            expect(tsconfig).toEqual({
+                extends: '../tsconfig.json',
+                compilerOptions: {
+                    types: ['cypress', 'node'],
+                    module: 'es2020'
+                },
+                include: [
+                    '**/*'
+                ]
+            });
         });
     })
 });
