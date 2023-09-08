@@ -9,7 +9,8 @@ import { packageJsonTypeCodec } from './PackageJson';
 export const controlFileCodec = t.readonly(
 	t.type({
 		workingDirectoryPath: t.string,
-		projectType: packageJsonTypeCodec
+		projectType: packageJsonTypeCodec,
+		eslintPlugins: t.readonlyArray(t.string)
 	})
 );
 

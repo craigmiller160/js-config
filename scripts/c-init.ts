@@ -7,6 +7,7 @@ import { parsePackageJson } from './files/PackageJson';
 import path from 'path';
 import { generateControlFile } from './init/generateControlFile';
 import { setupEslintFiles } from './init/setupEslintFiles';
+import { setupEslintPlugins } from './init/setupEslintPlugins';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
@@ -21,8 +22,11 @@ const performInitialization =
 			either.bindTo('packageJson'),
 			either.chainFirst(() => setupTypescript(cwd)),
 			either.chainFirst(() => setupEslintFiles(cwd)),
-			either.chainFirst(({ packageJson }) =>
-				generateControlFile(cwd, packageJson, process)
+			either.bind('eslintPlugins', () =>
+				either.right(setupEslintPlugins())
+			),
+			either.chainFirst(({ packageJson, eslintPlugins }) =>
+				generateControlFile(cwd, packageJson, eslintPlugins, process)
 			)
 		);
 	};

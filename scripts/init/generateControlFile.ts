@@ -7,11 +7,13 @@ import { PackageJson } from '../files/PackageJson';
 export const generateControlFile = (
 	cwd: string,
 	packageJson: PackageJson,
+	eslintPlugins: ReadonlyArray<string>,
 	process: NodeJS.Process
 ): either.Either<Error, void> => {
 	const controlFile: ControlFile = {
 		workingDirectoryPath: cwd,
-		projectType: packageJson.type ?? 'commonjs'
+		projectType: packageJson.type ?? 'commonjs',
+		eslintPlugins
 	};
 	return either.tryCatch(
 		() =>
