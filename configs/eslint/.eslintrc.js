@@ -1,9 +1,16 @@
+const fs = require('fs');
+const path = require('path');
+
+const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
+const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
+
 module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:prettier/recommended',
 		'plugin:import/recommended',
-		'plugin:sonarjs/recommended'
+		'plugin:sonarjs/recommended',
+		...controlFile.eslintPlugins
 	],
 	rules: {
 		'no-console': [

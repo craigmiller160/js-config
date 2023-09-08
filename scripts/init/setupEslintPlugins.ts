@@ -1,5 +1,4 @@
 import {
-	isLibraryPresent,
 	isLibraryPresent as realIsLibraryPresent
 } from '../utils/library';
 
@@ -30,7 +29,9 @@ export const setupEslintPlugins = (
 	const plugins: ReadonlyArray<ReadonlyArray<string>> = [
 		isLibraryPresent('react') ? REACT_PLUGINS : [],
 		isLibraryPresent('vitest') ? VITEST_PLUGINS : [],
-		isTestingLibraryPresent(isLibraryPresent) ? TESTING_LIBRARY_PLUGINS : [],
+		isTestingLibraryPresent(isLibraryPresent)
+			? TESTING_LIBRARY_PLUGINS
+			: [],
 		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : []
 	];
 	return plugins.flat();
