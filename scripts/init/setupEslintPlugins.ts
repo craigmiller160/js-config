@@ -1,4 +1,7 @@
-import { isLibraryPresent as realIsLibraryPresent } from '../utils/library';
+import {
+	isLibraryPresent,
+	isLibraryPresent as realIsLibraryPresent
+} from '../utils/library';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
@@ -17,12 +20,18 @@ const CYPRESS_PLUGINS: ReadonlyArray<string> = ['plugin:cypress/recommended'];
 
 type IsLibraryPresent = typeof realIsLibraryPresent;
 
+const isTestingLibraryPresent = (isLibraryPresent: IsLibraryPresent): boolean =>
+	isLibraryPresent('@testing-library/react') ||
+	isLibraryPresent('@testing-library/jest-dom');
+
 export const setupEslintPlugins = (
 	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
 ): ReadonlyArray<string> => {
 	const plugins: ReadonlyArray<ReadonlyArray<string>> = [
 		isLibraryPresent('react') ? REACT_PLUGINS : [],
-		isLibraryPresent('vitest') ? VITEST_PLUGINS : []
+		isLibraryPresent('vitest') ? VITEST_PLUGINS : [],
+		isTestingLibraryPresent(isLibraryPresent) ? TESTING_LIBRARY_PLUGINS : [],
+		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : []
 	];
 	return plugins.flat();
 };
