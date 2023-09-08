@@ -11,7 +11,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['**/*.[cm]?ts?(x)'],
+			files: ['**/*.{ts,tsx,mts,cts}'],
 			parser: '@typescript-eslint/parser',
 			extends: ['plugin:@typescript-eslint/recommended']
 		}
