@@ -38,15 +38,15 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toEqual(true);
+		expect(fs.existsSync(eslintrcPath)).toBe(true);
 		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
-		expect(eslintConfig.trim()).toEqual(
+		expect(eslintConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
 		);
 
-		expect(fs.existsSync(prettierrcPath)).toEqual(true);
+		expect(fs.existsSync(prettierrcPath)).toBe(true);
 		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toEqual(
+		expect(prettierConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
 		);
 	});
@@ -64,15 +64,15 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toEqual(true);
+		expect(fs.existsSync(eslintrcPath)).toBe(true);
 		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
-		expect(eslintConfig.trim()).toEqual(
+		expect(eslintConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
 		);
 
-		expect(fs.existsSync(prettierrcPath)).toEqual(true);
+		expect(fs.existsSync(prettierrcPath)).toBe(true);
 		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toEqual(
+		expect(prettierConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
 		);
 	});
@@ -90,15 +90,15 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toEqual(true);
+		expect(fs.existsSync(eslintrcPath)).toBe(true);
 		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
-		expect(eslintConfig.trim()).toEqual(
+		expect(eslintConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js'); \\ foo`
 		);
 
-		expect(fs.existsSync(prettierrcPath)).toEqual(true);
+		expect(fs.existsSync(prettierrcPath)).toBe(true);
 		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toEqual(
+		expect(prettierConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js'); \\ foo`
 		);
 	});

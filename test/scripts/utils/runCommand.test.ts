@@ -17,7 +17,7 @@ describe('runCommand', () => {
 			});
 			expect(result).toBeRight();
 			const value = (result as either.Right<string>).right;
-			expect(value.trim().endsWith('package.json')).toEqual(true);
+			expect(value.trim().endsWith('package.json')).toBe(true);
 		});
 
 		it('runs command with error with default options', () => {

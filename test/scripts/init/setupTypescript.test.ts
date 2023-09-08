@@ -48,7 +48,7 @@ describe('setupTypescript', () => {
 		it('writes tsconfig.json to a project without one, and nothing else', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
-			expect(fs.existsSync(TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
 				extends:
 					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
@@ -56,8 +56,8 @@ describe('setupTypescript', () => {
 				exclude: ['node_modules', 'build', 'lib']
 			});
 
-			expect(fs.existsSync(TEST_TSCONFIG)).toEqual(false);
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(false);
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
 		});
 
 		it('writes tsconfig.json to a project without one, adding additional files', () => {
@@ -68,7 +68,7 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
-			expect(fs.existsSync(TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
 				extends:
 					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
@@ -89,7 +89,7 @@ describe('setupTypescript', () => {
 
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
-			expect(fs.existsSync(TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
 				extends:
 					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
@@ -111,15 +111,15 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
-			expect(fs.existsSync(TEST_TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				include: ['../src/**/*', '**/*']
 			});
 
-			expect(fs.existsSync(TSCONFIG)).toEqual(true);
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(false);
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
 		});
 
 		it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
@@ -133,7 +133,7 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
-			expect(fs.existsSync(TEST_TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
@@ -154,7 +154,7 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(
 				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
 			);
@@ -166,8 +166,8 @@ describe('setupTypescript', () => {
 				include: ['../src/**/*', '**/*']
 			});
 
-			expect(fs.existsSync(TSCONFIG)).toEqual(true);
-			expect(fs.existsSync(TEST_TSCONFIG)).toEqual(false);
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
 		});
 
 		it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
@@ -182,7 +182,7 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toEqual(true);
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(
 				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
 			);

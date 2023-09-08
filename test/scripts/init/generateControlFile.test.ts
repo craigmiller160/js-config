@@ -43,7 +43,7 @@ describe('generateControlFile', () => {
 		});
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(CONTROL_FILE)).toEqual(true);
+		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
 		const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
@@ -66,7 +66,7 @@ describe('generateControlFile', () => {
 		});
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(CONTROL_FILE)).toEqual(true);
+		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
 		const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
