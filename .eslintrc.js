@@ -1,1 +1,8 @@
-module.exports = require('./configs/eslint/.eslintrc.js');
+const config = require('./configs/eslint/.eslintrc.js');
+
+module.exports = {
+    ...config,
+    env: {
+        node: true
+    }
+}

@@ -4,8 +4,6 @@ import path from 'path';
 import { unknownToError } from '../utils/unknownToError';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
-import { PackageJson } from '../files/PackageJson';
-import { isLibraryPresent } from '../utils/library';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
 	/^vite\.config\.[cm]?ts$/,
@@ -64,7 +62,7 @@ const createTsConfig = (
 		existingTsConfig = func.pipe(
 			parseTsConfig(tsConfigPath),
 			either.fold((error): TsConfig | undefined => {
-				logger.error(`Error parsing ${tsConfigPath}`);
+				logger.error(`Error parsing ${tsConfigPath}: ${error}`);
 				return undefined;
 			}, func.identity)
 		);

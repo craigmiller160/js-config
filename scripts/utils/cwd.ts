@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { parsePackageJson } from '../files/PackageJson';
-import { either, function as func, option } from 'fp-ts';
-import { match, P } from 'ts-pattern';
+import { either, function as func } from 'fp-ts';
+import { match } from 'ts-pattern';
 import { logger } from '../logger';
 
 type CheckPathResult =
