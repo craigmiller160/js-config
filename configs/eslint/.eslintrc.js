@@ -1,6 +1,7 @@
 module.exports = {
     extends: [
-        'eslint:recommended'
+        'eslint:recommended',
+        'plugin:prettier/recommended'
     ],
     rules: {
         'no-console': [
@@ -8,6 +9,7 @@ module.exports = {
             {
                 allow: ['error']
             }
-        ]
+        ],
+        'prettier/prettier': ['error', {}, { usePrettierrc: true }]
     }
 };
