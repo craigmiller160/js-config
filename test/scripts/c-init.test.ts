@@ -4,7 +4,7 @@ import {findCwd} from '../../scripts/utils/cwd';
 import {terminate} from '../../scripts/utils/terminate';
 import { either, function as func } from 'fp-ts';
 import {execute} from '../../scripts/c-init';
-import { parsePackageJson } from '../../scripts/files/PackageJson';
+import {PackageJson, parsePackageJson} from '../../scripts/files/PackageJson';
 import path from 'path';
 import {generateControlFile} from '../../scripts/init/generateControlFile';
 
@@ -40,20 +40,22 @@ describe('c-init', () => {
     });
 
     it('performs full initialization successfully', () => {
+        const packageJson: PackageJson = {
+            name: '',
+            version: '',
+            type: undefined,
+            dependencies: {},
+            devDependencies: {}
+        }
         const cwd = 'cwd';
         findCwdMock.mockReturnValue(either.right(cwd));
         setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
         generateControlFileMock.mockReturnValue(either.right(func.constVoid()));
-        parsePackageJsonMock.mockReturnValue(either.right({
-            name: '',
-            version: '',
-            dependencies: {},
-            devDependencies: {}
-        }));
+        parsePackageJsonMock.mockReturnValue(either.right(packageJson));
         execute(process);
         expect(parsePackageJsonMock).toHaveBeenCalledWith(path.join(cwd, 'package.json'));
         expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
-        expect(generateControlFileMock).toHaveBeenCalledWith(cwd, process);
+        expect(generateControlFileMock).toHaveBeenCalledWith(cwd, packageJson, process);
         expect(terminate).toHaveBeenCalled();
     });
 
