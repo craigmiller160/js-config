@@ -1,5 +1,10 @@
 module.exports = {
-	extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+	extends: [
+		'eslint:recommended',
+		'plugin:prettier/recommended',
+		'plugin:import/recommended',
+		'plugin:sonarjs/recommended'
+	],
 	rules: {
 		'no-console': [
 			'error',
