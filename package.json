@@ -11,6 +11,7 @@
   "scripts": {
     "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
+    "lint": "eslint --fix --max-warnings=0 '{configs,scripts}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "vitest run",
     "build": "npm run typeCheck && npm run test && npm run forceBuild",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
