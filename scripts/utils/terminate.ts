@@ -6,6 +6,5 @@ export const terminate = (result: Error | unknown): void => {
 		logger.on('finish', () => {
 			process.exit(1);
 		});
-		return;
 	}
 };

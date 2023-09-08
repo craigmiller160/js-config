@@ -12,7 +12,8 @@ module.exports = {
 				allow: ['error']
 			}
 		],
-		'prettier/prettier': ['error', {}, { usePrettierrc: true }]
+		'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+		'sonarjs/no-duplicate-string': 0
 	},
 	overrides: [
 		{
