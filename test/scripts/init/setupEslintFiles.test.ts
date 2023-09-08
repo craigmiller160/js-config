@@ -52,7 +52,29 @@ describe('setupEslint', () => {
 	});
 
 	it("writes default eslint & prettier config files, replacing existing ones that don't reference this lib", () => {
-		throw new Error();
+		fs.writeFileSync(
+			eslintrcPath,
+			`module.exports = require('@craigmiller160/eslint-config-js/.eslintrc.js');`
+		);
+		fs.writeFileSync(
+			prettierrcPath,
+			`module.exports = require('@craigmiller160/prettier-config/.prettierrc.js');`
+		);
+
+		const result = setupEslintFiles(WORKING_DIR);
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(eslintrcPath)).toEqual(true);
+		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
+		expect(eslintConfig.trim()).toEqual(
+			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+		);
+
+		expect(fs.existsSync(prettierrcPath)).toEqual(true);
+		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
+		expect(prettierConfig.trim()).toEqual(
+			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
+		);
 	});
 
 	it('do nothing when eslint & prettier config files that reference this lib exist', () => {
