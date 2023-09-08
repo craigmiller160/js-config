@@ -45,4 +45,27 @@ describe('generateControlFile', () => {
             projectType: 'module'
         });
     });
+
+    it('generates control file with data and default for package.json type', () => {
+        const cwd = '/hello/world';
+        const packageJson: PackageJson = {
+            name: '',
+            version: '',
+            type: undefined,
+            dependencies: {},
+            devDependencies: {}
+        };
+        const result = generateControlFile(cwd,  packageJson, {
+            ...process,
+            cwd: () => WORKING_DIR
+        });
+        expect(result).toBeRight();
+
+        expect(fs.existsSync(CONTROL_FILE)).toEqual(true);
+        const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
+        expect(controlFile).toEqual({
+            workingDirectoryPath: cwd,
+            projectType: 'commonjs'
+        });
+    });
 });
