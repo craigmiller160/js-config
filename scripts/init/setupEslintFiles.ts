@@ -1,4 +1,4 @@
-import { either } from 'fp-ts';
+import { either, function as func } from 'fp-ts';
 import path from 'path';
 import fs from 'fs';
 
@@ -15,19 +15,24 @@ const shouldWriteConfig = (configPath: string): boolean => {
 };
 
 export const setupEslintFiles = (cwd: string): either.Either<Error, void> => {
-	const eslintrcPath = getEslintrcPath(cwd);
-	if (shouldWriteConfig(eslintrcPath)) {
-		fs.writeFileSync(
-			eslintrcPath,
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
-		);
-	}
+	try {
+		const eslintrcPath = getEslintrcPath(cwd);
+		if (shouldWriteConfig(eslintrcPath)) {
+			fs.writeFileSync(
+				eslintrcPath,
+				`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+			);
+		}
 
-	const prettierrcPath = getPrettierrcPath(cwd);
-	if (shouldWriteConfig(prettierrcPath)) {
-		fs.writeFileSync(
-			prettierrcPath,
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
-		);
+		const prettierrcPath = getPrettierrcPath(cwd);
+		if (shouldWriteConfig(prettierrcPath)) {
+			fs.writeFileSync(
+				prettierrcPath,
+				`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
+			);
+		}
+		return either.right(func.constVoid());
+	} catch (ex) {
+		return either.left(ex as Error);
 	}
 };
