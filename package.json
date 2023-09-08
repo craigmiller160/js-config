@@ -6,7 +6,8 @@
   "bin": {
     "c-build-lib": "./build/bin/c-build-lib.js",
     "c-init": "./build/bin/c-init.js",
-    "c-type-check": "./build/bin/c-type-check.js"
+    "c-type-check": "./build/bin/c-type-check.js",
+    "c-lint": "./build/bin/c-lint.js"
   },
   "exports": {
     "./configs/*": {
