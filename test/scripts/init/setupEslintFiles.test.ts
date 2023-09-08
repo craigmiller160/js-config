@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import path from 'path';
 import fs from 'fs';
+import { setupEslintFiles } from '../../../scripts/init/setupEslintFiles';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -21,6 +22,9 @@ const wipeWorkingDir = () =>
 			})
 		);
 
+const eslintrcPath = path.join(WORKING_DIR, '.eslintrc.js');
+const prettierrcPath = path.join(WORKING_DIR, '.prettierrc.js');
+
 describe('setupEslint', () => {
 	beforeEach(() => {
 		wipeWorkingDir();
@@ -31,6 +35,13 @@ describe('setupEslint', () => {
 	});
 
 	it('writes default eslint & prettier config files when none exist', () => {
+		const result = setupEslintFiles(WORKING_DIR);
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(eslintrcPath)).toEqual(true);
+		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
+		expect(eslintConfig.trim()).toEqual(`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`);
+
 		throw new Error();
 	});
 
