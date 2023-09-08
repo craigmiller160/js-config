@@ -17,7 +17,7 @@ const performInitialization = (process: NodeJS.Process) => (cwd: string): either
         parsePackageJson(path.join(cwd, 'package.json')),
         either.bindTo('packageJson'),
         either.chainFirst(() => setupTypescript(cwd)),
-        either.chainFirst(() => generateControlFile(cwd, process))
+        either.chainFirst(({ packageJson }) => generateControlFile(cwd, packageJson, process))
     );
 };
 
