@@ -6,7 +6,7 @@ import { setupTypescript } from './init/setupTypescript';
 import { parsePackageJson } from './files/PackageJson';
 import path from 'path';
 import { generateControlFile } from './init/generateControlFile';
-import {setupEslintFiles} from './init/setupEslintFiles';
+import { setupEslintFiles } from './init/setupEslintFiles';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
