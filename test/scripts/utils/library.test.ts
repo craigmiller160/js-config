@@ -1,13 +1,14 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { isLibraryPresent } from '../../../scripts/utils/library';
 
 describe('library', () => {
 	describe('isLibraryPresent', () => {
 		it('is present', () => {
-			throw new Error();
+			expect(isLibraryPresent('typescript')).toEqual(true);
 		});
 
 		it('is not present', () => {
-			throw new Error();
+			expect(isLibraryPresent('foobar')).toEqual(false);
 		});
 	});
 });
