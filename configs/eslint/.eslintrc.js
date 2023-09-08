@@ -18,7 +18,10 @@ module.exports = {
 		{
 			files: ['**/*.{ts,tsx,mts,cts}'],
 			parser: '@typescript-eslint/parser',
-			extends: ['plugin:@typescript-eslint/recommended']
+			extends: [
+				'plugin:@typescript-eslint/recommended',
+				'plugin:import/typescript'
+			]
 		}
 	]
 };
