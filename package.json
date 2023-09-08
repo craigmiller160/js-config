@@ -4,6 +4,7 @@
   "author": "craigmiller160",
   "license": "GPL",
   "bin": {
+    "c-build-lib": "./build/bin/c-build-lib.js",
     "c-init": "./build/bin/c-init.js",
     "c-type-check": "./build/bin/c-type-check.js"
   },
@@ -13,12 +14,16 @@
     "test": "vitest run",
     "build": "npm run typeCheck && npm run test && npm run forceBuild",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
-    "postinstall": "node ./build/bin/c-init.js"
+    "postinstall": "if test -d scripts; then echo 'No Post-Install Needed'; else node ./build/bin/c-init.js; fi"
   },
   "files": [
     "configs",
     "build"
   ],
+  "peerDependencies": {
+    "@swc/cli": "^0.1.62",
+    "typescript": "^5.2.2"
+  },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
     "@types/node": "^20.5.8",
