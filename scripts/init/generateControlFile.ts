@@ -2,8 +2,9 @@ import {ControlFile, getControlFilePath} from '../files/ControlFile';
 import fs from 'fs';
 import { either } from 'fp-ts';
 import {unknownToError} from '../utils/unknownToError';
+import {PackageJson} from '../files/PackageJson';
 
-export const generateControlFile = (cwd: string, process: NodeJS.Process): either.Either<Error, void> => {
+export const generateControlFile = (cwd: string, packageJson: PackageJson, process: NodeJS.Process): either.Either<Error, void> => {
     const controlFile: ControlFile = {
         workingDirectoryPath: cwd
     };

@@ -4,9 +4,11 @@ import fs from 'fs';
 import {unknownToError} from '../utils/unknownToError';
 import {decode} from '../utils/decode';
 import path from 'path';
+import {packageJsonTypeCodec} from './PackageJson';
 
 export const controlFileCodec = t.readonly(t.type({
-    workingDirectoryPath: t.string
+    workingDirectoryPath: t.string,
+    projectType: packageJsonTypeCodec
 }));
 
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
