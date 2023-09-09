@@ -37,7 +37,9 @@ describe('command', () => {
 			);
 		});
 
-		it('cannot find command from NODE_PATH', () => {
+		it.fails('finds command from alternative pnpm path');
+
+		it('cannot find command', () => {
 			const result = findCommand(
 				{
 					...process,
