@@ -40,6 +40,12 @@ export const setupGitHooks = (
 	process: NodeJS.Process
 ): either.Either<Error, unknown> => {
 	logger.info('Setting up git hooks');
+	const gitDir = path.join(cwd, '.git');
+	if (!fs.existsSync(gitDir)) {
+		logger.debug('Git is not setup in the project, skipping githook setup');
+		return either.right(func.constVoid());
+	}
+
 	return func.pipe(
 		installHusky(cwd, process),
 		either.chain(() => writePreCommitScript(cwd))
