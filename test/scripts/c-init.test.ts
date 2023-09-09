@@ -7,6 +7,8 @@ import { execute } from '../../scripts/c-init';
 import { PackageJson, parsePackageJson } from '../../scripts/files/PackageJson';
 import path from 'path';
 import { generateControlFile } from '../../scripts/init/generateControlFile';
+import { setupEslintFiles } from '../../scripts/init/setupEslintFiles';
+import { setupEslintPlugins } from '../../scripts/init/setupEslintPlugins';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<
@@ -17,6 +19,12 @@ const parsePackageJsonMock = parsePackageJson as MockedFunction<
 >;
 const generateControlFileMock = generateControlFile as MockedFunction<
 	typeof generateControlFile
+>;
+const setupEslintFilesMock = setupEslintFiles as MockedFunction<
+	typeof setupEslintFiles
+>;
+const setupEslintPluginsMock = setupEslintPlugins as MockedFunction<
+	typeof setupEslintPlugins
 >;
 
 vi.mock('../../scripts/init/setupTypescript', () => ({
@@ -30,6 +38,14 @@ vi.mock('../../scripts/files/PackageJson', () => ({
 }));
 vi.mock('../../scripts/init/generateControlFile', () => ({
 	generateControlFile: vi.fn()
+}));
+
+vi.mock('../../scripts/init/setupEslintFiles', () => ({
+	setupEslintFiles: vi.fn()
+}));
+
+vi.mock('../../scripts/init/setupEslintPlugins', () => ({
+	setupEslintPlugins: vi.fn()
 }));
 
 describe('c-init', () => {
@@ -53,10 +69,13 @@ describe('c-init', () => {
 			devDependencies: {}
 		};
 		const cwd = 'cwd';
+		const plugins: ReadonlyArray<string> = ['plugin1', 'plugin2'];
 		findCwdMock.mockReturnValue(either.right(cwd));
 		setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
 		generateControlFileMock.mockReturnValue(either.right(func.constVoid()));
 		parsePackageJsonMock.mockReturnValue(either.right(packageJson));
+		setupEslintFilesMock.mockReturnValue(either.right(func.constVoid()));
+		setupEslintPluginsMock.mockReturnValue(plugins);
 		execute(process);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
@@ -65,6 +84,7 @@ describe('c-init', () => {
 		expect(generateControlFileMock).toHaveBeenCalledWith(
 			cwd,
 			packageJson,
+			plugins,
 			process
 		);
 		expect(terminate).toHaveBeenCalled();
