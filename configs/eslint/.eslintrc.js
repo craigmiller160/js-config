@@ -36,7 +36,14 @@ module.exports = {
 		'sonarjs/no-duplicate-string': 0
 	},
 	settings: {
-		...reactSettings
+		...reactSettings,
+		'import/resolver': {
+			node: {
+				extensions: [
+					'.js', '.jsx', '.cjs', '.mjs'
+				]
+			}
+		}
 	},
 	overrides: [
 		{
