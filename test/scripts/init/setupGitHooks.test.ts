@@ -4,6 +4,7 @@ import { setupGitHooks } from '../../../scripts/init/setupGitHooks';
 import { runCommandSync } from '../../../scripts/utils/runCommand';
 import fs from 'fs';
 import { either } from 'fp-ts';
+import { HUSKY } from '../../../scripts/commandPaths';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -46,14 +47,23 @@ describe('setupGitHooks', () => {
 	it.fails('aborts if .husky directory not created');
 
 	it('fully sets up git hooks', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
 		const cwd = path.join(WORKING_DIR, 'complete');
+		const preCommitPath = path.join(cwd, '.husky', 'pre-commit');
+		if (fs.existsSync(preCommitPath)) {
+			fs.rmSync(preCommitPath);
+		}
+
+		runCommandSyncMock.mockReturnValue(either.right(''));
 		ensureGitDirectory(cwd);
 		const result = setupGitHooks(cwd, process);
 		expect(result).toBeRight();
 
-		const preCommitPath = path.join(cwd, '.husky', 'pre-commit');
 		expect(fs.existsSync(preCommitPath)).toBe(true);
-		expect(runCommandSyncMock).toHaveBeenCalledWith('husky install');
+		expect(runCommandSyncMock).toHaveBeenCalledWith(
+			`${path.join(process.cwd(), 'node_modules', HUSKY)} install`,
+			{
+				cwd
+			}
+		);
 	});
 });
