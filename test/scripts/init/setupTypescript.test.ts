@@ -10,7 +10,7 @@ const WORKING_DIR_PATH = path.join(
 	'typescript'
 );
 const ADDITIONAL_FILES = [
-	'vite.config.mts',
+	'vite.config.ts',
 	'vite.config.mts',
 	'vite.config.cts',
 	'vitest.config.ts',
