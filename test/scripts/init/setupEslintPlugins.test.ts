@@ -25,7 +25,22 @@ describe('setupEslintPlugins', () => {
 	});
 
 	it('adds testing library plugins', () => {
-		throw new Error();
+		const expectedResult: ReadonlyArray<string> = [
+			'plugin:testing-library/recommended',
+			'plugin:jest-dom/recommended'
+		];
+
+		const isLibraryPresentReact = createIsLibraryPresent([
+			'@testing-library/react'
+		]);
+		const reactResult = setupEslintPlugins(isLibraryPresentReact);
+		expect(reactResult).toEqual(expectedResult);
+
+		const isLibraryPresentJestDom = createIsLibraryPresent([
+			'@testing-library/jest-dom'
+		]);
+		const jestDomResult = setupEslintPlugins(isLibraryPresentJestDom);
+		expect(jestDomResult).toEqual(expectedResult);
 	});
 
 	it('adds cypress plugins', () => {
