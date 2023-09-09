@@ -2,6 +2,7 @@ import {
 	IsLibraryPresent,
 	isLibraryPresent as realIsLibraryPresent
 } from '../utils/library';
+import { logger } from '../logger';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
@@ -26,6 +27,7 @@ const isTestingLibraryPresent = (isLibraryPresent: IsLibraryPresent): boolean =>
 export const setupEslintPlugins = (
 	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
 ): ReadonlyArray<string> => {
+	logger.info('Setting up eslint plugins');
 	const plugins: ReadonlyArray<ReadonlyArray<string>> = [
 		isLibraryPresent('react') ? REACT_PLUGINS : [],
 		isLibraryPresent('vitest') ? VITEST_PLUGINS : [],
