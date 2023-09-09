@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import { PackageJson } from '../../../scripts/files/PackageJson';
-import { setupVite } from '../../../scripts/init/setupVite';
+import {setupVite, VITE_CONFIG} from '../../../scripts/init/setupVite';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -46,9 +46,19 @@ describe('setupVite', () => {
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
 		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
 		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
+		expect(config).not.toMatch(/^.*foo.*$/);
 	});
 
 	it.fails('backs up and replaces old vite config');
 
-	it.fails('does nothing when valid vite config is present');
+	it('does nothing when valid vite config is present', () => {
+		fs.writeFileSync(VITE_CONFIG_PATH, `${VITE_CONFIG.trim()}\n// foo`);
+		const result = setupVite(WORKING_DIR, packageJson);
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
+		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
+		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
+		expect(config).toMatch(/^.*foo.*$/);
+	});
 });

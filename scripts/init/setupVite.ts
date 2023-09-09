@@ -1,7 +1,7 @@
 import { either } from 'fp-ts';
 import { PackageJson } from '../files/PackageJson';
 
-const VITE_CONFIG = `
+export const VITE_CONFIG = `
 import { defineConfig } from '@craigmiller160/js-config/configs/vite/vite.config';
 
 export default defineConfig();
