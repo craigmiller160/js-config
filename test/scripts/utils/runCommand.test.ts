@@ -7,11 +7,6 @@ vi.unmock('../../../scripts/utils/runCommand');
 describe('runCommand', () => {
 	describe('runCommandSync', () => {
 		it('runs command successfully with default options', () => {
-			const result = runCommandSync('ls -l package.json');
-			expect(result).toEqualRight('');
-		});
-
-		it('runs command successfully and returns output', () => {
 			const result = runCommandSync('ls -l package.json', {
 				stdio: 'pipe'
 			});
@@ -21,13 +16,6 @@ describe('runCommand', () => {
 		});
 
 		it('runs command with error with default options', () => {
-			const result = runCommandSync('ls -l package.json2');
-			expect(result).toEqualLeft(
-				new Error(`Command failed. Status: 1 Message: `)
-			);
-		});
-
-		it('runs command with error and returns output', () => {
 			const result = runCommandSync('ls -l package.json2', {
 				stdio: 'pipe'
 			});

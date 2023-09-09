@@ -2,10 +2,19 @@ import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { runCommandSync } from '../../scripts/utils/runCommand';
 import { either } from 'fp-ts';
 import { execute } from '../../scripts/c-eslint';
+import path from 'path';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync
 >;
+
+const COMMAND = path.join(
+	process.cwd(),
+	'node_modules',
+	'eslint',
+	'bin',
+	'eslint.js'
+);
 
 describe('c-lint', () => {
 	beforeEach(() => {
@@ -16,7 +25,7 @@ describe('c-lint', () => {
 	it('runs with default path', () => {
 		execute(process);
 		expect(runCommandSync).toHaveBeenCalledWith(
-			'eslint --fix --max-warnings=0 {src,test,cypress}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'
+			`${COMMAND} --fix --max-warnings=0 {src,test,cypress}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`
 		);
 	});
 
@@ -27,7 +36,7 @@ describe('c-lint', () => {
 			argv: ['', '', thePath]
 		});
 		expect(runCommandSync).toHaveBeenCalledWith(
-			`eslint --fix --max-warnings=0 ${thePath}`
+			`${COMMAND} --fix --max-warnings=0 ${thePath}`
 		);
 	});
 });

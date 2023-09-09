@@ -10,16 +10,22 @@ export const runCommandSync = (
 	const commandParts = command.split(' ');
 	const result = spawnSync(commandParts[0], commandParts.slice(1), {
 		...(options ?? {}),
-		stdio: options?.stdio ?? 'inherit'
+		stdio: 'pipe'
 	});
-	if (result.status === 0) {
-		return either.right(result.stdout?.toString('utf8') ?? '');
+	const stdout = result.stdout?.toString('utf8') ?? '';
+	const stderr = result.stderr?.toString('utf8');
+	if (stdout) {
+		logger.debug(`  STDOUT: ${stdout}`);
 	}
+	if (stderr) {
+		logger.error(`  STDERR: ${stderr}`);
+	}
+
+	if (result.status === 0) {
+		return either.right(stdout);
+	}
+
 	return either.left(
-		new Error(
-			`Command failed. Status: ${result.status} Message: ${
-				result.stderr?.toString('utf8') ?? ''
-			}`
-		)
+		new Error(`Command failed. Status: ${result.status} Message: ${stderr}`)
 	);
 };

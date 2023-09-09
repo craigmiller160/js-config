@@ -14,7 +14,8 @@ describe('setupEslintPlugins', () => {
 		expect(result).toEqual([
 			'plugin:react/recommended',
 			'plugin:react-hooks/recommended',
-			'plugin:jsx-a11y/recommended'
+			'plugin:jsx-a11y/recommended',
+			'plugin:react/jsx-runtime'
 		]);
 	});
 

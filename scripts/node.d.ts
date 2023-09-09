@@ -1,7 +1,7 @@
 declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
-			readonly NODE_PATH: string;
+			readonly NODE_PATH?: string;
 		}
 	}
 }

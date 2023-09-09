@@ -10,14 +10,14 @@ const WORKING_DIR = path.join(
 );
 
 const NODE_PATH: string = [
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/build/bin/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/build/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/node_modules',
-	'.pnpm/js-config-root/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/build/bin/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/build/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules',
 	'.pnpm/node_modules'
 ]
-	.map((thePath) => path.join(WORKING_DIR, thePath))
+	.map((thePath) => path.join(WORKING_DIR, 'node_modules', thePath))
 	.join(':');
 
 describe('command', () => {
@@ -37,7 +37,29 @@ describe('command', () => {
 			);
 		});
 
-		it('cannot find command from NODE_PATH', () => {
+		it.fails('finds command from alternative pnpm path', () => {
+			const result = findCommand(
+				{
+					...process,
+					env: {
+						NODE_PATH: undefined
+					}
+				},
+				'typescript/bin/tsc'
+			);
+			expect(result).toEqualRight(
+				path.join(
+					WORKING_DIR,
+					'node_modules',
+					'.pnpm',
+					'typescript@5.2.0',
+					'node_modules',
+					'typescript/bin/tsc'
+				)
+			);
+		});
+
+		it('cannot find command', () => {
 			const result = findCommand(
 				{
 					...process,
@@ -48,7 +70,7 @@ describe('command', () => {
 				'foo/bar'
 			);
 			expect(result).toEqualLeft(
-				new Error('Unable to find command on NODE_PATH: foo/bar')
+				new Error('Unable to find command: foo/bar')
 			);
 		});
 	});
