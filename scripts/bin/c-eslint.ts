@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { execute } from '../c-lint';
+import { execute } from '../c-eslint';
 
 execute(process);
