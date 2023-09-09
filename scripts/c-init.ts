@@ -26,7 +26,7 @@ const performInitialization =
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
 			),
-			either.chainFirst(() => setupGitHooks()),
+			either.chainFirst(() => setupGitHooks(cwd, process)),
 			either.chainFirst(({ packageJson, eslintPlugins }) =>
 				generateControlFile(cwd, packageJson, eslintPlugins, process)
 			)
