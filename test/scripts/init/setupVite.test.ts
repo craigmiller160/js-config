@@ -10,7 +10,7 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'vite'
 );
-const VITE_CONFIG_PATH = path.join(WORKING_DIR, 'vite.config.mts');
+const VITE_CONFIG_PATH = path.join(WORKING_DIR, 'vite.config.ts');
 const cleanWorkingDir = () =>
 	fs
 		.readdirSync(WORKING_DIR)
