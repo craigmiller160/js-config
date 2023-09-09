@@ -42,7 +42,7 @@ export const setupGitHooks = (
 	logger.info('Setting up git hooks');
 	const gitDir = path.join(cwd, '.git');
 	if (!fs.existsSync(gitDir)) {
-		logger.debug('Git is not setup in the project, skipping githook setup');
+		logger.warn('Git is not setup in the project, skipping githook setup');
 		return either.right(func.constVoid());
 	}
 
