@@ -15,7 +15,7 @@ export const runCommandSync = (
 	const stdout = result.stdout?.toString('utf8') ?? '';
 	const stderr = result.stderr?.toString('utf8');
 	if (stdout) {
-		logger.verbose(`  STDOUT: ${stdout}`);
+		logger.debug(`  STDOUT: ${stdout}`);
 	}
 	if (stderr) {
 		logger.error(`  STDERR: ${stderr}`);
