@@ -9,6 +9,7 @@ import { generateControlFile } from './init/generateControlFile';
 import { setupEslintFiles } from './init/setupEslintFiles';
 import { setupEslintPlugins } from './init/setupEslintPlugins';
 import { setupGitHooks } from './init/setupGitHooks';
+import { setupVite } from './init/setupVite';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
@@ -21,6 +22,7 @@ const performInitialization =
 		return func.pipe(
 			parsePackageJson(path.join(cwd, 'package.json')),
 			either.bindTo('packageJson'),
+			either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
 			either.chainFirst(() => setupTypescript(cwd)),
 			either.chainFirst(() => setupEslintFiles(cwd)),
 			either.bind('eslintPlugins', () =>

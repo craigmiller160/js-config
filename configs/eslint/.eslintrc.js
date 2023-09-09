@@ -36,7 +36,10 @@ module.exports = {
 		'sonarjs/no-duplicate-string': 0
 	},
 	settings: {
-		...reactSettings
+		...reactSettings,
+		'import/resolver': {
+			typescript: {}
+		}
 	},
 	overrides: [
 		{
@@ -45,7 +48,12 @@ module.exports = {
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:import/typescript'
-			]
+			],
+			settings: {
+				'import/resolver': {
+					typescript: {}
+				}
+			}
 		}
 	]
 };
