@@ -38,9 +38,7 @@ module.exports = {
 	settings: {
 		...reactSettings,
 		'import/resolver': {
-			node: {
-				extensions: ['.js', '.jsx', '.cjs', '.mjs']
-			}
+			typescript: {}
 		}
 	},
 	overrides: [
