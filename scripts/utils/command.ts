@@ -22,7 +22,20 @@ const findViaNodePath = (
 const findViaPnpmPath = (
 	process: NodeJS.Process,
 	pathFromNodeModules: string
-): option.Option<string> => {};
+): option.Option<string> => {
+	const pnpmPath = PNPM_PATH_REGEX.exec(process.cwd())?.groups?.pnpmPath;
+	if (pnpmPath) {
+		const firstPathElement = pathFromNodeModules.split('/')[0];
+
+		const matchingLibraries = fs
+			.readdirSync(pnpmPath)
+			.filter((fileName) => fileName.startsWith(firstPathElement));
+		if (matchingLibraries.length > 0) {
+			return option.some(matchingLibraries[matchingLibraries.length - 1]);
+		}
+	}
+	return option.none;
+};
 
 export const findCommand = (
 	process: NodeJS.Process,
