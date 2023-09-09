@@ -8,6 +8,7 @@ import path from 'path';
 import { generateControlFile } from './init/generateControlFile';
 import { setupEslintFiles } from './init/setupEslintFiles';
 import { setupEslintPlugins } from './init/setupEslintPlugins';
+import { setupGitHooks } from './init/setupGitHooks';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
@@ -25,6 +26,7 @@ const performInitialization =
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
 			),
+			either.chainFirst(() => setupGitHooks()),
 			either.chainFirst(({ packageJson, eslintPlugins }) =>
 				generateControlFile(cwd, packageJson, eslintPlugins, process)
 			)
