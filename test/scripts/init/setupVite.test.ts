@@ -28,7 +28,9 @@ describe('setupVite', () => {
 		cleanWorkingDir();
 	});
 
-	it.fails('sets up vite config');
+	it.fails('sets up vite config when none is there');
 
 	it.fails('backs up and replaces old vite config');
+
+	it.fails('does nothing when valid vite config is present');
 });
