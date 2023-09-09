@@ -6,6 +6,6 @@ export const execute = () => {
 		path.join(__dirname, '..', 'command.log'),
 		'utf8'
 	);
-	// eslint-disable-next-line
+	// eslint-disable-next-line no-console
 	console.log(logText);
 };
