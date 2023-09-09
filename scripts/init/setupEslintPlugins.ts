@@ -1,6 +1,4 @@
-import {
-	isLibraryPresent as realIsLibraryPresent
-} from '../utils/library';
+import { isLibraryPresent as realIsLibraryPresent } from '../utils/library';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
