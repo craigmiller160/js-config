@@ -3,6 +3,9 @@ import { runCommandSync } from '../utils/runCommand';
 import { logger } from '../logger';
 import { findCommand } from '../utils/command';
 import { HUSKY } from '../commandPaths';
+import path from 'path';
+import fs from 'fs';
+import { unknownToError } from '../utils/unknownToError';
 
 const PRE_COMMIT = `
 #!/bin/sh
@@ -20,8 +23,16 @@ const installHusky = (cwd: string, process: NodeJS.Process) =>
 		)
 	);
 
-const writePreCommitScript = (cwd: string) => {
-
+const writePreCommitScript = (cwd: string): either.Either<Error, unknown> => {
+	const huskyDir = path.join(cwd, '.husky');
+	if (!fs.existsSync(huskyDir)) {
+		return either.left(new Error('Husky failed to install correctly'));
+	}
+	const preCommitPath = path.join(huskyDir, 'pre-commit');
+	return either.tryCatch(() => {
+		fs.writeFileSync(preCommitPath, PRE_COMMIT);
+		fs.chmodSync(preCommitPath, 0o755);
+	}, unknownToError);
 };
 
 export const setupGitHooks = (
@@ -31,6 +42,6 @@ export const setupGitHooks = (
 	logger.info('Setting up git hooks');
 	return func.pipe(
 		installHusky(cwd, process),
-		either.map(() => writePreCommitScript(cwd))
+		either.chain(() => writePreCommitScript(cwd))
 	);
 };
