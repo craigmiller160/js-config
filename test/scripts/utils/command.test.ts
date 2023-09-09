@@ -17,7 +17,7 @@ const NODE_PATH: string = [
 	'.pnpm/js-config-root/node_modules',
 	'.pnpm/node_modules'
 ]
-	.map((thePath) => path.join(WORKING_DIR, thePath))
+	.map((thePath) => path.join(WORKING_DIR, 'node_modules', thePath))
 	.join(':');
 
 describe('command', () => {
@@ -37,7 +37,27 @@ describe('command', () => {
 			);
 		});
 
-		it.fails('finds command from alternative pnpm path');
+		it.fails('finds command from alternative pnpm path', () => {
+			const result = findCommand(
+				{
+					...process,
+					env: {
+						NODE_PATH: undefined
+					}
+				},
+				'typescript/bin/tsc'
+			);
+			expect(result).toEqualRight(
+				path.join(
+					WORKING_DIR,
+					'node_modules',
+					'.pnpm',
+					'typescript@5.2.0',
+					'node_modules',
+					'typescript/bin/tsc'
+				)
+			);
+		});
 
 		it('cannot find command', () => {
 			const result = findCommand(
