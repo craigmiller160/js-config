@@ -37,17 +37,23 @@ describe('generateControlFile', () => {
 			dependencies: {},
 			devDependencies: {}
 		};
-		const result = generateControlFile(cwd, packageJson, {
-			...process,
-			cwd: () => WORKING_DIR
-		});
+		const result = generateControlFile(
+			cwd,
+			packageJson,
+			['plugin1', 'plugin2'],
+			{
+				...process,
+				cwd: () => WORKING_DIR
+			}
+		);
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
 		const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
-			projectType: 'module'
+			projectType: 'module',
+			eslintPlugins: ['plugin1', 'plugin2']
 		});
 	});
 
@@ -60,17 +66,23 @@ describe('generateControlFile', () => {
 			dependencies: {},
 			devDependencies: {}
 		};
-		const result = generateControlFile(cwd, packageJson, {
-			...process,
-			cwd: () => WORKING_DIR
-		});
+		const result = generateControlFile(
+			cwd,
+			packageJson,
+			['plugin1', 'plugin2'],
+			{
+				...process,
+				cwd: () => WORKING_DIR
+			}
+		);
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
 		const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
-			projectType: 'commonjs'
+			projectType: 'commonjs',
+			eslintPlugins: ['plugin1', 'plugin2']
 		});
 	});
 });
