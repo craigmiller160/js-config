@@ -11,7 +11,6 @@ const reactSettings = !hasReact
 				version: 'detect'
 			}
 	  };
-// TODO need to add jsx=true
 
 module.exports = {
 	extends: [
@@ -21,6 +20,11 @@ module.exports = {
 		'plugin:sonarjs/recommended',
 		...controlFile.eslintPlugins
 	],
+	parserOptions: {
+		ecmaFeatures: {
+			jsx: true
+		}
+	},
 	rules: {
 		'no-console': [
 			'error',
@@ -30,6 +34,9 @@ module.exports = {
 		],
 		'prettier/prettier': ['error', {}, { usePrettierrc: true }],
 		'sonarjs/no-duplicate-string': 0
+	},
+	settings: {
+		...reactSettings
 	},
 	overrides: [
 		{
