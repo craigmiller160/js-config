@@ -45,8 +45,8 @@ describe('setupVite', () => {
 
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
 		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
-		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
-		expect(config).not.toMatch(/^.*foo.*$/);
+		expect(config.includes('@craigmiller160/js-config')).toBe(true);
+		expect(config.includes('foo')).toBe(false);
 	});
 
 	it('backs up and replaces old vite config', () => {
@@ -56,16 +56,11 @@ describe('setupVite', () => {
 
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
 		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
-		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
-		expect(config).not.toMatch(/^.*foo.*$/);
+		expect(config.includes('@craigmiller160/js-config')).toBe(true);
+		expect(config.includes('foo')).toBe(false);
 
-		const backupConfigPath = path.join(
-			WORKING_DIR,
-			'vite.config.backup.ts'
-		);
-		expect(
-			fs.existsSync(path.join(WORKING_DIR, 'vite.config.backup.ts'))
-		).toBe(true);
+		const backupConfigPath = path.join(WORKING_DIR, 'vite.config.backup');
+		expect(fs.existsSync(backupConfigPath)).toBe(true);
 		const backupConfig = fs.readFileSync(backupConfigPath, 'utf8');
 		expect(backupConfig).toBe('Hello World');
 	});
@@ -77,7 +72,7 @@ describe('setupVite', () => {
 
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
 		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
-		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
-		expect(config).toMatch(/^.*foo.*$/);
+		expect(config.includes('@craigmiller160/js-config')).toBe(true);
+		expect(config.includes('foo')).toBe(true);
 	});
 });
