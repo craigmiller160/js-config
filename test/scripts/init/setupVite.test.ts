@@ -1,6 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
+import { PackageJson } from '../../../scripts/files/PackageJson';
+import { setupVite } from '../../../scripts/init/setupVite';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -8,6 +10,7 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'vite'
 );
+const VITE_CONFIG_PATH = path.join(WORKING_DIR, 'vite.config.ts');
 const cleanWorkingDir = () =>
 	fs
 		.readdirSync(WORKING_DIR)
@@ -19,6 +22,14 @@ const cleanWorkingDir = () =>
 			})
 		);
 
+const packageJson: PackageJson = {
+	name: '',
+	type: 'module',
+	devDependencies: {},
+	dependencies: {},
+	version: ''
+};
+
 describe('setupVite', () => {
 	beforeEach(() => {
 		cleanWorkingDir();
@@ -28,7 +39,12 @@ describe('setupVite', () => {
 		cleanWorkingDir();
 	});
 
-	it.fails('sets up vite config when none is there');
+	it('sets up vite config when none is there', () => {
+		const result = setupVite(WORKING_DIR, packageJson);
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
+	});
 
 	it.fails('backs up and replaces old vite config');
 
