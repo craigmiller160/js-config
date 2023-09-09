@@ -6,7 +6,7 @@ import path from 'path';
 import { unknownToError } from '../utils/unknownToError';
 
 export const VITE_CONFIG = `
-import { defineConfig } from '@craigmiller160/js-config/configs/vite/vite.config';
+import { defineConfig } from '@craigmiller160/js-config/configs/vite/vite.config.mjs';
 
 export default defineConfig();
 `;
