@@ -30,7 +30,7 @@ const writePreCommitScript = (cwd: string): either.Either<Error, unknown> => {
 	}
 	const preCommitPath = path.join(huskyDir, 'pre-commit');
 	return either.tryCatch(() => {
-		fs.writeFileSync(preCommitPath, PRE_COMMIT);
+		fs.writeFileSync(preCommitPath, PRE_COMMIT.trim());
 		fs.chmodSync(preCommitPath, 0o755);
 	}, unknownToError);
 };
