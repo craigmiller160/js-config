@@ -25,13 +25,22 @@ const findViaPnpmPath = (
 ): option.Option<string> => {
 	const pnpmPath = PNPM_PATH_REGEX.exec(process.cwd())?.groups?.pnpmPath;
 	if (pnpmPath) {
-		const firstPathElement = pathFromNodeModules.split('/')[0];
+		const [firstPathElement] = pathFromNodeModules.split('/');
 
 		const matchingLibraries = fs
 			.readdirSync(pnpmPath)
 			.filter((fileName) => fileName.startsWith(firstPathElement));
 		if (matchingLibraries.length > 0) {
-			return option.some(matchingLibraries[matchingLibraries.length - 1]);
+			const matchingLibrary =
+				matchingLibraries[matchingLibraries.length - 1];
+			const fullPathToCommand = path.join(
+				pnpmPath,
+				matchingLibrary,
+				'node_modules',
+				pathFromNodeModules
+			);
+
+			return option.some(fullPathToCommand);
 		}
 	}
 	return option.none;
