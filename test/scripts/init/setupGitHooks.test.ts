@@ -44,7 +44,25 @@ describe('setupGitHooks', () => {
 		expect(runCommandSyncMock).not.toHaveBeenCalled();
 	});
 
-	it.fails('aborts if .husky directory not created');
+	it('aborts if .husky directory not created', () => {
+		const cwd = path.join(WORKING_DIR, 'noHusky');
+		runCommandSyncMock.mockReturnValue(either.right(''));
+		ensureGitDirectory(cwd);
+
+		const result = setupGitHooks(cwd, process);
+		expect(result).toEqualLeft(
+			new Error('Husky failed to install correctly')
+		);
+
+		const preCommitPath = path.join(cwd, '.husky', 'pre-commit');
+		expect(fs.existsSync(preCommitPath)).toBe(false);
+		expect(runCommandSyncMock).toHaveBeenCalledWith(
+			`${path.join(process.cwd(), 'node_modules', HUSKY)} install`,
+			{
+				cwd
+			}
+		);
+	});
 
 	it('fully sets up git hooks', () => {
 		const cwd = path.join(WORKING_DIR, 'complete');
