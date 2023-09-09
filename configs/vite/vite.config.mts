@@ -21,7 +21,8 @@ const cert = fs.readFileSync(
 	'utf8'
 );
 const key = fs.readFileSync(
-	path.join(__dirname, 'certs', 'localhost.key.pem', 'utf8')
+	path.join(__dirname, 'certs', 'localhost.key.pem'),
+	'utf8'
 );
 const https: ServerOptions = {
 	cert,

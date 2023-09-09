@@ -45,7 +45,15 @@ module.exports = {
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:import/typescript'
-			]
+			],
+			settings: {
+				'import/parsers': {
+					'@typescript-eslint/parser': ['.ts', '.tsx', '.mts', '.cts']
+				},
+				'import/resolver': {
+					typescript: {}
+				}
+			}
 		}
 	]
 };
