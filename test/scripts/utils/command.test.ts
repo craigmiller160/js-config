@@ -50,7 +50,7 @@ describe('command', () => {
 				'foo/bar'
 			);
 			expect(result).toEqualLeft(
-				new Error('Unable to find command on NODE_PATH: foo/bar')
+				new Error('Unable to find command: foo/bar')
 			);
 		});
 	});
