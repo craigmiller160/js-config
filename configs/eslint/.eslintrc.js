@@ -3,6 +3,15 @@ const path = require('path');
 
 const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
+const hasReact = controlFile.eslintPlugins.includes('plugin:react/recommended');
+const reactSettings = !hasReact
+	? {}
+	: {
+			react: {
+				version: 'detect'
+			}
+	  };
+// TODO need to add jsx=true
 
 module.exports = {
 	extends: [

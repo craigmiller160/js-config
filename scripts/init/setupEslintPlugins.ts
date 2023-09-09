@@ -6,7 +6,8 @@ import {
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
 	'plugin:react-hooks/recommended',
-	'plugin:jsx-a11y/recommended'
+	'plugin:jsx-a11y/recommended',
+	'plugin:react/jsx-runtime'
 ];
 
 const TESTING_LIBRARY_PLUGINS: ReadonlyArray<string> = [
