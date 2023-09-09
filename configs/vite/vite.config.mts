@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import {
 	defineConfig as viteDefineConfig,
 	mergeConfig,
