@@ -39,9 +39,7 @@ module.exports = {
 		...reactSettings,
 		'import/resolver': {
 			node: {
-				extensions: [
-					'.js', '.jsx', '.cjs', '.mjs'
-				]
+				extensions: ['.js', '.jsx', '.cjs', '.mjs']
 			}
 		}
 	},
