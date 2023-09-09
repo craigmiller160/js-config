@@ -1,4 +1,7 @@
-import { isLibraryPresent as realIsLibraryPresent } from '../utils/library';
+import {
+	IsLibraryPresent,
+	isLibraryPresent as realIsLibraryPresent
+} from '../utils/library';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
@@ -14,8 +17,6 @@ const TESTING_LIBRARY_PLUGINS: ReadonlyArray<string> = [
 const VITEST_PLUGINS: ReadonlyArray<string> = ['plugin:vitest/recommended'];
 
 const CYPRESS_PLUGINS: ReadonlyArray<string> = ['plugin:cypress/recommended'];
-
-type IsLibraryPresent = typeof realIsLibraryPresent;
 
 const isTestingLibraryPresent = (isLibraryPresent: IsLibraryPresent): boolean =>
 	isLibraryPresent('@testing-library/react') ||

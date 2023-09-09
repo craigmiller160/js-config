@@ -5,3 +5,5 @@ export const isLibraryPresent = (name: string): boolean =>
 		either.tryCatch(() => require.resolve(name), func.identity),
 		either.isRight
 	);
+
+export type IsLibraryPresent = typeof isLibraryPresent;
