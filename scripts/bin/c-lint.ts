@@ -2,4 +2,4 @@
 
 import { execute } from '../c-lint';
 
-execute();
+execute(process);
