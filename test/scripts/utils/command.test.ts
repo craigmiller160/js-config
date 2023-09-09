@@ -10,11 +10,11 @@ const WORKING_DIR = path.join(
 );
 
 const NODE_PATH: string = [
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/build/bin/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/build/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/js-config/node_modules',
-	'.pnpm/js-config-root/node_modules/@craigmiller160/node_modules',
-	'.pnpm/js-config-root/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/build/bin/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/build/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/node_modules',
+	'.pnpm/js-config-root@1.0.0/node_modules',
 	'.pnpm/node_modules'
 ]
 	.map((thePath) => path.join(WORKING_DIR, 'node_modules', thePath))
