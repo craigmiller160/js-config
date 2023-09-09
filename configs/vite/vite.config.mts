@@ -50,9 +50,12 @@ const reactConfig = viteDefineConfig({
 	plugins: [react()]
 });
 
-export const defineConfig = (overrideConfig: UserConfig): UserConfig => {
+export const defineConfig = (overrideConfig?: UserConfig): UserConfig => {
 	const baseConfig = hasLibrary('react')
 		? mergeConfig(defaultConfig, reactConfig)
 		: defaultConfig;
-	return mergeConfig(baseConfig, overrideConfig);
+	if (overrideConfig) {
+		return mergeConfig(baseConfig, overrideConfig);
+	}
+	return baseConfig;
 };
