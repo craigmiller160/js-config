@@ -35,18 +35,22 @@ describe('setupGitHooks', () => {
 
 	it('does nothing when no .git directory', () => {
 		const cwd = path.join(WORKING_DIR, 'noGit');
-		setupGitHooks(cwd, process);
+		const result = setupGitHooks(cwd, process);
+		expect(result).toBeRight();
+
 		const preCommitPath = path.join(cwd, '.husky', 'pre-commit');
 		expect(fs.existsSync(preCommitPath)).toBe(false);
 		expect(runCommandSyncMock).not.toHaveBeenCalled();
 	});
+
 	it.fails('aborts if .husky directory not created');
+
 	it('fully sets up git hooks', () => {
+		runCommandSyncMock.mockReturnValue(either.right(''));
 		const cwd = path.join(WORKING_DIR, 'complete');
 		ensureGitDirectory(cwd);
-		setupGitHooks(cwd, process);
-
-		runCommandSyncMock.mockReturnValue(either.right(''));
+		const result = setupGitHooks(cwd, process);
+		expect(result).toBeRight();
 
 		const preCommitPath = path.join(cwd, '.husky', 'pre-commit');
 		expect(fs.existsSync(preCommitPath)).toBe(true);
