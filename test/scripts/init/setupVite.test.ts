@@ -44,6 +44,8 @@ describe('setupVite', () => {
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(true);
+		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
+		expect(config).toMatch(/^.*@craigmiller160\/js-config.*$/);
 	});
 
 	it.fails('backs up and replaces old vite config');
