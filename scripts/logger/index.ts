@@ -1,19 +1,19 @@
-import winston from 'winston';
+import { format, createLogger, transports } from 'winston';
 import path from 'path';
 
-const myFormat = winston.format.printf(
+const myFormat = format.printf(
 	({ level, message, timestamp }) =>
 		`${timestamp} [${level.padEnd(5)}]: ${message}`
 );
 
-export const logger = winston.createLogger({
+export const logger = createLogger({
 	level: 'debug',
-	format: winston.format.combine(winston.format.timestamp(), myFormat),
+	format: format.combine(format.timestamp(), myFormat),
 	transports: [
-		new winston.transports.Console({
+		new transports.Console({
 			level: 'debug'
 		}),
-		new winston.transports.File({
+		new transports.File({
 			filename: path.join(process.cwd(), 'command.log'),
 			level: 'debug'
 		})
