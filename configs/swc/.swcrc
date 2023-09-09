@@ -18,7 +18,12 @@
       },
       "target": "es2018",
       "loose": false,
-      "externalHelpers": false
+      "externalHelpers": false,
+      "transform": {
+        "react": {
+          "runtime": "automatic"
+        }
+      }
     }
   },
   {
@@ -33,7 +38,12 @@
       },
       "target": "es2018",
       "loose": false,
-      "externalHelpers": false
+      "externalHelpers": false,
+      "transform": {
+        "react": {
+          "runtime": "automatic"
+        }
+      }
     }
   }
 ]
