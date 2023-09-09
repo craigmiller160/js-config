@@ -13,9 +13,9 @@ export default defineConfig();
 
 const getViteConfigPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
-		return 'vite.config.mts';
+		return path.join(cwd, 'vite.config.mts');
 	}
-	return 'vite.config.ts';
+	return path.join(cwd, 'vite.config.ts');
 };
 
 type ExistingFileType = 'invalid' | 'valid' | 'none';
