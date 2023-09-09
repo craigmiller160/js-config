@@ -19,7 +19,9 @@ describe('setupEslintPlugins', () => {
 	});
 
 	it('adds vitest plugins', () => {
-		throw new Error();
+		const isLibraryPresent = createIsLibraryPresent(['vitest']);
+		const result = setupEslintPlugins(isLibraryPresent);
+		expect(result).toEqual(['plugin:vitest/recommended']);
 	});
 
 	it('adds testing library plugins', () => {
@@ -27,6 +29,8 @@ describe('setupEslintPlugins', () => {
 	});
 
 	it('adds cypress plugins', () => {
-		throw new Error();
+		const isLibraryPresent = createIsLibraryPresent(['cypress']);
+		const result = setupEslintPlugins(isLibraryPresent);
+		expect(result).toEqual(['plugin:cypress/recommended']);
 	});
 });
