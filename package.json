@@ -11,7 +11,8 @@
     "c-init": "./build/bin/c-init.js",
     "c-type-check": "./build/bin/c-type-check.js",
     "c-eslint": "./build/bin/c-eslint.js",
-    "c-log": "./build/bin/c-log.js"
+    "c-log": "./build/bin/c-log.js",
+    "c-test": "./build/bin/c-test.js"
   },
   "exports": {
     "./configs/*": {
