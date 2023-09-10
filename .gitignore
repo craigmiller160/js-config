@@ -3,4 +3,4 @@
 *.iml
 node_modules
 build
-command.log
+/command.log
