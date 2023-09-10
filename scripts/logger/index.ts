@@ -8,11 +8,11 @@ const myFormat = format.printf(
 );
 
 export const LOG_FILE = path.join(__dirname, '..', '..', 'command.log');
-// if (fs.existsSync(LOG_FILE)) {
-// 	fs.rmSync(LOG_FILE, {
-// 		force: true
-// 	});
-// }
+if (!process.argv[1].endsWith('c-log.js') && fs.existsSync(LOG_FILE)) {
+	fs.rmSync(LOG_FILE, {
+		force: true
+	});
+}
 
 export const logger = createLogger({
 	level: 'debug',
