@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest';
 import path from 'path';
 import { execute, LogToStdout } from '../../scripts/c-log';
 
-const WORKING_DIR = path.join(
+const LOG_FILE = path.join(
 	process.cwd(),
 	'test',
 	'__working_directories__',
 	'log',
-	'child'
+	'command.log'
 );
 
 describe('c-log', () => {
@@ -17,7 +17,7 @@ describe('c-log', () => {
 			receivedLogText = logText;
 		};
 
-		execute(logToStdout, WORKING_DIR);
+		execute(logToStdout, LOG_FILE);
 		expect(receivedLogText).toBe(
 			'This is a sample log\nJust including all the data'
 		);
