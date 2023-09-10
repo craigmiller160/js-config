@@ -14,7 +14,7 @@ export const logger = createLogger({
 			level: 'debug'
 		}),
 		new transports.File({
-			filename: path.join(process.cwd(), 'command.log'),
+			filename: path.join(__dirname, '..', '..', 'command.log'),
 			level: 'debug'
 		})
 	]
