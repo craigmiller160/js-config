@@ -3,6 +3,7 @@ import fs from 'fs';
 import { either } from 'fp-ts';
 import { unknownToError } from '../utils/unknownToError';
 import { PackageJson } from '../files/PackageJson';
+import { logger } from '../logger';
 
 export const generateControlFile = (
 	cwd: string,
@@ -10,6 +11,7 @@ export const generateControlFile = (
 	eslintPlugins: ReadonlyArray<string>,
 	process: NodeJS.Process
 ): either.Either<Error, void> => {
+	logger.info('Generating control file');
 	const controlFile: ControlFile = {
 		workingDirectoryPath: cwd,
 		projectType: packageJson.type ?? 'commonjs',
