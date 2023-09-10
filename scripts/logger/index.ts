@@ -7,12 +7,12 @@ const myFormat = format.printf(
 		`${timestamp} [${level.padEnd(5)}]: ${message}`
 );
 
-const file = path.join(__dirname, '..', '..', 'command.log');
-if (fs.existsSync(file)) {
-	fs.rmSync(file, {
-		force: true
-	});
-}
+export const LOG_FILE = path.join(__dirname, '..', '..', 'command.log');
+// if (fs.existsSync(LOG_FILE)) {
+// 	fs.rmSync(LOG_FILE, {
+// 		force: true
+// 	});
+// }
 
 export const logger = createLogger({
 	level: 'debug',
@@ -22,7 +22,7 @@ export const logger = createLogger({
 			level: 'debug'
 		}),
 		new transports.File({
-			filename: file,
+			filename: LOG_FILE,
 			level: 'debug'
 		})
 	]
