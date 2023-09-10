@@ -2,16 +2,18 @@ import { either, function as func } from 'fp-ts';
 import { runCommandSync } from '../utils/runCommand';
 import { logger } from '../logger';
 import { findCommand } from '../utils/command';
-import { HUSKY } from '../commandPaths';
+import { HUSKY, LINT_STAGED } from '../commandPaths';
 import path from 'path';
 import fs from 'fs';
 import { unknownToError } from '../utils/unknownToError';
 
-const PRE_COMMIT = `
+const createPreCommit = (commandPath: string): string =>
+	`
 #!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
-lint-staged --config ./node_modules/@craigmiller160/js-config/configs/eslint/.lintstagedrc
-`;
+${commandPath} --config ./node_modules/@craigmiller160/js-config/configs/eslint/.lintstagedrc
+`.trim();
 
 const installHusky = (cwd: string, process: NodeJS.Process) =>
 	func.pipe(
@@ -23,14 +25,18 @@ const installHusky = (cwd: string, process: NodeJS.Process) =>
 		)
 	);
 
-const writePreCommitScript = (cwd: string): either.Either<Error, unknown> => {
+const writePreCommitScript = (
+	lintStagedCommand: string,
+	cwd: string
+): either.Either<Error, unknown> => {
 	const huskyDir = path.join(cwd, '.husky');
 	if (!fs.existsSync(huskyDir)) {
 		return either.left(new Error('Husky failed to install correctly'));
 	}
 	const preCommitPath = path.join(huskyDir, 'pre-commit');
+
 	return either.tryCatch(() => {
-		fs.writeFileSync(preCommitPath, PRE_COMMIT.trim());
+		fs.writeFileSync(preCommitPath, createPreCommit(lintStagedCommand));
 		fs.chmodSync(preCommitPath, 0o755);
 	}, unknownToError);
 };
@@ -48,6 +54,7 @@ export const setupGitHooks = (
 
 	return func.pipe(
 		installHusky(cwd, process),
-		either.chain(() => writePreCommitScript(cwd))
+		either.chain(() => findCommand(process, LINT_STAGED)),
+		either.chain((command) => writePreCommitScript(command, cwd))
 	);
 };

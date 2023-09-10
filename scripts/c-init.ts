@@ -36,7 +36,7 @@ const performInitialization =
 	};
 
 export const execute = (process: NodeJS.Process) => {
-	logger.info('Running command: c-init');
+	logger.info('Initializing project');
 	func.pipe(
 		findCwd(process),
 		either.chain(performInitialization(process)),
