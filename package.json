@@ -3,12 +3,16 @@
   "version": "1.0.0-beta",
   "author": "craigmiller160",
   "license": "GPL",
+  "publishConfig": {
+    "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
+  },
   "bin": {
     "c-build-lib": "./build/bin/c-build-lib.js",
     "c-init": "./build/bin/c-init.js",
     "c-type-check": "./build/bin/c-type-check.js",
     "c-eslint": "./build/bin/c-eslint.js",
-    "c-log": "./build/bin/c-log.js"
+    "c-log": "./build/bin/c-log.js",
+    "c-test": "./build/bin/c-test.js"
   },
   "exports": {
     "./configs/*": {
