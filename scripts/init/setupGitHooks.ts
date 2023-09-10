@@ -10,6 +10,7 @@ import { unknownToError } from '../utils/unknownToError';
 const createPreCommit = (commandPath: string): string =>
 	`
 #!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
 ${commandPath} --config ./node_modules/@craigmiller160/js-config/configs/eslint/.lintstagedrc
 `.trim();
