@@ -1,6 +1,5 @@
 import { format, createLogger, transports } from 'winston';
 import path from 'path';
-import fs from 'fs';
 
 const myFormat = format.printf(
 	({ level, message, timestamp }) =>
@@ -8,11 +7,6 @@ const myFormat = format.printf(
 );
 
 export const LOG_FILE = path.join(__dirname, '..', '..', 'command.log');
-if (!process.argv[1].endsWith('c-log.js') && fs.existsSync(LOG_FILE)) {
-	fs.rmSync(LOG_FILE, {
-		force: true
-	});
-}
 
 export const logger = createLogger({
 	level: 'debug',
@@ -23,7 +17,10 @@ export const logger = createLogger({
 		}),
 		new transports.File({
 			filename: LOG_FILE,
-			level: 'debug'
+			level: 'debug',
+			maxsize: 100_000,
+			maxFiles: 1,
+			tailable: true
 		})
 	]
 });
