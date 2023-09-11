@@ -14,6 +14,7 @@ const CONFIG = path.join(
 	'.stylelintrc.json'
 );
 
+// TODO integrate with lint staged
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running stylelint');
 	func.pipe(
