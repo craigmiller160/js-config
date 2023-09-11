@@ -1,6 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
+import { setupStylelint } from '../../../scripts/init/setupStylelint';
+import { Stylelintrc } from '../../../scripts/files/Stylelintrc';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -8,6 +10,10 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'stylelint'
 );
+const STYLELINT_PATH = path.join(WORKING_DIR, '.stylelintrc.json');
+const EXPECTED_CONFIG: Stylelintrc = {
+	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json'
+};
 const clearDirectory = () =>
 	fs
 		.readdirSync(WORKING_DIR)
@@ -27,7 +33,12 @@ describe('setupStylelint', () => {
 	afterEach(() => {
 		clearDirectory();
 	});
-	it.fails('sets up stylelint config file');
+	it('sets up stylelint config file', () => {
+		setupStylelint(WORKING_DIR);
+		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
+		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		expect(content).toEqual(EXPECTED_CONFIG);
+	});
 
 	it.fails('replaces existing config file if invalid');
 
