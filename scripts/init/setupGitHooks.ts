@@ -50,7 +50,7 @@ const writePreCommitScript = (
 	return either.tryCatch(() => {
 		fs.writeFileSync(
 			preCommitPath,
-			createPreCommit(`./${relativeLintStagedCommand}`)
+			createPreCommit(relativeLintStagedCommand)
 		);
 		fs.chmodSync(preCommitPath, 0o755);
 	}, unknownToError);
