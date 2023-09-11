@@ -4,15 +4,6 @@ import { terminate } from './utils/terminate';
 import { logger } from './logger';
 import { findCommand } from './utils/command';
 import { STYLELINT } from './commandPaths';
-import path from 'path';
-
-const CONFIG = path.join(
-	__dirname,
-	'..',
-	'configs',
-	'stylelint',
-	'.stylelintrc.json'
-);
 
 // TODO integrate with lint staged
 export const execute = (process: NodeJS.Process) => {
@@ -20,7 +11,7 @@ export const execute = (process: NodeJS.Process) => {
 	func.pipe(
 		findCommand(process, STYLELINT),
 		either.chain((command) =>
-			runCommandSync(`${command} -c ${CONFIG} src/**/*.{css,scss}`)
+			runCommandSync(`${command} src/**/*.{css,scss}`)
 		),
 		either.fold(terminate, terminate)
 	);
