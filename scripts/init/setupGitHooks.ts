@@ -25,6 +25,13 @@ const installHusky = (cwd: string, process: NodeJS.Process) =>
 		)
 	);
 
+const ensureRelativePrefix = (command: string): string => {
+	if (command.startsWith('./')) {
+		return command;
+	}
+	return `./${command}`;
+};
+
 const writePreCommitScript = (
 	lintStagedCommand: string,
 	cwd: string
@@ -34,9 +41,17 @@ const writePreCommitScript = (
 		return either.left(new Error('Husky failed to install correctly'));
 	}
 	const preCommitPath = path.join(huskyDir, 'pre-commit');
+	const relativeLintStagedCommand = func.pipe(
+		lintStagedCommand,
+		(command) => path.relative(cwd, command),
+		ensureRelativePrefix
+	);
 
 	return either.tryCatch(() => {
-		fs.writeFileSync(preCommitPath, createPreCommit(lintStagedCommand));
+		fs.writeFileSync(
+			preCommitPath,
+			createPreCommit(relativeLintStagedCommand)
+		);
 		fs.chmodSync(preCommitPath, 0o755);
 	}, unknownToError);
 };
