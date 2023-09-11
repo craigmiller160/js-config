@@ -10,7 +10,7 @@ import { setupEslintFiles } from './init/setupEslintFiles';
 import { setupEslintPlugins } from './init/setupEslintPlugins';
 import { setupGitHooks } from './init/setupGitHooks';
 import { setupVite } from './init/setupVite';
-import {setupStylelint} from './init/setupStylelint';
+import { setupStylelint } from './init/setupStylelint';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
