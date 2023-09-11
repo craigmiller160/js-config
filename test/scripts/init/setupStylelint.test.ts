@@ -12,7 +12,8 @@ const WORKING_DIR = path.join(
 );
 const STYLELINT_PATH = path.join(WORKING_DIR, '.stylelintrc.json');
 const EXPECTED_CONFIG: Stylelintrc = {
-	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json'
+	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json',
+	rules: undefined
 };
 const clearDirectory = () =>
 	fs
@@ -40,7 +41,30 @@ describe('setupStylelint', () => {
 		expect(content).toEqual(EXPECTED_CONFIG);
 	});
 
-	it.fails('replaces existing config file if invalid');
+	it('replaces existing config file if invalid', () => {
+		const invalidConfig: Stylelintrc = {
+			extends: 'other-config'
+		};
+		fs.writeFileSync(STYLELINT_PATH, JSON.stringify(invalidConfig));
 
-	it.fails('does nothing if stylelint config already exists');
+		setupStylelint(WORKING_DIR);
+		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
+		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		expect(content).toEqual(EXPECTED_CONFIG);
+	});
+
+	it('does nothing if stylelint config already exists', () => {
+		const config: Stylelintrc = {
+			...EXPECTED_CONFIG,
+			rules: {
+				rule1: true
+			}
+		};
+		fs.writeFileSync(STYLELINT_PATH, JSON.stringify(config));
+
+		setupStylelint(WORKING_DIR);
+		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
+		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		expect(content).toEqual(config);
+	});
 });

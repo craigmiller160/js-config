@@ -6,7 +6,11 @@ import { decode } from '../utils/decode';
 
 const stylelintrcCodec = t.readonly(
 	t.type({
-		extends: t.string
+		extends: t.string,
+		rules: t.union([
+			t.record(t.string, t.union([t.boolean, t.array(t.unknown)])),
+			t.undefined
+		])
 	})
 );
 

@@ -6,7 +6,8 @@ import { logger } from '../logger';
 import { unknownToError } from '../utils/unknownToError';
 
 const DEFAULT_CONFIG: Stylelintrc = {
-	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json'
+	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json',
+	rules: undefined
 };
 
 const getStylelintrcPath = (cwd: string): string =>
