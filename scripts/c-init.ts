@@ -10,6 +10,7 @@ import { setupEslintFiles } from './init/setupEslintFiles';
 import { setupEslintPlugins } from './init/setupEslintPlugins';
 import { setupGitHooks } from './init/setupGitHooks';
 import { setupVite } from './init/setupVite';
+import { setupStylelint } from './init/setupStylelint';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
@@ -28,6 +29,7 @@ const performInitialization =
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
 			),
+			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() => setupGitHooks(cwd, process)),
 			either.chainFirst(({ packageJson, eslintPlugins }) =>
 				generateControlFile(cwd, packageJson, eslintPlugins, process)

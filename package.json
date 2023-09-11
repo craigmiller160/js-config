@@ -12,7 +12,8 @@
     "c-type-check": "./build/bin/c-type-check.js",
     "c-eslint": "./build/bin/c-eslint.js",
     "c-log": "./build/bin/c-log.js",
-    "c-test": "./build/bin/c-test.js"
+    "c-test": "./build/bin/c-test.js",
+    "c-stylelint": "./build/bin/c-stylelint.js"
   },
   "exports": {
     "./configs/*": {
@@ -65,7 +66,11 @@
     "io-ts": "^2.2.20",
     "io-ts-reporters": "^2.0.1",
     "lint-staged": "^14.0.1",
+    "postcss": "^8.4.29",
     "prettier": "^3.0.3",
+    "sass": "^1.66.1",
+    "stylelint": "^15.10.3",
+    "stylelint-config-standard-scss": "^11.0.0",
     "ts-pattern": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",

@@ -12,7 +12,7 @@ const createPreCommit = (commandPath: string): string =>
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-${commandPath} --config ./node_modules/@craigmiller160/js-config/configs/eslint/.lintstagedrc
+${commandPath} --config ./node_modules/@craigmiller160/js-config/configs/lintstaged/.lintstagedrc
 `.trim();
 
 const installHusky = (cwd: string, process: NodeJS.Process) =>

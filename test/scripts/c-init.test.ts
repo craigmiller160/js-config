@@ -11,6 +11,7 @@ import { setupEslintFiles } from '../../scripts/init/setupEslintFiles';
 import { setupEslintPlugins } from '../../scripts/init/setupEslintPlugins';
 import { setupVite } from '../../scripts/init/setupVite';
 import { setupGitHooks } from '../../scripts/init/setupGitHooks';
+import { setupStylelint } from '../../scripts/init/setupStylelint';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<
@@ -30,6 +31,9 @@ const setupEslintPluginsMock = setupEslintPlugins as MockedFunction<
 >;
 const setupViteMock = setupVite as MockedFunction<typeof setupVite>;
 const setupGitHooksMock = setupGitHooks as MockedFunction<typeof setupGitHooks>;
+const setupStylelintMock = setupStylelint as MockedFunction<
+	typeof setupStylelint
+>;
 
 vi.mock('../../scripts/init/setupTypescript', () => ({
 	setupTypescript: vi.fn()
@@ -56,6 +60,9 @@ vi.mock('../../scripts/init/setupVite', () => ({
 }));
 vi.mock('../../scripts/init/setupGitHooks', () => ({
 	setupGitHooks: vi.fn()
+}));
+vi.mock('../../scripts/init/setupStylelint', () => ({
+	setupStylelint: vi.fn()
 }));
 
 describe('c-init', () => {
@@ -88,6 +95,7 @@ describe('c-init', () => {
 		setupEslintPluginsMock.mockReturnValue(plugins);
 		setupViteMock.mockReturnValue(either.right(func.constVoid()));
 		setupGitHooksMock.mockReturnValue(either.right(func.constVoid()));
+		setupStylelintMock.mockReturnValue(either.right(func.constVoid()));
 		execute(process);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
@@ -96,6 +104,7 @@ describe('c-init', () => {
 		expect(setupViteMock).toHaveBeenCalledWith(cwd, packageJson);
 		expect(setupEslintPluginsMock).toHaveBeenCalled();
 		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, process);
+		expect(setupStylelintMock).toHaveBeenCalledWith(cwd);
 		expect(generateControlFileMock).toHaveBeenCalledWith(
 			cwd,
 			packageJson,
