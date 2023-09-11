@@ -1,3 +1,4 @@
 {
-  "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "c-eslint"
+  "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "c-eslint",
+  "*.{css,scss}": "c-stylelint"
 }
