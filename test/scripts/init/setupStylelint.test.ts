@@ -43,7 +43,8 @@ describe('setupStylelint', () => {
 
 	it('replaces existing config file if invalid', () => {
 		const invalidConfig: Stylelintrc = {
-			extends: 'other-config'
+			extends: 'other-config',
+			rules: undefined
 		};
 		fs.writeFileSync(STYLELINT_PATH, JSON.stringify(invalidConfig));
 
