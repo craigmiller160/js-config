@@ -36,7 +36,11 @@ export const setupStylelint = (cwd: string): either.Either<Error, unknown> => {
 
 	const stylelintrcPath = getStylelintrcPath(cwd);
 	return either.tryCatch(
-		() => fs.writeFileSync(stylelintrcPath, JSON.stringify(DEFAULT_CONFIG)),
+		() =>
+			fs.writeFileSync(
+				stylelintrcPath,
+				JSON.stringify(DEFAULT_CONFIG, null, 2)
+			),
 		unknownToError
 	);
 };
