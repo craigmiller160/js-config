@@ -39,11 +39,11 @@ export const runCommandAsync = (
 
 				childProcess.on('exit', (code) => {
 					if (code === 0) {
-						resolve(output);
+						resolve(output.trim());
 					} else {
 						reject(
 							new Error(
-								`Command failed. Status: ${code} Message: ${error}`
+								`Command failed. Status: ${code} Message: ${error.trim()}`
 							)
 						);
 					}
