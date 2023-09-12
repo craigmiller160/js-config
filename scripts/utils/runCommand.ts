@@ -8,11 +8,11 @@ export const runCommandAsync = (
 	options?: SpawnOptions
 ): taskEither.TaskEither<Error, string> => {
 	logger.debug(`Running command: ${command}`);
-	const commandParts = command.split(' ');
 
 	return taskEither.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
+				const commandParts = command.split(' ');
 				const childProcess = spawn(
 					commandParts[0],
 					commandParts.slice(1),
