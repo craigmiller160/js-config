@@ -2,4 +2,4 @@
 
 import { execute } from '../c-start';
 
-execute();
+execute(process);
