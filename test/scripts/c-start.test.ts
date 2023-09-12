@@ -15,5 +15,6 @@ describe('c-start', () => {
 		runCommandSyncMock.mockReturnValue(either.right(''));
 		execute();
 		expect(runCommandSyncMock).toHaveBeenCalledWith('vite start');
+		throw new Error('Needs to do dev server and tsc');
 	});
 });
