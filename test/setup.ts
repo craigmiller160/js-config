@@ -1,7 +1,8 @@
 import { vi } from 'vitest';
 import path from 'path';
 vi.mock('../scripts/utils/runCommand', () => ({
-	runCommandSync: vi.fn()
+	runCommandSync: vi.fn(),
+	runCommandAsync: vi.fn()
 }));
 
 vi.mock('../scripts/utils/terminate', () => ({
