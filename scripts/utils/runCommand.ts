@@ -28,13 +28,13 @@ export const runCommandAsync = (
 				childProcess.stdout.on('data', (data: Buffer) => {
 					const text = data.toString('utf8');
 					output += `${text}\n`;
-					logger.debug(`  STDOUT: ${text}`);
+					logger.debug(`  STDOUT: ${text.trim()}`);
 				});
 
 				childProcess.stderr.on('data', (data: Buffer) => {
 					const text = data.toString('utf8');
 					error += `${text}\n`;
-					logger.debug(`  STDERR: ${text}`);
+					logger.debug(`  STDERR: ${text.trim()}`);
 				});
 
 				childProcess.on('exit', (code) => {
