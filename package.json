@@ -15,7 +15,9 @@
     "c-test": "./build/bin/c-test.js",
     "c-stylelint": "./build/bin/c-stylelint.js",
     "c-start": "./build/bin/c-start.js",
-    "c-build-app": "./build/bin/c-build-app.js"
+    "c-build-app": "./build/bin/c-build-app.js",
+    "c-cypress": "./build/bin/c-cypress.js",
+    "c-cypress-dev": "./build/bin/c-cypress-dev.js"
   },
   "exports": {
     "./configs/*": {
