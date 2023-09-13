@@ -1,3 +1,6 @@
+import { logger } from './logger';
+
 export const execute = (process: NodeJS.Process) => {
-    throw new Error();
-}
+	logger.info('Running all cypress tests');
+	throw new Error();
+};
