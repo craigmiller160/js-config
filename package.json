@@ -13,7 +13,9 @@
     "c-eslint": "./build/bin/c-eslint.js",
     "c-log": "./build/bin/c-log.js",
     "c-test": "./build/bin/c-test.js",
-    "c-stylelint": "./build/bin/c-stylelint.js"
+    "c-stylelint": "./build/bin/c-stylelint.js",
+    "c-start": "./build/bin/c-start.js",
+    "c-build-app": "./build/bin/c-build-app.js"
   },
   "exports": {
     "./configs/*": {
