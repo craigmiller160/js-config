@@ -6,3 +6,4 @@ export const VITEST = 'vitest/vitest.mjs';
 export const LINT_STAGED = 'lint-staged/bin/lint-staged.js';
 export const STYLELINT = 'stylelint/bin/stylelint.mjs';
 export const VITE = 'vite/bin/vite.js';
+export const CYPRESS = 'cypress/bin/cypress';
