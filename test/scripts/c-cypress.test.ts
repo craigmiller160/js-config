@@ -1,7 +1,9 @@
-import {beforeEach, describe, it, MockedFunction, vi} from 'vitest';
+import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { runCommandSync } from '../../scripts/utils/runCommand';
 import path from 'path';
 import { CYPRESS } from '../../scripts/commandPaths';
+import { either } from 'fp-ts';
+import { execute } from '../../scripts/c-cypress-dev';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync
@@ -13,5 +15,12 @@ describe('c-cypress', () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 	});
-	it.fails('runs command');
+	it('runs command', () => {
+		runCommandSyncMock.mockReturnValue(either.right(''));
+		execute(process);
+
+		expect(runCommandSyncMock).toHaveBeenCalledWith(
+			`${COMMAND} run --component -b electron`
+		);
+	});
 });
