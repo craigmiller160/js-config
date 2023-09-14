@@ -3,7 +3,7 @@ import { runCommandSync } from '../../scripts/utils/runCommand';
 import path from 'path';
 import { CYPRESS } from '../../scripts/commandPaths';
 import { either } from 'fp-ts';
-import { execute } from '../../scripts/c-cypress-dev';
+import { execute } from '../../scripts/c-cypress';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync
