@@ -44,7 +44,8 @@
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
-    "@types/node": "^20.5.8"
+    "@types/node": "^20.5.8",
+    "cypress": "^13.2.0"
   },
   "dependencies": {
     "@swc/cli": "^0.1.62",
