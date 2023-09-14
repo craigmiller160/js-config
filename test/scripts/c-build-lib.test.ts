@@ -1,4 +1,4 @@
-import {describe, it, MockedFunction, expect, beforeEach, vi} from 'vitest';
+import { describe, it, MockedFunction, expect, beforeEach, vi } from 'vitest';
 import { execute } from '../../scripts/c-build-lib';
 import { runCommandSync } from '../../scripts/utils/runCommand';
 import path from 'path';
