@@ -1,4 +1,4 @@
-import { describe, it, MockedFunction, expect } from 'vitest';
+import { describe, it, MockedFunction, expect, beforeEach, vi } from 'vitest';
 import { execute } from '../../scripts/c-build-lib';
 import { runCommandSync } from '../../scripts/utils/runCommand';
 import path from 'path';
@@ -19,6 +19,9 @@ const swcCommand = path.join(process.cwd(), 'node_modules', SWC);
 const tscCommand = path.join(process.cwd(), 'node_modules', TSC);
 
 describe('c-build-lib', () => {
+	beforeEach(() => {
+		vi.resetAllMocks();
+	});
 	it('runs build', () => {
 		runCommandSyncMock.mockReturnValue(either.right(''));
 		execute(process);

@@ -27,6 +27,7 @@ describe('command', () => {
 				{
 					...process,
 					env: {
+						...process.env,
 						NODE_PATH
 					}
 				},
@@ -42,6 +43,7 @@ describe('command', () => {
 				{
 					...process,
 					env: {
+						...process.env,
 						NODE_PATH: undefined
 					}
 				},
@@ -64,6 +66,7 @@ describe('command', () => {
 				{
 					...process,
 					env: {
+						...process.env,
 						NODE_PATH
 					}
 				},

@@ -64,6 +64,9 @@ vi.mock('../../scripts/init/setupGitHooks', () => ({
 vi.mock('../../scripts/init/setupStylelint', () => ({
 	setupStylelint: vi.fn()
 }));
+vi.mock('../../scripts/utils/terminate', () => ({
+	terminate: vi.fn()
+}));
 
 describe('c-init', () => {
 	beforeEach(() => {

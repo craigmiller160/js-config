@@ -15,7 +15,9 @@
     "c-test": "./build/bin/c-test.js",
     "c-stylelint": "./build/bin/c-stylelint.js",
     "c-start": "./build/bin/c-start.js",
-    "c-build-app": "./build/bin/c-build-app.js"
+    "c-build-app": "./build/bin/c-build-app.js",
+    "c-cypress": "./build/bin/c-cypress.js",
+    "c-cypress-dev": "./build/bin/c-cypress-dev.js"
   },
   "exports": {
     "./configs/*": {
@@ -42,7 +44,8 @@
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
-    "@types/node": "^20.5.8"
+    "@types/node": "^20.5.8",
+    "cypress": "^13.2.0"
   },
   "dependencies": {
     "@swc/cli": "^0.1.62",
