@@ -1,7 +1,7 @@
 {
   "extends": "./configs/typescript/tsconfig.json",
   "compilerOptions": {
-    "module": "es2020"
+    "module": "ES2022"
   },
   "include": [
     "scripts/**/*",
