@@ -2,7 +2,11 @@ import fs from 'fs';
 import { readonlyArray, function as func, either } from 'fp-ts';
 import path from 'path';
 import { unknownToError } from '../utils/unknownToError';
-import { parseTsConfig, TsConfig } from '../files/TsConfig';
+import {
+	parseTsConfig,
+	TsConfig,
+	TsConfigCompilerOptions
+} from '../files/TsConfig';
 import { logger } from '../logger';
 
 const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
@@ -20,13 +24,21 @@ const isAdditionalFile = (file: string): boolean =>
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
-	(additionalFiles: ReadonlyArray<string>) =>
-	(existingTsConfig?: TsConfig): TsConfig => ({
-		extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
-		compilerOptions: existingTsConfig?.compilerOptions,
-		include: ['src/**/*', ...additionalFiles],
-		exclude: ['node_modules', 'build', 'lib']
-	});
+	(additionalFiles: ReadonlyArray<string>, hasCypress: boolean) =>
+	(existingTsConfig?: TsConfig): TsConfig => {
+		const cypresCompilerOptions: TsConfigCompilerOptions = {
+			module: 'ES2022',
+			moduleResolution: 'node'
+		};
+		return {
+			extends:
+				'@craigmiller160/js-config/configs/typescript/tsconfig.json',
+			compilerOptions: existingTsConfig?.compilerOptions,
+			include: ['src/**/*', ...additionalFiles],
+			exclude: ['node_modules', 'build', 'lib'],
+			'ts-node': hasCypress ? cypresCompilerOptions : undefined
+		};
+	};
 
 const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -88,18 +100,20 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	);
 
 	const testDirPath = path.join(cwd, 'test');
+	const hasTestDir = fs.existsSync(testDirPath);
 	const cypressDirPath = path.join(cwd, 'cypress');
+	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig(additionalFiles)),
+		createTsConfig(cwd, createRootTsConfig(additionalFiles, hasCypressDir)),
 		either.chain(() => {
-			if (fs.existsSync(testDirPath)) {
+			if (hasTestDir) {
 				return createTsConfig(testDirPath, createTestTsConfig);
 			}
 			return either.right(func.constVoid());
 		}),
 		either.chain(() => {
-			if (fs.existsSync(cypressDirPath)) {
+			if (hasCypressDir) {
 				return createTsConfig(cypressDirPath, createCypressTsConfig);
 			}
 			return either.right(func.constVoid());
