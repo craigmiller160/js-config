@@ -34,7 +34,17 @@ export const tsConfigCodec = t.readonly(
 		compilerOptions: compilerOptionsCodec,
 		include: t.readonlyArray(t.string),
 		exclude: t.readonlyArray(t.string),
-		'ts-node': t.union([compilerOptionsCodec, t.undefined])
+		'ts-node': t.union([
+			t.undefined,
+			t.readonly(
+				t.partial({
+					compilerOptions: t.union([
+						compilerOptionsCodec,
+						t.undefined
+					])
+				})
+			)
+		])
 	})
 );
 

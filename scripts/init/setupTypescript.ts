@@ -36,7 +36,11 @@ const createRootTsConfig =
 			compilerOptions: existingTsConfig?.compilerOptions,
 			include: ['src/**/*', ...additionalFiles],
 			exclude: ['node_modules', 'build', 'lib'],
-			'ts-node': hasCypress ? cypresCompilerOptions : undefined
+			'ts-node': hasCypress
+				? {
+						compilerOptions: cypresCompilerOptions
+				  }
+				: undefined
 		};
 	};
 

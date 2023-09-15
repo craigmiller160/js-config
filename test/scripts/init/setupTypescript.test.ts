@@ -82,7 +82,7 @@ describe('setupTypescript', () => {
 				TSCONFIG,
 				JSON.stringify({
 					compilerOptions: {
-						module: 'es2020'
+						module: 'ES2022'
 					}
 				})
 			);
@@ -94,7 +94,7 @@ describe('setupTypescript', () => {
 				extends:
 					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
 				compilerOptions: {
-					module: 'es2020'
+					module: 'ES2022'
 				},
 				include: ['src/**/*'],
 				exclude: ['node_modules', 'build', 'lib']
@@ -125,7 +125,7 @@ describe('setupTypescript', () => {
 		it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
 			const baseConfig = {
 				compilerOptions: {
-					module: 'es2020'
+					module: 'ES2022'
 				}
 			};
 			fs.writeFileSync(TEST_TSCONFIG, JSON.stringify(baseConfig));
@@ -138,7 +138,7 @@ describe('setupTypescript', () => {
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				compilerOptions: {
-					module: 'es2020'
+					module: 'ES2022'
 				},
 				include: ['../src/**/*', '**/*']
 			});
@@ -160,7 +160,7 @@ describe('setupTypescript', () => {
 					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
 				'ts-node': {
 					compilerOptions: {
-						module: 'es2022',
+						module: 'ES2022',
 						moduleResolution: 'node'
 					}
 				},
@@ -192,7 +192,7 @@ describe('setupTypescript', () => {
 		it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
 			const baseConfig = {
 				compilerOptions: {
-					module: 'es2020',
+					module: 'ES2022',
 					types: ['node', 'foo']
 				}
 			};
@@ -209,7 +209,7 @@ describe('setupTypescript', () => {
 				extends: '../tsconfig.json',
 				compilerOptions: {
 					types: ['foo', 'node', 'cypress'],
-					module: 'es2020'
+					module: 'ES2022'
 				},
 				include: ['../src/**/*', '**/*']
 			});
