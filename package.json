@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
+    "buildScripts": "swc src --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
     "lint": "eslint --fix --max-warnings=0 '{configs,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "vitest run",

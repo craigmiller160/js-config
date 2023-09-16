@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isLibraryPresent } from '../../../scripts/utils/library';
+import { isLibraryPresent } from '../../../src/scripts/utils/library';
 
 describe('library', () => {
 	describe('isLibraryPresent', () => {

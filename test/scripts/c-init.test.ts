@@ -1,17 +1,20 @@
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
-import { setupTypescript } from '../../scripts/init/setupTypescript';
-import { findCwd } from '../../scripts/utils/cwd';
-import { terminate } from '../../scripts/utils/terminate';
+import { setupTypescript } from '../../src/scripts/init/setupTypescript';
+import { findCwd } from '../../src/scripts/utils/cwd';
+import { terminate } from '../../src/scripts/utils/terminate';
 import { either, function as func } from 'fp-ts';
-import { execute } from '../../scripts/c-init';
-import { PackageJson, parsePackageJson } from '../../scripts/files/PackageJson';
+import { execute } from '../../src/scripts/c-init';
+import {
+	PackageJson,
+	parsePackageJson
+} from '../../src/scripts/files/PackageJson';
 import path from 'path';
-import { generateControlFile } from '../../scripts/init/generateControlFile';
-import { setupEslintFiles } from '../../scripts/init/setupEslintFiles';
-import { setupEslintPlugins } from '../../scripts/init/setupEslintPlugins';
-import { setupVite } from '../../scripts/init/setupVite';
-import { setupGitHooks } from '../../scripts/init/setupGitHooks';
-import { setupStylelint } from '../../scripts/init/setupStylelint';
+import { generateControlFile } from '../../src/scripts/init/generateControlFile';
+import { setupEslintFiles } from '../../src/scripts/init/setupEslintFiles';
+import { setupEslintPlugins } from '../../src/scripts/init/setupEslintPlugins';
+import { setupVite } from '../../src/scripts/init/setupVite';
+import { setupGitHooks } from '../../src/scripts/init/setupGitHooks';
+import { setupStylelint } from '../../src/scripts/init/setupStylelint';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<

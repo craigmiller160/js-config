@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	runCommandAsync,
 	runCommandSync
-} from '../../../scripts/utils/runCommand';
+} from '../../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
 
 vi.unmock('../../../scripts/utils/runCommand');

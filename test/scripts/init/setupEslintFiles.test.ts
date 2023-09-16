@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { setupEslintFiles } from '../../../scripts/init/setupEslintFiles';
+import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
 
 const WORKING_DIR = path.join(
 	process.cwd(),

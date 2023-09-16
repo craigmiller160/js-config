@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { PackageJson } from '../../../scripts/files/PackageJson';
-import { setupVite, VITE_CONFIG } from '../../../scripts/init/setupVite';
+import { PackageJson } from '../../../src/scripts/files/PackageJson';
+import { setupVite, VITE_CONFIG } from '../../../src/scripts/init/setupVite';
 
 const WORKING_DIR = path.join(
 	process.cwd(),

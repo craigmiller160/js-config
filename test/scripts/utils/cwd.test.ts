@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findCwd } from '../../../scripts/utils/cwd';
+import { findCwd } from '../../../src/scripts/utils/cwd';
 import path from 'path';
 
 const WORKING_DIR_ROOT = path.join(

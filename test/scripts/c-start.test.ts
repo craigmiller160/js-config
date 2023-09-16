@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
-import { runCommandAsync } from '../../scripts/utils/runCommand';
-import { execute } from '../../scripts/c-start';
+import { runCommandAsync } from '../../src/scripts/utils/runCommand';
+import { execute } from '../../src/scripts/c-start';
 import { taskEither } from 'fp-ts';
 import path from 'path';
-import { TSC, VITE } from '../../scripts/commandPaths';
+import { TSC, VITE } from '../../src/scripts/commandPaths';
 
 const runCommandAsyncMock = runCommandAsync as MockedFunction<
 	typeof runCommandAsync
