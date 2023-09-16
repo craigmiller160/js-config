@@ -17,7 +17,8 @@
     "c-start": "./build/bin/c-start.js",
     "c-build-app": "./build/bin/c-build-app.js",
     "c-cypress": "./build/bin/c-cypress.js",
-    "c-cypress-dev": "./build/bin/c-cypress-dev.js"
+    "c-cypress-dev": "./build/bin/c-cypress-dev.js",
+    "c-validate": "./build/bin/c-validate.js"
   },
   "exports": {
     "./configs/*": {
