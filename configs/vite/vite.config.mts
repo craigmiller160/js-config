@@ -29,15 +29,28 @@ const https: ServerOptions = {
 	key
 };
 
+const jestFpTsPath = path.join(
+	process.cwd(),
+	'src',
+	'test-support',
+	'jest-fp-ts.ts'
+);
+const noop = path.join(__dirname, 'noop.js');
+const hasJestFpTs = func.pipe(
+	either.tryCatch(
+		() => require.resolve('@relmify/jest-fp-ts'),
+		func.identity
+	),
+	either.isRight
+);
+
 const defaultConfig = viteDefineConfig({
 	root: path.join(process.cwd(), 'src'),
 	publicDir: path.join(process.cwd(), 'public'),
 	envDir: path.join(process.cwd(), 'environment'),
 	test: {
 		root: path.join(process.cwd(), 'test'),
-		setupFiles: [
-			path.join(process.cwd(), 'src', 'test-support', 'jest-fp-ts.ts')
-		]
+		setupFiles: [hasJestFpTs ? jestFpTsPath : noop]
 	},
 	server: {
 		port: 3000,
