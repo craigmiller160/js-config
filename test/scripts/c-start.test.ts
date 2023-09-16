@@ -20,7 +20,7 @@ describe('c-start', () => {
 	it('starts vite dev server', () => {
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
 		execute(process);
-		expect(runCommandAsyncMock).toHaveBeenCalledWith(`${VITE_CMD} start`);
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(`${VITE_CMD} start `);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
 		);
