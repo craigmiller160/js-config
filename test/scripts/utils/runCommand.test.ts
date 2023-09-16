@@ -5,7 +5,7 @@ import {
 } from '../../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
 
-vi.unmock('../../../scripts/utils/runCommand');
+vi.unmock('../../../src/scripts/utils/runCommand');
 
 describe('runCommand', () => {
 	describe('runCommandAsync', () => {

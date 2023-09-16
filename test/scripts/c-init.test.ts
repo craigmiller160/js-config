@@ -38,36 +38,36 @@ const setupStylelintMock = setupStylelint as MockedFunction<
 	typeof setupStylelint
 >;
 
-vi.mock('../../scripts/init/setupTypescript', () => ({
+vi.mock('../../src/scripts/init/setupTypescript', () => ({
 	setupTypescript: vi.fn()
 }));
-vi.mock('../../scripts/utils/cwd', () => ({
+vi.mock('../../src/scripts/utils/cwd', () => ({
 	findCwd: vi.fn()
 }));
-vi.mock('../../scripts/files/PackageJson', () => ({
+vi.mock('../../src/scripts/files/PackageJson', () => ({
 	parsePackageJson: vi.fn()
 }));
 vi.mock('../../scripts/init/generateControlFile', () => ({
 	generateControlFile: vi.fn()
 }));
 
-vi.mock('../../scripts/init/setupEslintFiles', () => ({
+vi.mock('../../src/scripts/init/setupEslintFiles', () => ({
 	setupEslintFiles: vi.fn()
 }));
 
-vi.mock('../../scripts/init/setupEslintPlugins', () => ({
+vi.mock('../../src/scripts/init/setupEslintPlugins', () => ({
 	setupEslintPlugins: vi.fn()
 }));
-vi.mock('../../scripts/init/setupVite', () => ({
+vi.mock('../../src/scripts/init/setupVite', () => ({
 	setupVite: vi.fn()
 }));
-vi.mock('../../scripts/init/setupGitHooks', () => ({
+vi.mock('../../src/scripts/init/setupGitHooks', () => ({
 	setupGitHooks: vi.fn()
 }));
-vi.mock('../../scripts/init/setupStylelint', () => ({
+vi.mock('../../src/scripts/init/setupStylelint', () => ({
 	setupStylelint: vi.fn()
 }));
-vi.mock('../../scripts/utils/terminate', () => ({
+vi.mock('../../src/scripts/utils/terminate', () => ({
 	terminate: vi.fn()
 }));
 
