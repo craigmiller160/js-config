@@ -34,7 +34,10 @@ const defaultConfig = viteDefineConfig({
 	publicDir: path.join(process.cwd(), 'public'),
 	envDir: path.join(process.cwd(), 'environment'),
 	test: {
-		root: path.join(process.cwd(), 'test')
+		root: path.join(process.cwd(), 'test'),
+		setupFiles: [
+			path.join(process.cwd(), 'src', 'test-support', 'jest-fp-ts.ts')
+		]
 	},
 	server: {
 		port: 3000,
