@@ -44,10 +44,16 @@ vi.mock('../../src/scripts/init/setupTypescript', () => ({
 vi.mock('../../src/scripts/utils/cwd', () => ({
 	findCwd: vi.fn()
 }));
-vi.mock('../../src/scripts/files/PackageJson', () => ({
-	parsePackageJson: vi.fn()
-}));
-vi.mock('../../scripts/init/generateControlFile', () => ({
+vi.mock('../../src/scripts/files/PackageJson', async () => {
+	const actual = (await vi.importActual(
+		'../../src/scripts/files/PackageJson'
+	)) as object;
+	return {
+		...actual,
+		parsePackageJson: vi.fn()
+	};
+});
+vi.mock('../../src/scripts/init/generateControlFile', () => ({
 	generateControlFile: vi.fn()
 }));
 
