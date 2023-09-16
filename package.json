@@ -39,9 +39,16 @@
     "configs",
     "build"
   ],
+  "peerDependenciesMeta": {
+    "cypress": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
-    "@swc/cli": "^0.1.62",
-    "typescript": "^5.2.2"
+    "cypress": ">=13.0.0",
+    "ts-pattern": "^5.0.5",
+    "fp-ts": "^2.16.1",
+    "io-ts": "^2.2.20"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
