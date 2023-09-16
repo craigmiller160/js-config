@@ -36,13 +36,7 @@ const jestFpTsPath = path.join(
 	'jest-fp-ts.ts'
 );
 const noop = path.join(__dirname, 'noop.js');
-const hasJestFpTs = func.pipe(
-	either.tryCatch(
-		() => require.resolve('@relmify/jest-fp-ts'),
-		func.identity
-	),
-	either.isRight
-);
+const hasJestFpTs = hasLibrary('@relmify/jest-fp-ts');
 
 const defaultConfig = viteDefineConfig({
 	root: path.join(process.cwd(), 'src'),
