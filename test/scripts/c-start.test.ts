@@ -25,4 +25,18 @@ describe('c-start', () => {
 			`${TSC_CMD} --noEmit --watch`
 		);
 	});
+
+	it('starts dev server with arguments', () => {
+		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
+		execute({
+			...process,
+			argv: ['', '', '--force']
+		});
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(
+			`${VITE_CMD} start --force`
+		);
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(
+			`${TSC_CMD} --noEmit --watch`
+		);
+	});
 });
