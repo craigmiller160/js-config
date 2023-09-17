@@ -18,11 +18,11 @@ const hasLibrary = (name: string): Promise<boolean> =>
 	)();
 
 const cert = fs.readFileSync(
-	path.join(VITE_CONFIGS_DIR, 'localhost.cert.pem'),
+	path.join(VITE_CONFIGS_DIR, 'certs', 'localhost.cert.pem'),
 	'utf8'
 );
 const key = fs.readFileSync(
-	path.join(VITE_CONFIGS_DIR, 'localhost.key.pem'),
+	path.join(VITE_CONFIGS_DIR, 'certs', 'localhost.key.pem'),
 	'utf8'
 );
 const https: ServerOptions = {
