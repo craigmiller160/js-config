@@ -30,16 +30,29 @@ const https: ServerOptions = {
 	key
 };
 
-const createJestFpTsPath = (root: string): string =>
-	path.join(__dirname, '..', '..', root, 'test-support', 'jest-fp-ts.ts');
+const JEST_FP_TS_SRC_PATH = path.join(
+	__dirname,
+	'..',
+	'..',
+	'src',
+	'test-support',
+	'jest-fp-ts.ts'
+);
+const JEST_FP_TS_BUILD_PATH = path.join(
+	__dirname,
+	'..',
+	'..',
+	'build',
+	'test-support',
+	'jest-fp-ts.js'
+);
 
 const getJestFpTsPath = (): string => {
-	const srcPath = createJestFpTsPath('src');
-	if (fs.existsSync(srcPath)) {
-		return srcPath;
+	if (fs.existsSync(JEST_FP_TS_SRC_PATH)) {
+		return JEST_FP_TS_SRC_PATH;
 	}
 
-	return createJestFpTsPath('build');
+	return JEST_FP_TS_BUILD_PATH;
 };
 
 const noop = path.join(VITE_CONFIGS_DIR, 'noop.js');
