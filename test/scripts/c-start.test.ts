@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
-import { runCommandAsync } from '../../scripts/utils/runCommand';
-import { execute } from '../../scripts/c-start';
+import { runCommandAsync } from '../../src/scripts/utils/runCommand';
+import { execute } from '../../src/scripts/c-start';
 import { taskEither } from 'fp-ts';
 import path from 'path';
-import { TSC, VITE } from '../../scripts/commandPaths';
+import { TSC, VITE } from '../../src/scripts/commandPaths';
 
 const runCommandAsyncMock = runCommandAsync as MockedFunction<
 	typeof runCommandAsync
@@ -20,7 +20,21 @@ describe('c-start', () => {
 	it('starts vite dev server', () => {
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
 		execute(process);
-		expect(runCommandAsyncMock).toHaveBeenCalledWith(`${VITE_CMD} start`);
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(`${VITE_CMD} start `);
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(
+			`${TSC_CMD} --noEmit --watch`
+		);
+	});
+
+	it('starts dev server with arguments', () => {
+		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
+		execute({
+			...process,
+			argv: ['', '', '--force']
+		});
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(
+			`${VITE_CMD} start --force`
+		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
 		);

@@ -14,6 +14,12 @@ A library that automatically sets up preferred configuration for any JavaScript 
 - NPM Scripts
   - With Cypress Scripts, Not Cypress
 
+## Test Support
+
+### jest-fp-ts
+
+The `@relmify/jest-fp-ts` package will be automatically setup in tests when that package is present in the application.
+
 ## Git Hooks
 
 ### Pre-Commit

@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "buildScripts": "swc ./scripts --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
+    "buildScripts": "swc src --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
     "forceBuild": "npm run buildScripts",
     "lint": "eslint --fix --max-warnings=0 '{configs,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "vitest run",
@@ -42,13 +42,18 @@
   "peerDependenciesMeta": {
     "cypress": {
       "optional": true
+    },
+    "@relmify/jest-fp-ts": {
+      "optional": true
     }
   },
   "peerDependencies": {
     "cypress": ">=13.0.0",
     "ts-pattern": "^5.0.5",
     "fp-ts": "^2.16.1",
-    "io-ts": "^2.2.20"
+    "io-ts": "^2.2.20",
+    "@relmify/jest-fp-ts": "^2.1.1",
+    "vitest": "^0.34.3"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",

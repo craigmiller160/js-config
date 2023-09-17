@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import { findCommand } from '../../../scripts/utils/command';
+import { findCommand } from '../../../src/scripts/utils/command';
 
 const WORKING_DIR = path.join(
 	process.cwd(),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { IsLibraryPresent } from '../../../scripts/utils/library';
-import { setupEslintPlugins } from '../../../scripts/init/setupEslintPlugins';
+import { IsLibraryPresent } from '../../../src/scripts/utils/library';
+import { setupEslintPlugins } from '../../../src/scripts/init/setupEslintPlugins';
 
 const createIsLibraryPresent =
 	(presentLibraries: ReadonlyArray<string>): IsLibraryPresent =>

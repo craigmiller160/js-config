@@ -4,9 +4,6 @@ import path from 'path';
 
 export default defineConfig({
 	test: {
-		setupFiles: [
-			path.join(process.cwd(), 'test', 'jest-fp-ts.ts'),
-			path.join(process.cwd(), 'test', 'setup.ts')
-		]
+		setupFiles: [path.join(process.cwd(), 'test', 'setup.ts')]
 	}
 });

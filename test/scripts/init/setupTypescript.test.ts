@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { setupTypescript } from '../../../scripts/init/setupTypescript';
+import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),

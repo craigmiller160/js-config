@@ -1,9 +1,9 @@
 import { beforeEach, describe, it, MockedFunction, vi, expect } from 'vitest';
-import { runCommandSync } from '../../scripts/utils/runCommand';
+import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
-import { execute } from '../../scripts/c-build-app';
+import { execute } from '../../src/scripts/c-build-app';
 import path from 'path';
-import { VITE } from '../../scripts/commandPaths';
+import { VITE } from '../../src/scripts/commandPaths';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync

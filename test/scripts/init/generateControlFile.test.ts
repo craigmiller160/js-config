@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { getControlFilePath } from '../../../scripts/files/ControlFile';
-import { generateControlFile } from '../../../scripts/init/generateControlFile';
-import { PackageJson } from '../../../scripts/files/PackageJson';
+import { getControlFilePath } from '../../../src/scripts/files/ControlFile';
+import { generateControlFile } from '../../../src/scripts/init/generateControlFile';
+import { PackageJson } from '../../../src/scripts/files/PackageJson';
 
 const WORKING_DIR = path.join(
 	process.cwd(),

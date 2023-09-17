@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parsePackageJson } from '../../../scripts/files/PackageJson';
+import { parsePackageJson } from '../../../src/scripts/files/PackageJson';
 import path from 'path';
 
 const packageJsonDirectory = path.join(

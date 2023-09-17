@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import { execute, LogToStdout } from '../../scripts/c-log';
+import { execute, LogToStdout } from '../../src/scripts/c-log';
 
 const LOG_FILE = path.join(
 	process.cwd(),
