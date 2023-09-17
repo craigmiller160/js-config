@@ -1,9 +1,9 @@
 import { beforeEach, describe, it, MockedFunction, vi, expect } from 'vitest';
 import path from 'path';
-import { CYPRESS } from '../../scripts/commandPaths';
-import { runCommandSync } from '../../scripts/utils/runCommand';
+import { CYPRESS } from '../../src/scripts/commandPaths';
+import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
-import { execute } from '../../scripts/c-cypress-dev';
+import { execute } from '../../src/scripts/c-cypress-dev';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync

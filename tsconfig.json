@@ -1,7 +1,7 @@
 {
   "extends": "./configs/typescript/tsconfig.json",
   "include": [
-    "scripts/**/*",
+    "src/**/*",
     "vite.config.mts",
     "configs/vite/**/*"
   ],

@@ -6,7 +6,7 @@ const myFormat = format.printf(
 		`${timestamp} [${level.padEnd(5)}]: ${message}`
 );
 
-export const LOG_FILE = path.join(__dirname, '..', '..', 'command.log');
+export const LOG_FILE = path.join(__dirname, '..', '..', '..', 'command.log');
 
 export const logger = createLogger({
 	level: 'debug',

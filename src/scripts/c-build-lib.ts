@@ -21,7 +21,14 @@ export const execute = (process: NodeJS.Process) => {
 	const esModuleDir = path.join(libDir, 'esm');
 	const commonjsDir = path.join(libDir, 'cjs');
 	const typesDir = path.join(libDir, 'types');
-	const configPath = path.join(__dirname, '..', 'configs', 'swc', '.swcrc');
+	const configPath = path.join(
+		__dirname,
+		'..',
+		'..',
+		'configs',
+		'swc',
+		'.swcrc'
+	);
 
 	func.pipe(
 		findCommand(process, SWC),

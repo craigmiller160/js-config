@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { setupStylelint } from '../../../scripts/init/setupStylelint';
-import { Stylelintrc } from '../../../scripts/files/Stylelintrc';
+import { setupStylelint } from '../../../src/scripts/init/setupStylelint';
+import { Stylelintrc } from '../../../src/scripts/files/Stylelintrc';
 
 const WORKING_DIR = path.join(
 	process.cwd(),

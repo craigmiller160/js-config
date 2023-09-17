@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import path from 'path';
-import { setupGitHooks } from '../../../scripts/init/setupGitHooks';
-import { runCommandSync } from '../../../scripts/utils/runCommand';
+import { setupGitHooks } from '../../../src/scripts/init/setupGitHooks';
+import { runCommandSync } from '../../../src/scripts/utils/runCommand';
 import fs from 'fs';
 import { either } from 'fp-ts';
-import { HUSKY } from '../../../scripts/commandPaths';
+import { HUSKY } from '../../../src/scripts/commandPaths';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
