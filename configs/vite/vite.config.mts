@@ -36,7 +36,7 @@ const jestFpTsPath = path.join(
 );
 const noop = path.join(__dirname, 'noop.js');
 
-const defaultConfig: Promise<UserConfig> = (async () => {
+const createDefaultConfig = async () => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
@@ -58,7 +58,7 @@ const defaultConfig: Promise<UserConfig> = (async () => {
 			emptyOutDir: true
 		}
 	};
-})();
+};
 
 const reactConfig: UserConfig = {
 	plugins: [react()]
@@ -67,6 +67,7 @@ const reactConfig: UserConfig = {
 export const defineConfig =
 	(overrideConfig?: UserConfig): UserConfigFnPromise =>
 	async () => {
+		const defaultConfig = await createDefaultConfig();
 		const baseConfig = (await hasLibrary('react'))
 			? mergeConfig(defaultConfig, reactConfig)
 			: defaultConfig;
