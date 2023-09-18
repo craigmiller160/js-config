@@ -1,8 +1,8 @@
-import { matchers as decodeMatchers } from '@relmify/jest-fp-ts/dist/decodeMatchers';
-import { matchers as eitherMatchers } from '@relmify/jest-fp-ts/dist/eitherMatchers';
-import { matchers as optionMatchers } from '@relmify/jest-fp-ts/dist/optionMatchers';
-import { matchers as theseMatchers } from '@relmify/jest-fp-ts/dist/theseMatchers';
-import { matchers as eitherOrTheseMatchers } from '@relmify/jest-fp-ts/dist/eitherOrTheseMatchers';
+import { matchers as decodeMatchers } from '@relmify/jest-fp-ts/dist/decodeMatchers/index.js';
+import { matchers as eitherMatchers } from '@relmify/jest-fp-ts/dist/eitherMatchers/index.js';
+import { matchers as optionMatchers } from '@relmify/jest-fp-ts/dist/optionMatchers/index.js';
+import { matchers as theseMatchers } from '@relmify/jest-fp-ts/dist/theseMatchers/index.js';
+import { matchers as eitherOrTheseMatchers } from '@relmify/jest-fp-ts/dist/eitherOrTheseMatchers/index.js';
 import { expect } from 'vitest';
 
 expect.extend(decodeMatchers);
