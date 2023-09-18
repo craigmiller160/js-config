@@ -36,7 +36,7 @@ const JEST_FP_TS_SRC_PATH = path.join(
 	'..',
 	'src',
 	'test-support',
-	'jest-fp-ts.ts'
+	'jest-fp-ts.mts'
 );
 const JEST_FP_TS_BUILD_PATH = path.join(
 	__dirname,
@@ -44,7 +44,7 @@ const JEST_FP_TS_BUILD_PATH = path.join(
 	'..',
 	'build',
 	'test-support',
-	'jest-fp-ts.js'
+	'jest-fp-ts.mjs'
 );
 
 const getJestFpTsPath = (): string => {
