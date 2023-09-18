@@ -1,6 +1,6 @@
 [
   {
-    "test": "^.*\\.[cm]?jsx?",
+    "test": "^.*\\.(js|mjs|cjs|jsx)",
     "$schema": "https://json.schemastore.org/swcrc",
     "jsc": {
       "parser": {
@@ -27,7 +27,7 @@
     }
   },
   {
-    "test": "^.*\\.[cm]?tsx?",
+    "test": "^.*\\.(ts|mts|cts|tsx)",
     "$schema": "https://json.schemastore.org/swcrc",
     "jsc": {
       "parser": {
