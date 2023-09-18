@@ -21,6 +21,7 @@ module.exports = {
 		...controlFile.eslintPlugins
 	],
 	parserOptions: {
+		ecmaVersion: 2022,
 		ecmaFeatures: {
 			jsx: true
 		}
