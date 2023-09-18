@@ -21,14 +21,9 @@ export const execute = (process: NodeJS.Process) => {
 	const esModuleDir = path.join(libDir, 'esm');
 	const commonjsDir = path.join(libDir, 'cjs');
 	const typesDir = path.join(libDir, 'types');
-	const configPath = path.join(
-		__dirname,
-		'..',
-		'..',
-		'configs',
-		'swc',
-		'.swcrc'
-	);
+	const configRoot = path.join(__dirname, '..', '..', 'configs', 'swc');
+	const jsConfigPath = path.join(configRoot, '.swcrc_js');
+	const tsConfigPath = path.join(configRoot, '.swcrc_ts');
 
 	func.pipe(
 		findCommand(process, SWC),
@@ -36,12 +31,22 @@ export const execute = (process: NodeJS.Process) => {
 		either.bind('tscCommand', () => findCommand(process, TSC)),
 		either.chainFirst(({ swcCommand }) =>
 			runCommandSync(
-				`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`
+				`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${jsConfigPath} -C module.type=es6 --only **/*.{js,mjs,cjs,jsx}`
 			)
 		),
 		either.chainFirst(({ swcCommand }) =>
 			runCommandSync(
-				`${swcCommand} ${srcDir} -d ${commonjsDir} --config-file ${configPath} -C module.type=commonjs`
+				`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${tsConfigPath} -C module.type=es6 --only **/*.{ts,mts,cts,tsx}`
+			)
+		),
+		either.chainFirst(({ swcCommand }) =>
+			runCommandSync(
+				`${swcCommand} ${srcDir} -d ${commonjsDir} --config-file ${jsConfigPath} -C module.type=commonjs --only **/*.{js,mjs,cjs,jsx}`
+			)
+		),
+		either.chainFirst(({ swcCommand }) =>
+			runCommandSync(
+				`${swcCommand} ${srcDir} -d ${commonjsDir} --config-file ${tsConfigPath} -C module.type=commonjs --only **/*.{ts,mts,cts,tsx}`
 			)
 		),
 		either.chainFirst(({ tscCommand }) =>
