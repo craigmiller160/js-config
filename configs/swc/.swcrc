@@ -27,7 +27,7 @@
     }
   },
   {
-    "test": "^.*\\.(ts|mts|cts|tsx)",
+    "test": "^.*\\.(?<!d\\.)(ts|mts|cts|tsx)",
     "$schema": "https://json.schemastore.org/swcrc",
     "jsc": {
       "parser": {
