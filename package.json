@@ -27,8 +27,10 @@
   },
   "scripts": {
     "buildSrc": "swc src --config-file ./configs/swc/.swcrc -C module.type=commonjs -d build",
-    "forceBuild": "rm -rf ./build && npm run buildSrc && tsc --declaration --emitDeclarationOnly --outDir ./build --project ./tsconfig.build.json",
-    "lint": "eslint --fix --max-warnings=0 '{configs,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
+    "buildTestSupport": "swc src/test-support --config-file ./configs/swc/.swcrc -C module.type=es6 -d build",
+    "generateTypes": "tsc --declaration --emitDeclarationOnly --outDir ./build --project ./tsconfig.build.json",
+    "forceBuild": "rm -rf ./build && npm run buildSrc && npm run buildTestSupport && npm run generateTypes",
+    "lint": "eslint --fix --max-warnings=0 '{configs,src,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "vitest run",
     "build": "npm run typeCheck && npm run lint && npm run test && npm run forceBuild",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
