@@ -1,5 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import url from 'url';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const TEST_SUPPORT_BUILD_PATH = path.join(
 	__dirname,
