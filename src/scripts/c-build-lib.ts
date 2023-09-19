@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { logger } from './logger';
 import { runCommandSync } from './utils/runCommand';
-import { function as func, either, taskEither } from 'fp-ts';
+import { function as func, taskEither } from 'fp-ts';
 import { terminate } from './utils/terminate';
 import { findCommand } from './utils/command';
 import { SWC, TSC } from './commandPaths';
@@ -23,13 +23,28 @@ const getSwcConfigPath = (compileType: CompileType): string =>
 		.with('typescript', () => SWCRC_TS)
 		.exhaustive();
 
+const fixFileExtension = (filePath: string): string => {
+	const originalExtension = path.extname(filePath);
+	const newExtension = match(originalExtension)
+		.with('.ts', () => '.js')
+		.with('.mts', () => '.mjs')
+		.with('.cts', () => '.cjs')
+		.with('.tsx', () => '.jsx')
+		.otherwise(() => originalExtension);
+	const filePathWithoutExtension = filePath.replace(/\..*$/, '');
+	return `${filePathWithoutExtension}${newExtension}`;
+};
+
 const createCompile =
 	(srcDir: string, destDir: string) =>
 	(file: string, compileType: CompileType, moduleType: ModuleType) => {
 		const configFile = getSwcConfigPath(compileType);
 		const parentDir = path.dirname(file);
-		const relativePath = path.relative(srcDir, file);
-		const outputPath = path.join(destDir, relativePath); // TODO fix file extensions for ts
+		const outputPath = func.pipe(
+			path.relative(srcDir, file),
+			(relativePath) => path.join(destDir, relativePath),
+			fixFileExtension
+		);
 		func.pipe(
 			taskEither.tryCatch(
 				() =>
