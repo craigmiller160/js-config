@@ -7,6 +7,9 @@ import { unknownToError } from './utils/unknownToError';
 import { match } from 'ts-pattern';
 import { walk } from './utils/files';
 import { terminate } from './utils/terminate';
+import { runCommandSync } from './utils/runCommand';
+import { findCommand } from './utils/command';
+import { TSC } from './commandPaths';
 
 type CompileType = 'ecmascript' | 'typescript' | 'none';
 type ModuleType = 'es6' | 'commonjs';
@@ -96,9 +99,18 @@ const compileFiles =
 			taskEither.sequenceArray
 		);
 
-const generateTypes = (destDir: string): either.Either<Error, unknown> => {
-	throw new Error();
-};
+const generateTypes = (
+	process: NodeJS.Process,
+	destDir: string
+): either.Either<Error, unknown> =>
+	func.pipe(
+		findCommand(process, TSC),
+		either.chain((command) =>
+			runCommandSync(
+				`${command} --declaration --emitDeclarationOnly --outDir ${destDir}`
+			)
+		)
+	);
 
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Performing library build');
@@ -115,7 +127,7 @@ export const execute = (process: NodeJS.Process) => {
 		taskEither.fromTask,
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
-		taskEither.chainEitherK(() => generateTypes(destTypesDir)),
+		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);
