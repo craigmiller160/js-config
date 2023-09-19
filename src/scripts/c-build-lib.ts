@@ -183,13 +183,34 @@ const copyResources = (
 	return Promise.all(promises);
 };
 
-type OutputType = 'esm' | 'cjs' | 'both';
+type CompileFunctions = Readonly<{
+	esmCompile: (file: string) => taskEither.TaskEither<Error, unknown>;
+	cjsCompile: (file: string) => taskEither.TaskEither<Error, unknown>;
+}>;
 
-const getOutputType = (args: ReadonlyArray<string>): OutputType =>
-	match<ReadonlyArray<string>, OutputType>(args)
-		.with(P.array('-e'), () => 'esm')
-		.with(P.array('-c'), () => 'cjs')
-		.otherwise(() => 'both');
+const getCompileFunctions = (
+	args: ReadonlyArray<string>,
+	srcDir: string,
+	destEsmDir: string,
+	destCjsDir: string
+): CompileFunctions => {
+	const esmCompile = createCompile(srcDir, destEsmDir, 'es6');
+	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
+	const noop = () => taskEither.right(func.constVoid());
+	return match<ReadonlyArray<string>, CompileFunctions>(args)
+		.with(P.array('-e'), () => ({
+			esmCompile,
+			cjsCompile: noop
+		}))
+		.with(P.array('-c'), () => ({
+			esmCompile: noop,
+			cjsCompile
+		}))
+		.otherwise(() => ({
+			esmCompile,
+			cjsCompile
+		}));
+};
 
 export const execute = async (process: NodeJS.Process) => {
 	const args = getRealArgs(process);
@@ -200,8 +221,12 @@ export const execute = async (process: NodeJS.Process) => {
 	const destCjsDir = path.join(destDir, 'cjs');
 	const destTypesDir = path.join(destDir, 'types');
 
-	const esmCompile = createCompile(srcDir, destEsmDir, 'es6');
-	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
+	const { esmCompile, cjsCompile } = getCompileFunctions(
+		args,
+		srcDir,
+		destEsmDir,
+		destCjsDir
+	);
 
 	const files = await walk(srcDir);
 
