@@ -26,6 +26,7 @@
     }
   },
   "scripts": {
+    "experiment": "ts-node --swc ./src/bin/c-build-lib.ts",
     "buildSrc": "swc src --config-file ./configs/swc/.swcrc_ts -C module.type=commonjs -d build --only **/*.{ts,mts,cts,tsx} --ignore **/*.d.{ts,mts,cts,tsx}",
     "buildTestSupport": "swc src/test-support --config-file ./configs/swc/.swcrc_ts -C module.type=es6 -d build --only **/*.{ts,mts,cts,tsx} --ignore **/*.d.{ts,mts,cts,tsx} && node ./scripts/fix-test-support.mjs",
     "generateTypes": "tsc --declaration --emitDeclarationOnly --outDir ./build --project ./tsconfig.build.json",
@@ -60,7 +61,8 @@
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
     "@types/node": "^20.5.8",
-    "cypress": "^13.2.0"
+    "cypress": "^13.2.0",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@swc/core": "^1.3.82",

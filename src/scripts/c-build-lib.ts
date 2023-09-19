@@ -28,14 +28,20 @@ const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
-		.when(JS_FILE.test, () => ({
-			type: 'ecmascript',
-			config: SWCRC_JS
-		}))
-		.when(TS_FILE.test, () => ({
-			type: 'typescript',
-			config: SWCRC_TS
-		}))
+		.when(
+			(_) => JS_FILE.test(_),
+			() => ({
+				type: 'ecmascript',
+				config: SWCRC_JS
+			})
+		)
+		.when(
+			(_) => TS_FILE.test(_),
+			() => ({
+				type: 'typescript',
+				config: SWCRC_TS
+			})
+		)
 		.otherwise(() => ({
 			type: 'none',
 			config: ''
