@@ -1,27 +1,39 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { logger } from './logger';
-import { runCommandSync } from './utils/runCommand';
-import { function as func, taskEither } from 'fp-ts';
-import { terminate } from './utils/terminate';
-import { findCommand } from './utils/command';
-import { SWC, TSC } from './commandPaths';
+import { function as func, readonlyArray, taskEither } from 'fp-ts';
 import { transformFile } from '@swc/core';
 import { unknownToError } from './utils/unknownToError';
 import { match } from 'ts-pattern';
+import { walk } from './utils/files';
 
-type CompileType = 'ecmascript' | 'typescript';
+type CompileType = 'ecmascript' | 'typescript' | 'none';
 type ModuleType = 'es6' | 'commonjs';
+type CompileInfo = Readonly<{
+	type: CompileType;
+	config: string;
+}>;
 
 const SWCRC_CONFIG_DIR = path.join(__dirname, '..', '..', 'configs', 'swc');
 const SWCRC_JS = path.join(SWCRC_CONFIG_DIR, '.swcrc_js');
 const SWCRC_TS = path.join(SWCRC_CONFIG_DIR, '.swcrc_ts');
+const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
+const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
 
-const getSwcConfigPath = (compileType: CompileType): string =>
-	match(compileType)
-		.with('ecmascript', () => SWCRC_JS)
-		.with('typescript', () => SWCRC_TS)
-		.exhaustive();
+const getSwcCompileInfo = (filePath: string): CompileInfo =>
+	match<string, CompileInfo>(filePath)
+		.when(JS_FILE.test, () => ({
+			type: 'ecmascript',
+			config: SWCRC_JS
+		}))
+		.when(TS_FILE.test, () => ({
+			type: 'typescript',
+			config: SWCRC_TS
+		}))
+		.otherwise(() => ({
+			type: 'none',
+			config: ''
+		}));
 
 const fixFileExtension = (filePath: string): string => {
 	const originalExtension = path.extname(filePath);
@@ -37,19 +49,22 @@ const fixFileExtension = (filePath: string): string => {
 
 const createCompile =
 	(srcDir: string, destDir: string) =>
-	(file: string, compileType: CompileType, moduleType: ModuleType) => {
-		const configFile = getSwcConfigPath(compileType);
+	(
+		file: string,
+		moduleType: ModuleType
+	): taskEither.TaskEither<Error, unknown> => {
+		const compileInfo = getSwcCompileInfo(file);
 		const parentDir = path.dirname(file);
 		const outputPath = func.pipe(
 			path.relative(srcDir, file),
 			(relativePath) => path.join(destDir, relativePath),
 			fixFileExtension
 		);
-		func.pipe(
+		return func.pipe(
 			taskEither.tryCatch(
 				() =>
 					transformFile(file, {
-						configFile,
+						configFile: compileInfo.config,
 						module: {
 							type: moduleType
 						}
@@ -78,4 +93,17 @@ export const execute = (process: NodeJS.Process) => {
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
 	const destDir = path.join(process.cwd(), 'lib');
+
+	const compile = createCompile(srcDir, destDir);
+	func.pipe(
+		() => walk(srcDir),
+		taskEither.fromTask,
+		taskEither.chainFirst((files) =>
+			func.pipe(
+				files,
+				readonlyArray.map((file) => compile(file, 'es6')),
+				taskEither.sequenceArray
+			)
+		)
+	);
 };
