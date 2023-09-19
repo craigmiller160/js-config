@@ -112,7 +112,15 @@ const generateTypes = (
 		)
 	);
 
-export const execute = (process: NodeJS.Process) => {
+const copyResources = (
+	files: ReadonlyArray<string>,
+	srcDir: string,
+	destEsmDir: string,
+	destCjsDir: string,
+	destTypesDir: string
+) => {};
+
+export const execute = async (process: NodeJS.Process) => {
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
 	const destDir = path.join(process.cwd(), 'lib');
@@ -122,9 +130,11 @@ export const execute = (process: NodeJS.Process) => {
 
 	const esmCompile = createCompile(srcDir, destEsmDir, 'es6');
 	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
-	func.pipe(
-		() => walk(srcDir),
-		taskEither.fromTask,
+
+	const files = await walk(srcDir);
+
+	await func.pipe(
+		taskEither.right(files),
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),
