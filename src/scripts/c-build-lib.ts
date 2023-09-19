@@ -10,6 +10,7 @@ import { terminate } from './utils/terminate';
 import { runCommandSync } from './utils/runCommand';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
+import {getRealArgs} from './utils/process';
 
 type CompileType = 'ecmascript' | 'typescript' | 'none';
 type ModuleType = 'es6' | 'commonjs';
@@ -183,6 +184,7 @@ const copyResources = (
 };
 
 export const execute = async (process: NodeJS.Process) => {
+	const args = getRealArgs(process);
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
 	const destDir = path.join(process.cwd(), 'lib');
