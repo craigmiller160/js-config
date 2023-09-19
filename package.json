@@ -7,20 +7,24 @@
     "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
   },
   "bin": {
-    "c-build-lib": "./build/bin/c-build-lib.js",
-    "c-init": "./build/bin/c-init.js",
-    "c-type-check": "./build/bin/c-type-check.js",
-    "c-eslint": "./build/bin/c-eslint.js",
-    "c-log": "./build/bin/c-log.js",
-    "c-test": "./build/bin/c-test.js",
-    "c-stylelint": "./build/bin/c-stylelint.js",
-    "c-start": "./build/bin/c-start.js",
-    "c-build-app": "./build/bin/c-build-app.js",
-    "c-cypress": "./build/bin/c-cypress.js",
-    "c-cypress-dev": "./build/bin/c-cypress-dev.js",
-    "c-validate": "./build/bin/c-validate.js"
+    "c-build-lib": "./lib/cjs/bin/c-build-lib.js",
+    "c-init": "./lib/cjs/bin/c-init.js",
+    "c-type-check": "./lib/cjs/bin/c-type-check.js",
+    "c-eslint": "./lib/cjs/bin/c-eslint.js",
+    "c-log": "./lib/cjs/bin/c-log.js",
+    "c-test": "./lib/cjs/bin/c-test.js",
+    "c-stylelint": "./lib/cjs/bin/c-stylelint.js",
+    "c-start": "./lib/cjs/bin/c-start.js",
+    "c-build-app": "./lib/cjs/bin/c-build-app.js",
+    "c-cypress": "./lib/cjs/bin/c-cypress.js",
+    "c-cypress-dev": "./lib/cjs/bin/c-cypress-dev.js",
+    "c-validate": "./lib/cjs/bin/c-validate.js"
   },
   "exports": {
+    "./*": {
+      "commonjs": "./lib/cjs/*",
+      "types": "./lib/types/*"
+    },
     "./configs/*": {
       "default": "./configs/*"
     }
@@ -40,7 +44,7 @@
   },
   "files": [
     "configs",
-    "build"
+    "lib"
   ],
   "peerDependenciesMeta": {
     "cypress": {
