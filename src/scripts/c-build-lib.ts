@@ -10,7 +10,7 @@ import { terminate } from './utils/terminate';
 import { runCommandSync } from './utils/runCommand';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
-import {getRealArgs} from './utils/process';
+import { getRealArgs } from './utils/process';
 
 type CompileType = 'ecmascript' | 'typescript' | 'none';
 type ModuleType = 'es6' | 'commonjs';
@@ -182,6 +182,14 @@ const copyResources = (
 	);
 	return Promise.all(promises);
 };
+
+type OutputType = 'esm' | 'cjs' | 'both';
+
+const getOutputType = (args: ReadonlyArray<string>): OutputType =>
+	match<ReadonlyArray<string>, OutputType>(args)
+		.with(P.array('-e'), () => 'esm')
+		.with(P.array('-c'), () => 'cjs')
+		.otherwise(() => 'both');
 
 export const execute = async (process: NodeJS.Process) => {
 	const args = getRealArgs(process);
