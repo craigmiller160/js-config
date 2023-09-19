@@ -57,6 +57,9 @@ const createCompile =
 	(srcDir: string, destDir: string, moduleType: ModuleType) =>
 	(file: string): taskEither.TaskEither<Error, unknown> => {
 		const compileInfo = getSwcCompileInfo(file);
+		if (compileInfo.type === 'none') {
+			return taskEither.right(func.constVoid());
+		}
 		const outputPath = func.pipe(
 			path.relative(srcDir, file),
 			(relativePath) => path.join(destDir, relativePath),
