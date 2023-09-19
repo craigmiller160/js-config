@@ -4,7 +4,7 @@ import { logger } from './logger';
 import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { transformFile } from '@swc/core';
 import { unknownToError } from './utils/unknownToError';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { walk } from './utils/files';
 import { terminate } from './utils/terminate';
 import { runCommandSync } from './utils/runCommand';
@@ -28,20 +28,14 @@ const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
-		.when(
-			(_) => JS_FILE.test(_),
-			() => ({
-				type: 'ecmascript',
-				config: SWCRC_JS
-			})
-		)
-		.when(
-			(_) => TS_FILE.test(_),
-			() => ({
-				type: 'typescript',
-				config: SWCRC_TS
-			})
-		)
+		.with(P.string.regex(JS_FILE), () => ({
+			type: 'ecmascript',
+			config: SWCRC_JS
+		}))
+		.with(P.string.regex(TS_FILE), () => ({
+			type: 'typescript',
+			config: SWCRC_TS
+		}))
 		.otherwise(() => ({
 			type: 'none',
 			config: ''
