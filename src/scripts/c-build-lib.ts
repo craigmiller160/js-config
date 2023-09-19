@@ -48,11 +48,8 @@ const fixFileExtension = (filePath: string): string => {
 };
 
 const createCompile =
-	(srcDir: string, destDir: string) =>
-	(
-		file: string,
-		moduleType: ModuleType
-	): taskEither.TaskEither<Error, unknown> => {
+	(srcDir: string, destDir: string, moduleType: ModuleType) =>
+	(file: string): taskEither.TaskEither<Error, unknown> => {
 		const compileInfo = getSwcCompileInfo(file);
 		const parentDir = path.dirname(file);
 		const outputPath = func.pipe(
@@ -93,15 +90,25 @@ export const execute = (process: NodeJS.Process) => {
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
 	const destDir = path.join(process.cwd(), 'lib');
+	const destEsmDir = path.join(destDir, 'esm');
+	const destCjsDir = path.join(destDir, 'cjs');
 
-	const compile = createCompile(srcDir, destDir);
+	const esmCompile = createCompile(srcDir, destEsmDir, 'es6');
+	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
 	func.pipe(
 		() => walk(srcDir),
 		taskEither.fromTask,
 		taskEither.chainFirst((files) =>
 			func.pipe(
 				files,
-				readonlyArray.map((file) => compile(file, 'es6')),
+				readonlyArray.map(esmCompile),
+				taskEither.sequenceArray
+			)
+		),
+		taskEither.chainFirst((files) =>
+			func.pipe(
+				files,
+				readonlyArray.map(cjsCompile),
 				taskEither.sequenceArray
 			)
 		)
