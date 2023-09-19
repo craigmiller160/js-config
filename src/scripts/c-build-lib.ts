@@ -138,6 +138,9 @@ export const execute = async (process: NodeJS.Process) => {
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),
+		taskEither.map(() =>
+			copyResources(files, srcDir, destEsmDir, destCjsDir, destTypesDir)
+		),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);
