@@ -27,6 +27,9 @@ const createCompile =
 	(srcDir: string, destDir: string) =>
 	(file: string, compileType: CompileType, moduleType: ModuleType) => {
 		const configFile = getSwcConfigPath(compileType);
+		const parentDir = path.dirname(file);
+		const relativePath = path.relative(srcDir, file);
+		const outputPath = path.join(destDir, relativePath); // TODO fix file extensions for ts
 		func.pipe(
 			taskEither.tryCatch(
 				() =>
@@ -37,6 +40,21 @@ const createCompile =
 						}
 					}),
 				unknownToError
+			),
+			taskEither.chainFirst(() =>
+				taskEither.tryCatch(
+					() =>
+						fs.mkdir(parentDir, {
+							recursive: true
+						}),
+					unknownToError
+				)
+			),
+			taskEither.chain((output) =>
+				taskEither.tryCatch(
+					() => fs.writeFile(outputPath, output.code),
+					unknownToError
+				)
 			)
 		);
 	};
