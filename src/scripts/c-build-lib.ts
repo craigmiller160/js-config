@@ -86,6 +86,15 @@ const createCompile =
 		);
 	};
 
+const compileFiles =
+	(compileFn: (file: string) => taskEither.TaskEither<Error, unknown>) =>
+	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, unknown> =>
+		func.pipe(
+			files,
+			readonlyArray.map(compileFn),
+			taskEither.sequenceArray
+		);
+
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
@@ -98,19 +107,7 @@ export const execute = (process: NodeJS.Process) => {
 	func.pipe(
 		() => walk(srcDir),
 		taskEither.fromTask,
-		taskEither.chainFirst((files) =>
-			func.pipe(
-				files,
-				readonlyArray.map(esmCompile),
-				taskEither.sequenceArray
-			)
-		),
-		taskEither.chainFirst((files) =>
-			func.pipe(
-				files,
-				readonlyArray.map(cjsCompile),
-				taskEither.sequenceArray
-			)
-		)
+		taskEither.chainFirst(compileFiles(esmCompile)),
+		taskEither.chainFirst(compileFiles(cjsCompile))
 	);
 };
