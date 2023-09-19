@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { logger } from './logger';
-import { function as func, readonlyArray, taskEither } from 'fp-ts';
+import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { transformFile } from '@swc/core';
 import { unknownToError } from './utils/unknownToError';
 import { match } from 'ts-pattern';
@@ -96,12 +96,17 @@ const compileFiles =
 			taskEither.sequenceArray
 		);
 
+const generateTypes = (destDir: string): either.Either<Error, unknown> => {
+	throw new Error();
+};
+
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
 	const destDir = path.join(process.cwd(), 'lib');
 	const destEsmDir = path.join(destDir, 'esm');
 	const destCjsDir = path.join(destDir, 'cjs');
+	const destTypesDir = path.join(destDir, 'types');
 
 	const esmCompile = createCompile(srcDir, destEsmDir, 'es6');
 	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
@@ -110,6 +115,7 @@ export const execute = (process: NodeJS.Process) => {
 		taskEither.fromTask,
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
+		taskEither.chainEitherK(() => generateTypes(destTypesDir)),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);
