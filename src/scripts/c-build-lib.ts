@@ -142,11 +142,11 @@ type FileCopyInfo = Readonly<{
 
 const getFileCopyInfo = (file: string): FileCopyInfo =>
 	match<string, FileCopyInfo>(file)
-		.when(SOURCE_RESOURCES.test, () => ({
+		.with(P.string.regex(SOURCE_RESOURCES), () => ({
 			type: 'source',
 			file
 		}))
-		.when(TYPE_RESOURCES.test, () => ({
+		.with(P.string.regex(TYPE_RESOURCES), () => ({
 			type: 'type',
 			file
 		}))
