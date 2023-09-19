@@ -23,6 +23,8 @@ const SWCRC_JS = path.join(SWCRC_CONFIG_DIR, '.swcrc_js');
 const SWCRC_TS = path.join(SWCRC_CONFIG_DIR, '.swcrc_ts');
 const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
+const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg)$/;
+const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
@@ -112,13 +114,70 @@ const generateTypes = (
 		)
 	);
 
+const copyFile = async (
+	file: string,
+	srcDir: string,
+	destDir: string
+): Promise<unknown> => {
+	const outputPath = func.pipe(
+		path.relative(srcDir, file),
+		(relativePath) => path.join(destDir, relativePath),
+		fixFileExtension
+	);
+	const parentDir = path.dirname(outputPath);
+	await fs.mkdir(parentDir, {
+		recursive: true
+	});
+	return fs.copyFile(file, outputPath);
+};
+
+type FileCopyType = 'source' | 'type' | 'none';
+type FileCopyInfo = Readonly<{
+	type: FileCopyType;
+	file: string;
+}>;
+
+const getFileCopyInfo = (file: string): FileCopyInfo =>
+	match<string, FileCopyInfo>(file)
+		.when(SOURCE_RESOURCES.test, () => ({
+			type: 'source',
+			file
+		}))
+		.when(TYPE_RESOURCES.test, () => ({
+			type: 'type',
+			file
+		}))
+		.otherwise(() => ({
+			type: 'none',
+			file
+		}));
+
 const copyResources = (
 	files: ReadonlyArray<string>,
 	srcDir: string,
 	destEsmDir: string,
 	destCjsDir: string,
 	destTypesDir: string
-) => {};
+): Promise<unknown> => {
+	const promises = func.pipe(
+		files,
+		readonlyArray.map(getFileCopyInfo),
+		readonlyArray.map((info) =>
+			match(info)
+				.with({ type: 'source' }, () =>
+					Promise.all([
+						copyFile(info.file, srcDir, destEsmDir),
+						copyFile(info.file, srcDir, destCjsDir)
+					])
+				)
+				.with({ type: 'type' }, () =>
+					copyFile(info.file, srcDir, destTypesDir)
+				)
+				.otherwise(() => Promise.resolve())
+		)
+	);
+	return Promise.all(promises);
+};
 
 export const execute = async (process: NodeJS.Process) => {
 	logger.info('Performing library build');
@@ -138,8 +197,18 @@ export const execute = async (process: NodeJS.Process) => {
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),
-		taskEither.map(() =>
-			copyResources(files, srcDir, destEsmDir, destCjsDir, destTypesDir)
+		taskEither.chain(() =>
+			taskEither.tryCatch(
+				() =>
+					copyResources(
+						files,
+						srcDir,
+						destEsmDir,
+						destCjsDir,
+						destTypesDir
+					),
+				unknownToError
+			)
 		),
 		taskEither.fold(
 			(ex) => () => {
