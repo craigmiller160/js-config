@@ -212,6 +212,18 @@ const getCompileFunctions = (
 		}));
 };
 
+const removeDestDir = (
+	destDir: string
+): taskEither.TaskEither<Error, unknown> =>
+	taskEither.tryCatch(
+		() =>
+			fs.rm(destDir, {
+				recursive: true,
+				force: true
+			}),
+		unknownToError
+	);
+
 export const execute = async (process: NodeJS.Process) => {
 	const args = getRealArgs(process);
 	logger.info('Performing library build');
@@ -231,7 +243,8 @@ export const execute = async (process: NodeJS.Process) => {
 	const files = await walk(srcDir);
 
 	await func.pipe(
-		taskEither.right(files),
+		removeDestDir(destDir),
+		taskEither.map(() => files),
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),

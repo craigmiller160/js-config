@@ -30,7 +30,7 @@
     }
   },
   "scripts": {
-    "experiment": "ts-node --swc ./src/bin/c-build-lib.ts",
+    "experiment": "ts-node --swc ./src/bin/c-build-lib.ts -c",
     "buildSrc": "swc src --config-file ./configs/swc/.swcrc_ts -C module.type=commonjs -d build --only **/*.{ts,mts,cts,tsx} --ignore **/*.d.{ts,mts,cts,tsx}",
     "buildTestSupport": "swc src/test-support --config-file ./configs/swc/.swcrc_ts -C module.type=es6 -d build --only **/*.{ts,mts,cts,tsx} --ignore **/*.d.{ts,mts,cts,tsx} && node ./scripts/fix-test-support.mjs",
     "generateTypes": "tsc --declaration --emitDeclarationOnly --outDir ./build --project ./tsconfig.build.json",
