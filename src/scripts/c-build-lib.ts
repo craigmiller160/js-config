@@ -6,6 +6,7 @@ import { transformFile } from '@swc/core';
 import { unknownToError } from './utils/unknownToError';
 import { match } from 'ts-pattern';
 import { walk } from './utils/files';
+import { terminate } from './utils/terminate';
 
 type CompileType = 'ecmascript' | 'typescript' | 'none';
 type ModuleType = 'es6' | 'commonjs';
@@ -108,6 +109,16 @@ export const execute = (process: NodeJS.Process) => {
 		() => walk(srcDir),
 		taskEither.fromTask,
 		taskEither.chainFirst(compileFiles(esmCompile)),
-		taskEither.chainFirst(compileFiles(cjsCompile))
-	);
+		taskEither.chainFirst(compileFiles(cjsCompile)),
+		taskEither.fold(
+			(ex) => () => {
+				terminate(ex);
+				return Promise.resolve();
+			},
+			() => () => {
+				terminate('');
+				return Promise.resolve();
+			}
+		)
+	)();
 };
