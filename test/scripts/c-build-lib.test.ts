@@ -5,11 +5,12 @@ import path from 'path';
 import { either } from 'fp-ts';
 import { SWC, TSC } from '../../src/scripts/commandPaths';
 import fs from 'fs';
+import {walk} from '../../src/scripts/utils/files';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
 	'test',
-	'__working_directories',
+	'__working_directories__',
 	'buildLib'
 );
 const srcDir = path.join(WORKING_DIR, 'src');
@@ -31,7 +32,15 @@ describe('c-build-lib', () => {
 		});
 	});
 
-	it.fails('performs the entire library build for both esm and cjs');
+	it('performs the entire library build for both esm and cjs', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			cwd: () => WORKING_DIR
+		});
+		const files = await walk(libDir);
+		expect(files).toEqual([]);
+	});
 
 	it.fails('performs the entire library build for just esm');
 
