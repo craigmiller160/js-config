@@ -1,2 +1,2 @@
 /* eslint-disable */
-const abc = 'def';
+export const abc = 'def';

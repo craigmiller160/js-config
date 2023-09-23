@@ -17,9 +17,28 @@ const typesDir = path.join(libDir, 'types');
 
 vi.unmock('../../src/scripts/utils/runCommand');
 
+type FileAndContents = [file: string, contents: string];
+const ESM_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'def.css'), ''],
+	[
+		path.join('child', 'grandchild', 'weeee.js'),
+		`/* eslint-disable */\nexport const abc = 'def';`
+	],
+	['root.js', `/* eslint-disable */\nexport const hello = 'Hello World;`]
+];
+
 const validateEsmFiles = async () => {
 	const files = await walk(esModuleDir);
-	throw new Error();
+	ESM_FILES.forEach(([file, contents], index) => {
+		const actualFile = files[index];
+		const fullExpectedFile = path.join(esModuleDir, file);
+		console.log(file);
+		expect(actualFile).toEqual(fullExpectedFile);
+		if (path.extname(actualFile).endsWith('js')) {
+			const actualFileContents = fs.readFileSync(actualFile, 'utf8');
+			expect(actualFileContents).toEqual(contents);
+		}
+	});
 };
 const validateCjsFiles = async () => {
 	const files = await walk(commonjsDir);

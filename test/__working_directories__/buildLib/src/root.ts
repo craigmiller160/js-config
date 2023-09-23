@@ -1,2 +1,2 @@
 /* eslint-disable */
-const hello: string = 'world';
+export const hello: string = 'world';
