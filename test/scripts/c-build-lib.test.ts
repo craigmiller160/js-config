@@ -35,6 +35,7 @@ const ${varName} = '${value}';
 
 type FileAndContents = [file: string, contents: string];
 const ESM_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('abc.mjs'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
 	[path.join('child', 'def.css'), ''],
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
@@ -46,7 +47,6 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 		path.join('child', 'something.js'),
 		`/* eslint-disable */ export const foo = 'bar';\n`
 	],
-	[path.join('abc.mjs'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
 	[path.join('def.mjs'), `/* eslint-disable */ export const wxz = 'abc';\n`],
 	[
 		'other-root.js',
@@ -56,6 +56,7 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 ];
 
 const CJS_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('abc.mjs'), createCjsContent('qrs', 'tuv')],
 	[path.join('child', 'def.css'), ''],
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
@@ -64,7 +65,6 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
 	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
-	[path.join('abc.mjs'), createCjsContent('qrs', 'tuv')],
 	[path.join('def.mjs'), createCjsContent('wxz', 'abc')],
 	['other-root.js', createCjsContent('goodbye', 'universe')],
 	['root.js', createCjsContent('hello', 'world')]
