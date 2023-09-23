@@ -46,6 +46,8 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 		path.join('child', 'something.js'),
 		`/* eslint-disable */ export const foo = 'bar';\n`
 	],
+	[path.join('abc.mjs'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
+	[path.join('def.mjs'), `/* eslint-disable */ export const wxz = 'abc';\n`],
 	[
 		'other-root.js',
 		`/* eslint-disable */ export const goodbye = 'universe';\n`
@@ -62,6 +64,8 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
 	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
+	[path.join('abc.mjs'), createCjsContent('qrs', 'tuv')],
+	[path.join('def.mjs'), createCjsContent('wxz', 'abc')],
 	['other-root.js', createCjsContent('goodbye', 'universe')],
 	['root.js', createCjsContent('hello', 'world')]
 ];
@@ -69,6 +73,7 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 const TYPE_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'grandchild', 'weeee.d.ts'), ''],
 	[path.join('child', 'something.d.ts'), ''],
+	[path.join('def.d.mts'), ''],
 	[path.join('global.d.ts'), ''],
 	[path.join('root.d.ts'), '']
 ];
