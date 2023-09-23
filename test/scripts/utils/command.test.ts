@@ -8,6 +8,12 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'command'
 );
+const WORKING_DIR_2 = path.join(
+	process.cwd(),
+	'test',
+	'__working_directories__',
+	'command2'
+);
 
 const NODE_PATH: string = [
 	'.pnpm/js-config-root@1.0.0/node_modules/@craigmiller160/js-config/build/bin/node_modules',
@@ -42,6 +48,7 @@ describe('command', () => {
 			const result = findCommand(
 				{
 					...process,
+					cwd: () => WORKING_DIR,
 					env: {
 						...process.env,
 						NODE_PATH: undefined
@@ -57,6 +64,29 @@ describe('command', () => {
 					'typescript@5.2.0',
 					'node_modules',
 					'typescript/bin/tsc'
+				)
+			);
+		});
+
+		it('finds command from root node_modules', () => {
+			const result = findCommand(
+				{
+					...process,
+					cwd: () => WORKING_DIR_2,
+					env: {
+						...process.env,
+						NODE_PATH: undefined
+					}
+				},
+				'typescript/bin/tsc'
+			);
+			expect(result).toEqualRight(
+				path.join(
+					WORKING_DIR_2,
+					'node_modules',
+					'typescript',
+					'bin',
+					'tsc'
 				)
 			);
 		});
