@@ -17,6 +17,22 @@ const typesDir = path.join(libDir, 'types');
 
 vi.unmock('../../src/scripts/utils/runCommand');
 
+const createCjsContent = (
+	varName: string,
+	value: string
+) => `/* eslint-disable */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "${varName}", {
+    enumerable: true,
+    get: function() {
+        return ${varName};
+    }
+});
+const abc = '${value}';
+`;
+
 type FileAndContents = [file: string, contents: string];
 const ESM_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'def.css'), ''],
@@ -42,18 +58,12 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
 		path.join('child', 'grandchild', 'weeee.js'),
-		`/* eslint-disable */ export const abc = 'def';\n`
+		createCjsContent('abc', 'def')
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
-	[
-		path.join('child', 'something.js'),
-		`/* eslint-disable */ export const foo = 'bar';\n`
-	],
-	[
-		'other-root.js',
-		`/* eslint-disable */ export const goodbye = 'universe';\n`
-	],
-	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
+	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
+	['other-root.js', createCjsContent('goodbye', 'universe')],
+	['root.js', createCjsContent('hello', 'world')]
 ];
 
 const TYPE_FILES: ReadonlyArray<FileAndContents> = [];
