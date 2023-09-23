@@ -113,7 +113,10 @@ const generateTypes = (
 		findCommand(process, TSC),
 		either.chain((command) =>
 			runCommandSync(
-				`${command} --declaration --emitDeclarationOnly --outDir ${destDir}`
+				`${command} --declaration --emitDeclarationOnly --outDir ${destDir}`,
+				{
+					cwd: process.cwd()
+				}
 			)
 		)
 	);
