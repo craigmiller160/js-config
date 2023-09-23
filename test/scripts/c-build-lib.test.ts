@@ -42,6 +42,7 @@ const validateFiles = (
 	expectedFiles: ReadonlyArray<FileAndContents>,
 	actualFiles: ReadonlyArray<string>
 ) => {
+	expect(actualFiles).toHaveLength(expectedFiles.length);
 	expectedFiles.forEach(([file, contents], index) => {
 		const actualFile = actualFiles[index];
 		const fullExpectedFile = path.join(rootDir, file);
