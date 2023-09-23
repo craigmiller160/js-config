@@ -94,7 +94,31 @@ describe('c-build-lib', () => {
 		await validateTypeFiles();
 	});
 
-	it.fails('performs the entire library build for just esm');
+	it('performs the entire library build for just esm', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			argv: ['', '', '-e'],
+			cwd: () => WORKING_DIR
+		});
+		expect(fs.existsSync(esModuleDir)).toBe(true);
+		expect(fs.existsSync(commonjsDir)).toBe(false);
+		expect(fs.existsSync(typesDir)).toBe(true);
+		await validateEsmFiles();
+		await validateTypeFiles();
+	});
 
-	it.fails('performs the entire library build for just cjs');
+	it('performs the entire library build for just cjs', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			argv: ['', '', '-c'],
+			cwd: () => WORKING_DIR
+		});
+		expect(fs.existsSync(esModuleDir)).toBe(false);
+		expect(fs.existsSync(commonjsDir)).toBe(true);
+		expect(fs.existsSync(typesDir)).toBe(true);
+		await validateCjsFiles();
+		await validateTypeFiles();
+	});
 });
