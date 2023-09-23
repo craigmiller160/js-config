@@ -49,6 +49,22 @@ const findViaPnpmPath = (
 	return option.none;
 };
 
+const findViaRootNodeModules = (
+	process: NodeJS.Process,
+	pathFromNodeModules: string
+): option.Option<string> => {
+	logger.debug('Searching for command in node_modules');
+	const commandPath = path.join(
+		process.cwd(),
+		'node_modules',
+		pathFromNodeModules
+	);
+	if (fs.existsSync(commandPath)) {
+		return option.some(commandPath);
+	}
+	return option.none;
+};
+
 export const findCommand = (
 	process: NodeJS.Process,
 	pathFromNodeModules: string
@@ -58,6 +74,10 @@ export const findCommand = (
 		findViaNodePath(process, pathFromNodeModules),
 		option.fold(
 			() => findViaPnpmPath(process, pathFromNodeModules),
+			(thePath) => option.some(thePath)
+		),
+		option.fold(
+			() => findViaRootNodeModules(process, pathFromNodeModules),
 			(thePath) => option.some(thePath)
 		),
 		either.fromOption(
