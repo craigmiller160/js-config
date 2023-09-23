@@ -1,2 +1,2 @@
 /* eslint-disable */
-const goodbye = 'universe';
+export const goodbye = 'universe';

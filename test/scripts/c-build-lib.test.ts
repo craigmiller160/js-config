@@ -25,7 +25,16 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 		path.join('child', 'grandchild', 'weeee.js'),
 		`/* eslint-disable */ export const abc = 'def';\n`
 	],
-	['root.js', `/* eslint-disable */ export const hello = 'Hello World;\n`]
+	[path.join('child', 'pics', 'abc.png'), ''],
+	[
+		path.join('child', 'something.js'),
+		`/* eslint-disable */ export const foo = 'bar';\n`
+	],
+	[
+		'other-root.js',
+		`/* eslint-disable */ export const goodbye = 'universe';\n`
+	],
+	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
 ];
 
 const validateEsmFiles = async () => {
