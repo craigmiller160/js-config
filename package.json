@@ -34,7 +34,7 @@
     "lint": "ts-node --swc ./src/bin/c-eslint.ts '{configs,src,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "ts-node --swc ./src/bin/c-test.ts",
     "build": "npm run typeCheck && npm run lint && npm run test && npm run forceBuild",
-    "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
+    "typeCheck": "ts-node --swc ./src/bin/c-type-check.ts",
     "postinstall": "if test -f .is-js-config; then echo 'No Post-Install Needed'; else node ./build/bin/c-init.js; fi",
     "prepare": "husky install"
   },
