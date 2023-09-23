@@ -43,6 +43,9 @@ const getSwcCompileInfo = (filePath: string): CompileInfo =>
 		}));
 
 const fixFileExtension = (filePath: string): string => {
+	if (filePath.endsWith('.d.ts')) {
+		return filePath;
+	}
 	const originalExtension = path.extname(filePath);
 	const newExtension = match(originalExtension)
 		.with('.ts', () => '.js')
