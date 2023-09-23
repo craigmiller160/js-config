@@ -1,42 +1,156 @@
-import { describe, it, MockedFunction, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { execute } from '../../src/scripts/c-build-lib';
-import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import path from 'path';
-import { either } from 'fp-ts';
-import { SWC, TSC } from '../../src/scripts/commandPaths';
+import fs from 'fs';
+import { walk } from '../../src/scripts/utils/files';
 
-const runCommandSyncMock = runCommandSync as MockedFunction<
-	typeof runCommandSync
->;
-const srcDir = path.join(process.cwd(), 'src');
-const libDir = path.join(process.cwd(), 'lib');
+const WORKING_DIR = path.join(
+	process.cwd(),
+	'test',
+	'__working_directories__',
+	'buildLib'
+);
+const libDir = path.join(WORKING_DIR, 'lib');
 const esModuleDir = path.join(libDir, 'esm');
 const commonjsDir = path.join(libDir, 'cjs');
 const typesDir = path.join(libDir, 'types');
-const configPath = path.join(process.cwd(), 'configs', 'swc', '.swcrc');
 
-const swcCommand = path.join(process.cwd(), 'node_modules', SWC);
-const tscCommand = path.join(process.cwd(), 'node_modules', TSC);
+vi.unmock('../../src/scripts/utils/runCommand');
+
+const createCjsContent = (
+	varName: string,
+	value: string
+) => `/* eslint-disable */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "${varName}", {
+    enumerable: true,
+    get: function() {
+        return ${varName};
+    }
+});
+const ${varName} = '${value}';
+`;
+
+type FileAndContents = [file: string, contents: string];
+const ESM_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'def.css'), ''],
+	[path.join('child', 'grandchild', 'one.scss'), ''],
+	[
+		path.join('child', 'grandchild', 'weeee.js'),
+		`/* eslint-disable */ export const abc = 'def';\n`
+	],
+	[path.join('child', 'pics', 'abc.png'), ''],
+	[
+		path.join('child', 'something.js'),
+		`/* eslint-disable */ export const foo = 'bar';\n`
+	],
+	[
+		'other-root.js',
+		`/* eslint-disable */ export const goodbye = 'universe';\n`
+	],
+	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
+];
+
+const CJS_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'def.css'), ''],
+	[path.join('child', 'grandchild', 'one.scss'), ''],
+	[
+		path.join('child', 'grandchild', 'weeee.js'),
+		createCjsContent('abc', 'def')
+	],
+	[path.join('child', 'pics', 'abc.png'), ''],
+	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
+	['other-root.js', createCjsContent('goodbye', 'universe')],
+	['root.js', createCjsContent('hello', 'world')]
+];
+
+const TYPE_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'grandchild', 'weeee.d.ts'), ''],
+	[path.join('child', 'something.d.ts'), ''],
+	[path.join('global.d.ts'), ''],
+	[path.join('root.d.ts'), '']
+];
+
+const validateFiles = (
+	rootDir: string,
+	expectedFiles: ReadonlyArray<FileAndContents>,
+	actualFiles: ReadonlyArray<string>
+) => {
+	expect(actualFiles).toHaveLength(expectedFiles.length);
+	expectedFiles.forEach(([file, contents], index) => {
+		const actualFile = actualFiles[index];
+		const fullExpectedFile = path.join(rootDir, file);
+		expect(actualFile).toEqual(fullExpectedFile);
+		if (path.extname(actualFile).endsWith('js')) {
+			const actualFileContents = fs.readFileSync(actualFile, 'utf8');
+			expect(actualFileContents).toEqual(contents);
+		}
+	});
+};
+
+const validateEsmFiles = async () => {
+	const files = await walk(esModuleDir);
+	validateFiles(esModuleDir, ESM_FILES, files);
+};
+const validateCjsFiles = async () => {
+	const files = await walk(commonjsDir);
+	validateFiles(commonjsDir, CJS_FILES, files);
+};
+const validateTypeFiles = async () => {
+	const files = await walk(typesDir);
+	validateFiles(typesDir, TYPE_FILES, files);
+};
 
 describe('c-build-lib', () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
+		fs.rmSync(libDir, {
+			recursive: true,
+			force: true
+		});
 	});
-	it('runs build', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		execute(process);
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(3);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			1,
-			`${swcCommand} ${srcDir} -d ${esModuleDir} --config-file ${configPath} -C module.type=es6`
-		);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			2,
-			`${swcCommand} ${srcDir} -d ${commonjsDir} --config-file ${configPath} -C module.type=commonjs`
-		);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			3,
-			`${tscCommand} --declaration --emitDeclarationOnly --outDir ${typesDir}`
-		);
+
+	it('performs the entire library build for both esm and cjs', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			cwd: () => WORKING_DIR
+		});
+		expect(fs.existsSync(esModuleDir)).toBe(true);
+		expect(fs.existsSync(commonjsDir)).toBe(true);
+		expect(fs.existsSync(typesDir)).toBe(true);
+		await validateEsmFiles();
+		await validateCjsFiles();
+		await validateTypeFiles();
+	});
+
+	it('performs the entire library build for just esm', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			argv: ['', '', '-e'],
+			cwd: () => WORKING_DIR
+		});
+		expect(fs.existsSync(esModuleDir)).toBe(true);
+		expect(fs.existsSync(commonjsDir)).toBe(false);
+		expect(fs.existsSync(typesDir)).toBe(true);
+		await validateEsmFiles();
+		await validateTypeFiles();
+	});
+
+	it('performs the entire library build for just cjs', async () => {
+		expect(fs.existsSync(libDir)).toBe(false);
+		await execute({
+			...process,
+			argv: ['', '', '-c'],
+			cwd: () => WORKING_DIR
+		});
+		expect(fs.existsSync(esModuleDir)).toBe(false);
+		expect(fs.existsSync(commonjsDir)).toBe(true);
+		expect(fs.existsSync(typesDir)).toBe(true);
+		await validateCjsFiles();
+		await validateTypeFiles();
 	});
 });

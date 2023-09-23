@@ -1,9 +1,7 @@
 {
   "extends": "./configs/typescript/tsconfig.json",
   "include": [
-    "src/**/*",
-    "vite.config.mts",
-    "configs/vite/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
