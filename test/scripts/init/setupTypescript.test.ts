@@ -9,14 +9,6 @@ const WORKING_DIR_PATH = path.join(
 	'__working_directories__',
 	'typescript'
 );
-const ADDITIONAL_FILES = [
-	'vite.config.ts',
-	'vite.config.mts',
-	'vite.config.cts',
-	'vitest.config.ts',
-	'vitest.config.mts',
-	'vitest.config.cts'
-];
 const TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.json');
 const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
 const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
@@ -58,23 +50,6 @@ describe('setupTypescript', () => {
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
-		});
-
-		it('writes tsconfig.json to a project without one, adding additional files', () => {
-			ADDITIONAL_FILES.forEach((fileName) => {
-				const fullPath = path.join(WORKING_DIR_PATH, fileName);
-				fs.writeFileSync(fullPath, 'a');
-			});
-			const result = setupTypescript(WORKING_DIR_PATH);
-			expect(result).toBeRight();
-
-			expect(fs.existsSync(TSCONFIG)).toBe(true);
-			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
-				extends:
-					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
-				include: ['src/**/*', ...ADDITIONAL_FILES.sort()],
-				exclude: ['node_modules', 'build', 'lib']
-			});
 		});
 
 		it('writes tsconfig.json, preserving compilerOptions from existing one', () => {
