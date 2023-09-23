@@ -98,14 +98,12 @@ const createCompile =
 
 const compileFiles =
 	(compileFn: (file: string) => taskEither.TaskEither<Error, unknown>) =>
-	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, unknown> => {
-		console.log('compiling', compileFn)
-		return func.pipe(
+	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, unknown> =>
+		func.pipe(
 			files,
 			readonlyArray.map(compileFn),
 			taskEither.sequenceArray
 		);
-	}
 
 const generateTypes = (
 	process: NodeJS.Process,
@@ -200,6 +198,10 @@ const getCompileFunctions = (
 	const cjsCompile = createCompile(srcDir, destCjsDir, 'commonjs');
 	const noop = () => taskEither.right(func.constVoid());
 	return match<ReadonlyArray<string>, CompileFunctions>(args)
+		.with([], () => ({
+			esmCompile,
+			cjsCompile
+		}))
 		.with(P.array('-e'), () => ({
 			esmCompile,
 			cjsCompile: noop
