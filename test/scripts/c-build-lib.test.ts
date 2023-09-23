@@ -30,7 +30,7 @@ Object.defineProperty(exports, "${varName}", {
         return ${varName};
     }
 });
-const abc = '${value}';
+const ${varName} = '${value}';
 `;
 
 type FileAndContents = [file: string, contents: string];
