@@ -35,7 +35,7 @@
     "test": "ts-node --swc ./src/bin/c-test.ts",
     "build": "npm run typeCheck && npm run lint && npm run test && npm run forceBuild",
     "typeCheck": "ts-node --swc ./src/bin/c-type-check.ts",
-    "postinstall": "if test -f .is-js-config; then echo 'No Post-Install Needed'; else node ./build/bin/c-init.js; fi",
+    "postinstall": "if test -f .is-js-config; then echo 'No Post-Install Needed'; else node ./lib/bin/c-init.js; fi",
     "prepare": "husky install"
   },
   "files": [
