@@ -37,7 +37,24 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
 ];
 
-const CJS_FILES: ReadonlyArray<FileAndContents> = [];
+const CJS_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'def.css'), ''],
+	[path.join('child', 'grandchild', 'one.scss'), ''],
+	[
+		path.join('child', 'grandchild', 'weeee.js'),
+		`/* eslint-disable */ export const abc = 'def';\n`
+	],
+	[path.join('child', 'pics', 'abc.png'), ''],
+	[
+		path.join('child', 'something.js'),
+		`/* eslint-disable */ export const foo = 'bar';\n`
+	],
+	[
+		'other-root.js',
+		`/* eslint-disable */ export const goodbye = 'universe';\n`
+	],
+	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
+];
 
 const TYPE_FILES: ReadonlyArray<FileAndContents> = [];
 

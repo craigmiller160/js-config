@@ -98,12 +98,14 @@ const createCompile =
 
 const compileFiles =
 	(compileFn: (file: string) => taskEither.TaskEither<Error, unknown>) =>
-	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, unknown> =>
-		func.pipe(
+	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, unknown> => {
+		console.log('compiling', compileFn)
+		return func.pipe(
 			files,
 			readonlyArray.map(compileFn),
 			taskEither.sequenceArray
 		);
+	}
 
 const generateTypes = (
 	process: NodeJS.Process,
