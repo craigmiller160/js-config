@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { readonlyArray, function as func, either } from 'fp-ts';
+import { function as func, either } from 'fp-ts';
 import path from 'path';
 import { unknownToError } from '../utils/unknownToError';
 import {
@@ -9,22 +9,10 @@ import {
 } from '../files/TsConfig';
 import { logger } from '../logger';
 
-const ADDITIONAL_FILES: ReadonlyArray<RegExp> = [
-	/^vite\.config\.[cm]?ts$/,
-	/^vitest\.config\.[cm]?ts$/
-];
-
-const isAdditionalFile = (file: string): boolean =>
-	func.pipe(
-		ADDITIONAL_FILES,
-		readonlyArray.filter((regex) => regex.test(file)),
-		readonlyArray.size
-	) >= 1;
-
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
-	(additionalFiles: ReadonlyArray<string>, hasCypress: boolean) =>
+	(hasCypress: boolean) =>
 	(existingTsConfig?: TsConfig): TsConfig => {
 		const cypresCompilerOptions: TsConfigCompilerOptions = {
 			module: 'ES2022',
@@ -34,7 +22,7 @@ const createRootTsConfig =
 			extends:
 				'@craigmiller160/js-config/configs/typescript/tsconfig.json',
 			compilerOptions: existingTsConfig?.compilerOptions,
-			include: ['src/**/*', ...additionalFiles],
+			include: ['src/**/*'],
 			exclude: ['node_modules', 'build', 'lib'],
 			'ts-node': hasCypress
 				? {
@@ -65,9 +53,6 @@ const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	include: ['../src/**/*', '**/*']
 });
 
-const findAdditionalFiles = (cwd: string): ReadonlyArray<string> =>
-	func.pipe(fs.readdirSync(cwd), readonlyArray.filter(isAdditionalFile));
-
 const createTsConfig = (
 	dirPath: string,
 	creator: TsConfigCreator
@@ -93,15 +78,6 @@ const createTsConfig = (
 
 export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
-	const additionalFiles: ReadonlyArray<string> = func.pipe(
-		either.tryCatch(() => findAdditionalFiles(cwd), unknownToError),
-		either.fold((error) => {
-			logger.error(
-				`Error finding additional files for tsconfig: ${error}`
-			);
-			return [];
-		}, func.identity)
-	);
 
 	const testDirPath = path.join(cwd, 'test');
 	const hasTestDir = fs.existsSync(testDirPath);
@@ -109,7 +85,7 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig(additionalFiles, hasCypressDir)),
+		createTsConfig(cwd, createRootTsConfig(hasCypressDir)),
 		either.chain(() => {
 			if (hasTestDir) {
 				return createTsConfig(testDirPath, createTestTsConfig);
