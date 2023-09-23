@@ -66,7 +66,12 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	['root.js', createCjsContent('hello', 'world')]
 ];
 
-const TYPE_FILES: ReadonlyArray<FileAndContents> = [];
+const TYPE_FILES: ReadonlyArray<FileAndContents> = [
+	[path.join('child', 'grandchild', 'weeee.d.ts'), ''],
+	[path.join('child', 'something.d.ts'), ''],
+	[path.join('global.d.ts'), ''],
+	[path.join('root.d.ts'), '']
+];
 
 const validateFiles = (
 	rootDir: string,
