@@ -30,7 +30,7 @@
     }
   },
   "scripts": {
-    "forceBuild": "rm -rf ./build && ts-node --swc ./src/bin/c-build-lib.ts -c",
+    "forceBuild": "ts-node --swc ./src/bin/c-build-lib.ts -c",
     "lint": "ts-node --swc ./src/bin/c-eslint.ts '{configs,src,scripts,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'",
     "test": "ts-node --swc ./src/bin/c-test.ts",
     "build": "npm run typeCheck && npm run lint && npm run test && npm run forceBuild",
