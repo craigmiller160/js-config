@@ -42,6 +42,7 @@ describe('command', () => {
 			const result = findCommand(
 				{
 					...process,
+					cwd: () => WORKING_DIR,
 					env: {
 						...process.env,
 						NODE_PATH: undefined
@@ -58,6 +59,20 @@ describe('command', () => {
 					'node_modules',
 					'typescript/bin/tsc'
 				)
+			);
+		});
+
+		it('finds command from root node_modules', () => {
+			const result = findCommand(
+				{
+					...process,
+					cwd: () => WORKING_DIR,
+					env: {
+						...process.env,
+						NODE_PATH: undefined
+					}
+				},
+				'typescript/bin/tsc'
 			);
 		});
 
