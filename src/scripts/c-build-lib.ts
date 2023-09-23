@@ -127,8 +127,12 @@ const generateTypes = (
 const copyFile = async (
 	file: string,
 	srcDir: string,
-	destDir: string
+	destDir: string,
+	doExecute: boolean
 ): Promise<unknown> => {
+	if (!doExecute) {
+		return Promise.resolve();
+	}
 	const outputPath = func.pipe(
 		path.relative(srcDir, file),
 		(relativePath) => path.join(destDir, relativePath),
@@ -163,6 +167,7 @@ const getFileCopyInfo = (file: string): FileCopyInfo =>
 		}));
 
 const copyResources = (
+	compileOutputType: CompileOutputType,
 	files: ReadonlyArray<string>,
 	srcDir: string,
 	destEsmDir: string,
@@ -176,12 +181,22 @@ const copyResources = (
 			match(info)
 				.with({ type: 'source' }, () =>
 					Promise.all([
-						copyFile(info.file, srcDir, destEsmDir),
-						copyFile(info.file, srcDir, destCjsDir)
+						copyFile(
+							info.file,
+							srcDir,
+							destEsmDir,
+							compileOutputType !== 'cjs'
+						),
+						copyFile(
+							info.file,
+							srcDir,
+							destCjsDir,
+							compileOutputType !== 'esm'
+						)
 					])
 				)
 				.with({ type: 'type' }, () =>
-					copyFile(info.file, srcDir, destTypesDir)
+					copyFile(info.file, srcDir, destTypesDir, true)
 				)
 				.otherwise(() => Promise.resolve())
 		)
@@ -189,7 +204,9 @@ const copyResources = (
 	return Promise.all(promises);
 };
 
+type CompileOutputType = 'esm' | 'cjs' | 'both';
 type CompileFunctions = Readonly<{
+	type: CompileOutputType;
 	esmCompile: (file: string) => taskEither.TaskEither<Error, unknown>;
 	cjsCompile: (file: string) => taskEither.TaskEither<Error, unknown>;
 }>;
@@ -205,18 +222,22 @@ const getCompileFunctions = (
 	const noop = () => taskEither.right(func.constVoid());
 	return match<ReadonlyArray<string>, CompileFunctions>(args)
 		.with([], () => ({
+			type: 'both',
 			esmCompile,
 			cjsCompile
 		}))
 		.with(P.array('-e'), () => ({
+			type: 'esm',
 			esmCompile,
 			cjsCompile: noop
 		}))
 		.with(P.array('-c'), () => ({
+			type: 'cjs',
 			esmCompile: noop,
 			cjsCompile
 		}))
 		.otherwise(() => ({
+			type: 'both',
 			esmCompile,
 			cjsCompile
 		}));
@@ -243,12 +264,11 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const destCjsDir = path.join(destDir, 'cjs');
 	const destTypesDir = path.join(destDir, 'types');
 
-	const { esmCompile, cjsCompile } = getCompileFunctions(
-		args,
-		srcDir,
-		destEsmDir,
-		destCjsDir
-	);
+	const {
+		esmCompile,
+		cjsCompile,
+		type: compileOutputType
+	} = getCompileFunctions(args, srcDir, destEsmDir, destCjsDir);
 
 	return func.pipe(
 		removeDestDir(destDir),
@@ -264,6 +284,7 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 			taskEither.tryCatch(
 				() =>
 					copyResources(
+						compileOutputType,
 						files,
 						srcDir,
 						destEsmDir,
