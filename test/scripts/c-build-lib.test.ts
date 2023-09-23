@@ -37,18 +37,25 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
 ];
 
-const validateEsmFiles = async () => {
-	const files = await walk(esModuleDir);
-	ESM_FILES.forEach(([file, contents], index) => {
-		const actualFile = files[index];
-		const fullExpectedFile = path.join(esModuleDir, file);
-		console.log(file);
+const validateFiles = (
+	rootDir: string,
+	expectedFiles: ReadonlyArray<FileAndContents>,
+	actualFiles: ReadonlyArray<string>
+) => {
+	expectedFiles.forEach(([file, contents], index) => {
+		const actualFile = actualFiles[index];
+		const fullExpectedFile = path.join(rootDir, file);
 		expect(actualFile).toEqual(fullExpectedFile);
 		if (path.extname(actualFile).endsWith('js')) {
 			const actualFileContents = fs.readFileSync(actualFile, 'utf8');
 			expect(actualFileContents).toEqual(contents);
 		}
 	});
+};
+
+const validateEsmFiles = async () => {
+	const files = await walk(esModuleDir);
+	validateFiles(esModuleDir, ESM_FILES, files);
 };
 const validateCjsFiles = async () => {
 	const files = await walk(commonjsDir);
