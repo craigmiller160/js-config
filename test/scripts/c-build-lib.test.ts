@@ -37,6 +37,10 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
 ];
 
+const CJS_FILES: ReadonlyArray<FileAndContents> = [];
+
+const TYPE_FILES: ReadonlyArray<FileAndContents> = [];
+
 const validateFiles = (
 	rootDir: string,
 	expectedFiles: ReadonlyArray<FileAndContents>,
@@ -60,11 +64,11 @@ const validateEsmFiles = async () => {
 };
 const validateCjsFiles = async () => {
 	const files = await walk(commonjsDir);
-	throw new Error();
+	validateFiles(commonjsDir, CJS_FILES, files);
 };
 const validateTypeFiles = async () => {
 	const files = await walk(typesDir);
-	throw new Error();
+	validateFiles(typesDir, TYPE_FILES, files);
 };
 
 describe('c-build-lib', () => {
