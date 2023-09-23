@@ -224,7 +224,7 @@ const removeDestDir = (
 		unknownToError
 	);
 
-export const execute = async (process: NodeJS.Process) => {
+export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const args = getRealArgs(process);
 	logger.info('Performing library build');
 	const srcDir = path.join(process.cwd(), 'src');
@@ -240,15 +240,17 @@ export const execute = async (process: NodeJS.Process) => {
 		destCjsDir
 	);
 
-	const files = await walk(srcDir);
-
-	await func.pipe(
+	return func.pipe(
 		removeDestDir(destDir),
-		taskEither.map(() => files),
+		taskEither.chain(() =>
+			taskEither.tryCatch(() => walk(srcDir), unknownToError)
+		),
 		taskEither.chainFirst(compileFiles(esmCompile)),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
-		taskEither.chainEitherK(() => generateTypes(process, destTypesDir)),
-		taskEither.chain(() =>
+		taskEither.chainFirstEitherK(() =>
+			generateTypes(process, destTypesDir)
+		),
+		taskEither.chain((files) =>
 			taskEither.tryCatch(
 				() =>
 					copyResources(
