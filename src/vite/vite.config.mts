@@ -6,8 +6,6 @@ import react from '@vitejs/plugin-react-swc';
 import { ServerOptions } from 'https';
 import fs from 'fs';
 
-const VITE_CONFIGS_DIR = path.join(__dirname, '..', '..', 'configs', 'vite');
-
 const hasLibrary = (name: string): Promise<boolean> =>
 	func.pipe(
 		taskEither.tryCatch(() => import(name), func.identity),
@@ -18,11 +16,11 @@ const hasLibrary = (name: string): Promise<boolean> =>
 	)();
 
 const cert = fs.readFileSync(
-	path.join(VITE_CONFIGS_DIR, 'certs', 'localhost.cert.pem'),
+	path.join(__dirname, 'certs', 'localhost.cert.pem'),
 	'utf8'
 );
 const key = fs.readFileSync(
-	path.join(VITE_CONFIGS_DIR, 'certs', 'localhost.key.pem'),
+	path.join(__dirname, 'certs', 'localhost.key.pem'),
 	'utf8'
 );
 const https: ServerOptions = {
@@ -42,7 +40,8 @@ const JEST_FP_TS_BUILD_PATH = path.join(
 	__dirname,
 	'..',
 	'..',
-	'build',
+	'lib',
+	'cjs',
 	'test-support',
 	'jest-fp-ts.mjs'
 );
@@ -55,7 +54,7 @@ const getJestFpTsPath = (): string => {
 	return JEST_FP_TS_BUILD_PATH;
 };
 
-const noop = path.join(VITE_CONFIGS_DIR, 'noop.js');
+const noop = path.join(__dirname, 'noop.js');
 
 const createDefaultConfig = async () => {
 	const hasJestFpTs = await hasLibrary(
