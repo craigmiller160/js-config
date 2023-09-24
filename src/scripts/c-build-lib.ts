@@ -53,7 +53,7 @@ const fixFileExtension = (filePath: string): string => {
 		.with('.cts', () => '.cjs')
 		.with('.tsx', () => '.jsx')
 		.otherwise(() => originalExtension);
-	const filePathWithoutExtension = filePath.replace(/\..*$/, '');
+	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
 	return `${filePathWithoutExtension}${newExtension}`;
 };
 
