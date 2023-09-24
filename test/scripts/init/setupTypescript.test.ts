@@ -21,6 +21,7 @@ const WORKING_DIR_PATH = path.join(
 const TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.json');
 const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
 const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
+const TEST_SUPPORT_TYPES_PATH = path.join(TEST_DIR, 'test-support.d.ts');
 const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
 const CYPRESS_TSCONFIG = path.join(CYPRESS_DIR, 'tsconfig.json');
 
@@ -114,6 +115,7 @@ describe('setupTypescript', () => {
 
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
 		});
 
 		it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
@@ -137,6 +139,7 @@ describe('setupTypescript', () => {
 				},
 				include: ['../src/**/*', '**/*']
 			});
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
 		});
 
 		it('writes test/tsconfig.json to project without one, adding support for jest-fp-ts', () => {
@@ -148,14 +151,14 @@ describe('setupTypescript', () => {
 			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
-				include: [
-					'../src/**/*',
-					'**/*',
-					'../node_modules/@craigmiller160/js-config/lib/types/test-support/jest-fp-ts-types.d.ts'
-				]
+				include: ['../src/**/*', '**/*']
 			});
 			expect(isLibraryPresentMock).toHaveBeenCalledWith(
 				'@relmify/jest-fp-ts'
+			);
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(true);
+			expect(fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8')).toBe(
+				`import '@relmify/jest-fp-ts`
 			);
 		});
 	});
