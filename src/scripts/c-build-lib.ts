@@ -66,7 +66,6 @@ const fixFileExtension = (filePath: string): string => {
 const createCompile =
 	(srcDir: string, destDir: string, moduleType: ModuleType) =>
 	(file: string): taskEither.TaskEither<Error, unknown> => {
-		logger.debug(`Compiling files for module type: ${moduleType}`);
 		const compileInfo = getSwcCompileInfo(file);
 		if (compileInfo.type === 'none') {
 			return taskEither.right(func.constVoid());
@@ -305,13 +304,25 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 		cjsCompile,
 		type: compileOutputType
 	} = getCompileFunctions(args, srcDir, destEsmDir, destCjsDir);
+	logger.debug(`Library compilation module type: ${compileOutputType}`);
 
 	return func.pipe(
 		removeDestDir(destDir),
 		taskEither.chain(() =>
-			taskEither.tryCatch(() => walk(srcDir), unknownToError)
+			taskEither.tryCatch(() => {
+				logger.debug('Identifying all files in source directory');
+				return walk(srcDir);
+			}, unknownToError)
 		),
+		taskEither.map((files) => {
+			logger.debug('Compiling esm files, if necessary');
+			return files;
+		}),
 		taskEither.chainFirst(compileFiles(esmCompile)),
+		taskEither.map((files) => {
+			logger.debug('Compiling cjs files, if necessary');
+			return files;
+		}),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainFirstEitherK(() =>
 			generateTypes(process, destTypesDir)
