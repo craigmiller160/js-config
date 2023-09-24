@@ -77,7 +77,8 @@ const TYPE_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'something.d.ts'), ''],
 	[path.join('def.d.mts'), ''],
 	[path.join('global.d.ts'), ''],
-	[path.join('root.d.ts'), '']
+	[path.join('root.d.ts'), ''],
+	[path.join('vite.config.d.mts'), '']
 ];
 
 const validateFiles = (
