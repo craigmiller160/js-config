@@ -8,7 +8,6 @@ import {
 	TsConfigCompilerOptions
 } from '../files/TsConfig';
 import { logger } from '../logger';
-import { isLibraryPresent } from '../utils/library';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -33,30 +32,11 @@ const createRootTsConfig =
 		};
 	};
 
-const JEST_FP_TS_TYPE_PATH = path.join(
-	'..',
-	'node_modules',
-	'@craigmiller160',
-	'js-config',
-	'lib',
-	'types',
-	'test-support',
-	'jest-fp-ts-types.d.ts'
-);
-
-const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => {
-	const hasJestFpTs = isLibraryPresent('@relmify/jest-fp-ts');
-
-	return {
-		extends: '../tsconfig.json',
-		compilerOptions: existingTsConfig?.compilerOptions,
-		include: [
-			'../src/**/*',
-			'**/*',
-			hasJestFpTs ? JEST_FP_TS_TYPE_PATH : ''
-		].filter((_) => !!_)
-	};
-};
+const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
+	extends: '../tsconfig.json',
+	compilerOptions: existingTsConfig?.compilerOptions,
+	include: ['../src/**/*', '**/*']
+});
 
 const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
