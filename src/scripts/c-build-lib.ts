@@ -26,6 +26,7 @@ const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
+const EXTENSION = /\.[^/.]+$/;
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
@@ -43,7 +44,7 @@ const getSwcCompileInfo = (filePath: string): CompileInfo =>
 		}));
 
 const fixFileExtension = (filePath: string): string => {
-	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
+	const filePathWithoutExtension = filePath.replace(EXTENSION, '');
 	if (
 		filePath.endsWith('.d.ts') ||
 		filePath.endsWith('.d.mts') ||
@@ -260,6 +261,30 @@ const removeDestDir = (
 		unknownToError
 	);
 
+const fixTypeFileExtensions = (
+	typesDir: string
+): taskEither.TaskEither<Error, unknown> =>
+	func.pipe(
+		taskEither.tryCatch(() => walk(typesDir), unknownToError),
+		taskEither.map((files) =>
+			files.filter(
+				(file) => file.endsWith('.mts') || file.endsWith('.cts')
+			)
+		),
+		taskEither.chain(
+			func.flow(
+				readonlyArray.map((file) => {
+					const newFile = `${file.replace(EXTENSION, '')}.ts`;
+					return taskEither.tryCatch(
+						() => fs.rename(file, newFile),
+						unknownToError
+					);
+				}),
+				taskEither.sequenceArray
+			)
+		)
+	);
+
 export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const args = getRealArgs(process);
 	logger.info('Performing library build');
@@ -299,6 +324,7 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 				unknownToError
 			)
 		),
+		taskEither.chain(() => fixTypeFileExtensions(destTypesDir)),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);
