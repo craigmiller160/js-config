@@ -148,9 +148,6 @@ describe('setupTypescript', () => {
 			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
-				compilerOptions: {
-					module: 'ES2022'
-				},
 				include: [
 					'../src/**/*',
 					'**/*',
