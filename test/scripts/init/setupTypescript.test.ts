@@ -158,7 +158,7 @@ describe('setupTypescript', () => {
 			);
 			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(true);
 			expect(fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8')).toBe(
-				`import '@relmify/jest-fp-ts`
+				`import '@relmify/jest-fp-ts';\n`
 			);
 		});
 	});

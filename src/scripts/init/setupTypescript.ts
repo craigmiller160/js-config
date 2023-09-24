@@ -48,7 +48,7 @@ const createTestSupportTypes = (
 			() =>
 				fs.writeFileSync(
 					supportFilePath,
-					`import '@relmify/jest-fp-ts';`
+					`import '@relmify/jest-fp-ts';\n`
 				),
 			unknownToError
 		);
