@@ -48,10 +48,11 @@ const fixFileExtension = (filePath: string): string => {
 	}
 	const originalExtension = path.extname(filePath);
 	const newExtension = match(originalExtension)
-		.with('.ts', () => '.js')
-		.with('.mts', () => '.mjs')
-		.with('.cts', () => '.cjs')
-		.with('.tsx', () => '.jsx')
+		.with(
+			P.union('.ts', '.mts', '.cts', '.js', '.cjs', '.mjs'),
+			() => '.js'
+		)
+		.with(P.union('.tsx', '.jsx'), () => '.jsx')
 		.otherwise(() => originalExtension);
 	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
 	return `${filePathWithoutExtension}${newExtension}`;
