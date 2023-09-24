@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/no-unresolved
-export { defineConfig } from '../../build/vite/vite.config';
+export { defineConfig } from '../../lib/types/vite/vite.config';

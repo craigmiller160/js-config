@@ -1,7 +1,16 @@
-import { afterEach, beforeEach, describe, it, expect } from 'vitest';
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	it,
+	expect,
+	vi,
+	MockedFunction
+} from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
+import { isLibraryPresent } from '../../../src/scripts/utils/library';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -12,8 +21,17 @@ const WORKING_DIR_PATH = path.join(
 const TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.json');
 const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
 const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
+const TEST_SUPPORT_TYPES_PATH = path.join(TEST_DIR, 'test-support.d.ts');
 const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
 const CYPRESS_TSCONFIG = path.join(CYPRESS_DIR, 'tsconfig.json');
+
+vi.mock('../../../src/scripts/utils/library', () => ({
+	isLibraryPresent: vi.fn()
+}));
+
+const isLibraryPresentMock = isLibraryPresent as MockedFunction<
+	typeof isLibraryPresent
+>;
 
 const resetWorkingDirectory = () =>
 	fs
@@ -29,6 +47,7 @@ const resetWorkingDirectory = () =>
 
 describe('setupTypescript', () => {
 	beforeEach(() => {
+		vi.resetAllMocks();
 		resetWorkingDirectory();
 	});
 
@@ -83,6 +102,7 @@ describe('setupTypescript', () => {
 		});
 
 		it('writes test/tsconfig.json to project without one', () => {
+			isLibraryPresentMock.mockReturnValue(false);
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
 
@@ -95,9 +115,11 @@ describe('setupTypescript', () => {
 
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
 		});
 
 		it('writes test/tsconfig.json to project with one, preserving compilerOptions', () => {
+			isLibraryPresentMock.mockReturnValue(false);
 			const baseConfig = {
 				compilerOptions: {
 					module: 'ES2022'
@@ -117,6 +139,27 @@ describe('setupTypescript', () => {
 				},
 				include: ['../src/**/*', '**/*']
 			});
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
+		});
+
+		it('writes test/tsconfig.json to project without one, adding support for jest-fp-ts', () => {
+			isLibraryPresentMock.mockReturnValue(true);
+			const result = setupTypescript(WORKING_DIR_PATH);
+			expect(result).toBeRight();
+
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
+			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+			expect(tsconfig).toEqual({
+				extends: '../tsconfig.json',
+				include: ['../src/**/*', '**/*']
+			});
+			expect(isLibraryPresentMock).toHaveBeenCalledWith(
+				'@relmify/jest-fp-ts'
+			);
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(true);
+			expect(fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8')).toBe(
+				`import '@relmify/jest-fp-ts';\n`
+			);
 		});
 	});
 

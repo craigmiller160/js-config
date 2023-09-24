@@ -52,7 +52,8 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 		'other-root.js',
 		`/* eslint-disable */ export const goodbye = 'universe';\n`
 	],
-	['root.js', `/* eslint-disable */ export const hello = 'world';\n`]
+	['root.js', `/* eslint-disable */ export const hello = 'world';\n`],
+	['vite.config.mjs', `/* eslint-disable */ export const vite = 'vite2';\n`]
 ];
 
 const CJS_FILES: ReadonlyArray<FileAndContents> = [
@@ -67,7 +68,8 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
 	[path.join('def.mjs'), createCjsContent('wxz', 'abc')],
 	['other-root.js', createCjsContent('goodbye', 'universe')],
-	['root.js', createCjsContent('hello', 'world')]
+	['root.js', createCjsContent('hello', 'world')],
+	['vite.config.mjs', createCjsContent('vite', 'vite2')]
 ];
 
 const TYPE_FILES: ReadonlyArray<FileAndContents> = [
@@ -75,7 +77,8 @@ const TYPE_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'something.d.ts'), ''],
 	[path.join('def.d.mts'), ''],
 	[path.join('global.d.ts'), ''],
-	[path.join('root.d.ts'), '']
+	[path.join('root.d.ts'), ''],
+	[path.join('vite.config.d.mts'), '']
 ];
 
 const validateFiles = (
