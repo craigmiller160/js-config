@@ -66,6 +66,7 @@ const fixFileExtension = (filePath: string): string => {
 const createCompile =
 	(srcDir: string, destDir: string, moduleType: ModuleType) =>
 	(file: string): taskEither.TaskEither<Error, unknown> => {
+		logger.debug(`Compiling files for module type: ${moduleType}`);
 		const compileInfo = getSwcCompileInfo(file);
 		if (compileInfo.type === 'none') {
 			return taskEither.right(func.constVoid());
@@ -117,8 +118,9 @@ const compileFiles =
 const generateTypes = (
 	process: NodeJS.Process,
 	destDir: string
-): either.Either<Error, unknown> =>
-	func.pipe(
+): either.Either<Error, unknown> => {
+	logger.debug('Generating type declarations');
+	return func.pipe(
 		findCommand(process, TSC),
 		either.chain((command) =>
 			runCommandSync(
@@ -129,6 +131,7 @@ const generateTypes = (
 			)
 		)
 	);
+};
 
 const copyFile = async (
 	file: string,
@@ -180,6 +183,7 @@ const copyResources = (
 	destCjsDir: string,
 	destTypesDir: string
 ): Promise<unknown> => {
+	logger.debug('Copying resources & custom type declaration files');
 	const promises = func.pipe(
 		files,
 		readonlyArray.map(getFileCopyInfo),
@@ -263,8 +267,9 @@ const removeDestDir = (
 
 const fixTypeFileExtensions = (
 	typesDir: string
-): taskEither.TaskEither<Error, unknown> =>
-	func.pipe(
+): taskEither.TaskEither<Error, unknown> => {
+	logger.debug('Fixing type declaration file extensions');
+	return func.pipe(
 		taskEither.tryCatch(() => walk(typesDir), unknownToError),
 		taskEither.map((files) =>
 			files.filter(
@@ -284,6 +289,7 @@ const fixTypeFileExtensions = (
 			)
 		)
 	);
+};
 
 export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const args = getRealArgs(process);
