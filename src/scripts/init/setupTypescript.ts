@@ -8,6 +8,7 @@ import {
 	TsConfigCompilerOptions
 } from '../files/TsConfig';
 import { logger } from '../logger';
+import { isLibraryPresent } from '../utils/library';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -37,6 +38,23 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	compilerOptions: existingTsConfig?.compilerOptions,
 	include: ['../src/**/*', '**/*']
 });
+
+const createTestSupportTypes = (
+	testDirPath: string
+): either.Either<Error, unknown> => {
+	if (isLibraryPresent('@relmify/jest-fp-ts')) {
+		const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
+		return either.tryCatch(
+			() =>
+				fs.writeFileSync(
+					supportFilePath,
+					`import '@relmify/jest-fp-ts';`
+				),
+			unknownToError
+		);
+	}
+	return either.right(func.constVoid());
+};
 
 const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -88,7 +106,10 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 		createTsConfig(cwd, createRootTsConfig(hasCypressDir)),
 		either.chain(() => {
 			if (hasTestDir) {
-				return createTsConfig(testDirPath, createTestTsConfig);
+				return func.pipe(
+					createTsConfig(testDirPath, createTestTsConfig),
+					either.chain(() => createTestSupportTypes(testDirPath))
+				);
 			}
 			return either.right(func.constVoid());
 		}),
