@@ -43,8 +43,13 @@ const getSwcCompileInfo = (filePath: string): CompileInfo =>
 		}));
 
 const fixFileExtension = (filePath: string): string => {
-	if (filePath.endsWith('.d.ts')) {
-		return filePath;
+	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
+	if (
+		filePath.endsWith('.d.ts') ||
+		filePath.endsWith('.d.mts') ||
+		filePath.endsWith('.d.cts')
+	) {
+		return `${filePathWithoutExtension}.ts`;
 	}
 	const originalExtension = path.extname(filePath);
 	const newExtension = match(originalExtension)
@@ -54,7 +59,6 @@ const fixFileExtension = (filePath: string): string => {
 		)
 		.with(P.union('.tsx', '.jsx'), () => '.jsx')
 		.otherwise(() => originalExtension);
-	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
 	return `${filePathWithoutExtension}${newExtension}`;
 };
 
