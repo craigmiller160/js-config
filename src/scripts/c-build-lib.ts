@@ -24,7 +24,7 @@ const SWCRC_JS = path.join(SWCRC_CONFIG_DIR, '.swcrc_js');
 const SWCRC_TS = path.join(SWCRC_CONFIG_DIR, '.swcrc_ts');
 const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
-const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg)$/;
+const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 const EXTENSION = /\.[^/.]+$/;
 
