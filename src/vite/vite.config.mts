@@ -31,17 +31,12 @@ const https: ServerOptions = {
 const JEST_FP_TS_SRC_PATH = path.join(
 	__dirname,
 	'..',
-	'..',
-	'src',
 	'test-support',
 	'jest-fp-ts.mts'
 );
 const JEST_FP_TS_BUILD_PATH = path.join(
 	__dirname,
 	'..',
-	'..',
-	'lib',
-	'cjs',
 	'test-support',
 	'jest-fp-ts.js'
 );
