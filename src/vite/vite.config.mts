@@ -28,7 +28,16 @@ const https: ServerOptions = {
 	key
 };
 
-const JEST_FP_TS_PATH = path.join(
+const JEST_FP_TS_SRC_PATH = path.join(
+	__dirname,
+	'..',
+	'..',
+	'configs',
+	'test-support',
+	'jest-fp-ts.mts'
+);
+
+const JEST_FP_TS_BUILD_PATH = path.join(
 	__dirname,
 	'..',
 	'..',
@@ -37,6 +46,13 @@ const JEST_FP_TS_PATH = path.join(
 	'test-support',
 	'jest-fp-ts.mts'
 );
+
+const getJestFpTsPath = () => {
+	if (fs.existsSync(JEST_FP_TS_SRC_PATH)) {
+		return JEST_FP_TS_SRC_PATH;
+	}
+	return JEST_FP_TS_BUILD_PATH;
+};
 
 const noop = path.join(__dirname, 'noop.js');
 
@@ -50,7 +66,7 @@ const createDefaultConfig = async () => {
 		envDir: path.join(process.cwd(), 'environment'),
 		test: {
 			root: path.join(process.cwd(), 'test'),
-			setupFiles: [hasJestFpTs ? JEST_FP_TS_PATH : noop]
+			setupFiles: [hasJestFpTs ? getJestFpTsPath() : noop]
 		},
 		server: {
 			port: 3000,
