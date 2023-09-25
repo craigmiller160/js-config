@@ -35,7 +35,7 @@ const ${varName} = '${value}';
 
 type FileAndContents = [file: string, contents: string];
 const ESM_FILES: ReadonlyArray<FileAndContents> = [
-	[path.join('abc.mjs'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
+	[path.join('abc.js'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
 	[path.join('child', 'def.css'), ''],
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
@@ -47,17 +47,17 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 		path.join('child', 'something.js'),
 		`/* eslint-disable */ export const foo = 'bar';\n`
 	],
-	[path.join('def.mjs'), `/* eslint-disable */ export const wxz = 'abc';\n`],
+	[path.join('def.js'), `/* eslint-disable */ export const wxz = 'abc';\n`],
 	[
 		'other-root.js',
 		`/* eslint-disable */ export const goodbye = 'universe';\n`
 	],
 	['root.js', `/* eslint-disable */ export const hello = 'world';\n`],
-	['vite.config.mjs', `/* eslint-disable */ export const vite = 'vite2';\n`]
+	['vite.config.js', `/* eslint-disable */ export const vite = 'vite2';\n`]
 ];
 
 const CJS_FILES: ReadonlyArray<FileAndContents> = [
-	[path.join('abc.mjs'), createCjsContent('qrs', 'tuv')],
+	[path.join('abc.js'), createCjsContent('qrs', 'tuv')],
 	[path.join('child', 'def.css'), ''],
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
@@ -66,19 +66,19 @@ const CJS_FILES: ReadonlyArray<FileAndContents> = [
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
 	[path.join('child', 'something.js'), createCjsContent('foo', 'bar')],
-	[path.join('def.mjs'), createCjsContent('wxz', 'abc')],
+	[path.join('def.js'), createCjsContent('wxz', 'abc')],
 	['other-root.js', createCjsContent('goodbye', 'universe')],
 	['root.js', createCjsContent('hello', 'world')],
-	['vite.config.mjs', createCjsContent('vite', 'vite2')]
+	['vite.config.js', createCjsContent('vite', 'vite2')]
 ];
 
 const TYPE_FILES: ReadonlyArray<FileAndContents> = [
 	[path.join('child', 'grandchild', 'weeee.d.ts'), ''],
 	[path.join('child', 'something.d.ts'), ''],
-	[path.join('def.d.mts'), ''],
+	[path.join('def.d.ts'), ''],
 	[path.join('global.d.ts'), ''],
 	[path.join('root.d.ts'), ''],
-	[path.join('vite.config.d.mts'), '']
+	[path.join('vite.config.d.ts'), '']
 ];
 
 const validateFiles = (

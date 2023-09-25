@@ -24,8 +24,9 @@ const SWCRC_JS = path.join(SWCRC_CONFIG_DIR, '.swcrc_js');
 const SWCRC_TS = path.join(SWCRC_CONFIG_DIR, '.swcrc_ts');
 const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
-const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg)$/;
+const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
+const EXTENSION = /\.[^/.]+$/;
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
@@ -43,17 +44,22 @@ const getSwcCompileInfo = (filePath: string): CompileInfo =>
 		}));
 
 const fixFileExtension = (filePath: string): string => {
-	if (filePath.endsWith('.d.ts')) {
-		return filePath;
+	const filePathWithoutExtension = filePath.replace(EXTENSION, '');
+	if (
+		filePath.endsWith('.d.ts') ||
+		filePath.endsWith('.d.mts') ||
+		filePath.endsWith('.d.cts')
+	) {
+		return `${filePathWithoutExtension}.ts`;
 	}
 	const originalExtension = path.extname(filePath);
 	const newExtension = match(originalExtension)
-		.with('.ts', () => '.js')
-		.with('.mts', () => '.mjs')
-		.with('.cts', () => '.cjs')
-		.with('.tsx', () => '.jsx')
+		.with(
+			P.union('.ts', '.mts', '.cts', '.js', '.cjs', '.mjs'),
+			() => '.js'
+		)
+		.with(P.union('.tsx', '.jsx'), () => '.jsx')
 		.otherwise(() => originalExtension);
-	const filePathWithoutExtension = filePath.replace(/\.[^/.]+$/, '');
 	return `${filePathWithoutExtension}${newExtension}`;
 };
 
@@ -111,8 +117,9 @@ const compileFiles =
 const generateTypes = (
 	process: NodeJS.Process,
 	destDir: string
-): either.Either<Error, unknown> =>
-	func.pipe(
+): either.Either<Error, unknown> => {
+	logger.debug('Generating type declarations');
+	return func.pipe(
 		findCommand(process, TSC),
 		either.chain((command) =>
 			runCommandSync(
@@ -123,6 +130,7 @@ const generateTypes = (
 			)
 		)
 	);
+};
 
 const copyFile = async (
 	file: string,
@@ -174,6 +182,7 @@ const copyResources = (
 	destCjsDir: string,
 	destTypesDir: string
 ): Promise<unknown> => {
+	logger.debug('Copying resources & custom type declaration files');
 	const promises = func.pipe(
 		files,
 		readonlyArray.map(getFileCopyInfo),
@@ -255,6 +264,32 @@ const removeDestDir = (
 		unknownToError
 	);
 
+const fixTypeFileExtensions = (
+	typesDir: string
+): taskEither.TaskEither<Error, unknown> => {
+	logger.debug('Fixing type declaration file extensions');
+	return func.pipe(
+		taskEither.tryCatch(() => walk(typesDir), unknownToError),
+		taskEither.map((files) =>
+			files.filter(
+				(file) => file.endsWith('.mts') || file.endsWith('.cts')
+			)
+		),
+		taskEither.chain(
+			func.flow(
+				readonlyArray.map((file) => {
+					const newFile = `${file.replace(EXTENSION, '')}.ts`;
+					return taskEither.tryCatch(
+						() => fs.rename(file, newFile),
+						unknownToError
+					);
+				}),
+				taskEither.sequenceArray
+			)
+		)
+	);
+};
+
 export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const args = getRealArgs(process);
 	logger.info('Performing library build');
@@ -269,13 +304,25 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 		cjsCompile,
 		type: compileOutputType
 	} = getCompileFunctions(args, srcDir, destEsmDir, destCjsDir);
+	logger.debug(`Library compilation module type: ${compileOutputType}`);
 
 	return func.pipe(
 		removeDestDir(destDir),
 		taskEither.chain(() =>
-			taskEither.tryCatch(() => walk(srcDir), unknownToError)
+			taskEither.tryCatch(() => {
+				logger.debug('Identifying all files in source directory');
+				return walk(srcDir);
+			}, unknownToError)
 		),
+		taskEither.map((files) => {
+			logger.debug('Compiling esm files, if necessary');
+			return files;
+		}),
 		taskEither.chainFirst(compileFiles(esmCompile)),
+		taskEither.map((files) => {
+			logger.debug('Compiling cjs files, if necessary');
+			return files;
+		}),
 		taskEither.chainFirst(compileFiles(cjsCompile)),
 		taskEither.chainFirstEitherK(() =>
 			generateTypes(process, destTypesDir)
@@ -294,6 +341,7 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 				unknownToError
 			)
 		),
+		taskEither.chain(() => fixTypeFileExtensions(destTypesDir)),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);
