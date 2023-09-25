@@ -8,7 +8,6 @@ import { getRealArgs } from './utils/process';
 
 const DEFAULT_PATH = 'src/**/*.{css,scss}';
 
-// TODO integrate with lint staged
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running stylelint');
 	const args = getRealArgs(process);
@@ -16,7 +15,9 @@ export const execute = (process: NodeJS.Process) => {
 	func.pipe(
 		findCommand(process, STYLELINT),
 		either.chain((command) =>
-			runCommandSync(`${command} --fix --max-warnings=0 ${lintPath}`)
+			runCommandSync(
+				`${command} --fix --max-warnings=0 --allow-empty-input ${lintPath}`
+			)
 		),
 		either.fold(terminate, terminate)
 	);

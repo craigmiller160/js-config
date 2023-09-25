@@ -21,7 +21,7 @@ describe('c-stylelint', () => {
 		execute(process);
 
 		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${STYLELINT_PATH} --fix --max-warnings=0 src/**/*.{css,scss}`
+			`${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/**/*.{css,scss}`
 		);
 	});
 
@@ -33,7 +33,7 @@ describe('c-stylelint', () => {
 		});
 
 		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${STYLELINT_PATH} --fix --max-warnings=0 src/foo.scss`
+			`${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/foo.scss`
 		);
 	});
 });
