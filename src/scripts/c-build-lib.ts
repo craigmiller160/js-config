@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
+import baseFS from 'fs';
 import { logger } from './logger';
 import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { transformFile } from '@swc/core';
@@ -19,24 +20,49 @@ type CompileInfo = Readonly<{
 	config: string;
 }>;
 
-const SWCRC_CONFIG_DIR = path.join(__dirname, '..', '..', 'configs', 'swc');
-const SWCRC_JS = path.join(SWCRC_CONFIG_DIR, '.swcrc_js');
-const SWCRC_TS = path.join(SWCRC_CONFIG_DIR, '.swcrc_ts');
+const SWC_SRC_CONFIG_DIR = path.join(__dirname, '..', '..', 'configs', 'swc');
+const SWC_BUILD_CONFIG_DIR = path.join(
+	__dirname,
+	'..',
+	'..',
+	'..',
+	'configs',
+	'swc'
+);
+const SWCRC_JS = '.swcrc_js';
+const SWCRC_TS = '.swcrc_ts';
 const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 const EXTENSION = /\.[^/.]+$/;
 
+type SwcConfigFileType = 'js' | 'ts';
+const getSwcConfigFile = (type: SwcConfigFileType): string =>
+	match({ type, srcExists: baseFS.existsSync(SWC_SRC_CONFIG_DIR) })
+		.with({ type: 'js', srcExists: true }, () =>
+			path.join(SWC_SRC_CONFIG_DIR, SWCRC_JS)
+		)
+		.with({ type: 'ts', srcExists: true }, () =>
+			path.join(SWC_SRC_CONFIG_DIR, SWCRC_TS)
+		)
+		.with({ type: 'js', srcExists: false }, () =>
+			path.join(SWC_BUILD_CONFIG_DIR, SWCRC_JS)
+		)
+		.with({ type: 'ts', srcExists: false }, () =>
+			path.join(SWC_BUILD_CONFIG_DIR, SWCRC_TS)
+		)
+		.exhaustive();
+
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
 		.with(P.string.regex(JS_FILE), () => ({
 			type: 'ecmascript',
-			config: SWCRC_JS
+			config: getSwcConfigFile('js')
 		}))
 		.with(P.string.regex(TS_FILE), () => ({
 			type: 'typescript',
-			config: SWCRC_TS
+			config: getSwcConfigFile('ts')
 		}))
 		.otherwise(() => ({
 			type: 'none',
