@@ -31,7 +31,7 @@ export const execute = (process: NodeJS.Process) => {
 
 	func.pipe(
 		eslintEither,
-		either.chain((command) =>
+		either.chainFirst((command) =>
 			runCommandSync(`${command} --fix --max-warnings=0 ${SRC_TEST_PATH}`)
 		),
 		either.chain((command) => {
