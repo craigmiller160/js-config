@@ -19,10 +19,16 @@ export const execute = (process: NodeJS.Process) => {
 	const cypressDir = path.join(process.cwd(), 'cypress');
 
 	if (args.length > 0) {
+		const noVitest = `${args[0].startsWith(cypressDir)}`;
 		func.pipe(
 			eslintEither,
 			either.chain((command) =>
-				runCommandSync(`${command} --fix --max-warnings=0 ${args[0]}`)
+				runCommandSync(`${command} --fix --max-warnings=0 ${args[0]}`, {
+					env: {
+						...process.env,
+						NO_VITEST: noVitest
+					}
+				})
 			),
 			either.fold(terminate, terminate)
 		);
