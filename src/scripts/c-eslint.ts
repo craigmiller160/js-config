@@ -1,5 +1,7 @@
 import { runCommandSync } from './utils/runCommand';
 import { function as func, either } from 'fp-ts';
+import path from 'path';
+import fs from 'fs';
 import { terminate } from './utils/terminate';
 import { getRealArgs } from './utils/process';
 import { findCommand } from './utils/command';
@@ -14,6 +16,7 @@ export const execute = (process: NodeJS.Process) => {
 	const args = getRealArgs(process);
 
 	const eslintEither = findCommand(process, ESLINT);
+	const cypressDir = path.join(process.cwd(), 'cypress');
 
 	if (args.length > 0) {
 		func.pipe(
@@ -31,11 +34,14 @@ export const execute = (process: NodeJS.Process) => {
 		either.chain((command) =>
 			runCommandSync(`${command} --fix --max-warnings=0 ${SRC_TEST_PATH}`)
 		),
-		either.chain((command) =>
-			runCommandSync(
-				`${command} --fix --max-warnings=0 --allow-empty-input ${CYPRESS_PATH}`
-			)
-		),
+		either.chain((command) => {
+			if (fs.existsSync(cypressDir)) {
+				return runCommandSync(
+					`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`
+				);
+			}
+			return either.right('');
+		}),
 		either.fold(terminate, terminate)
 	);
 };
