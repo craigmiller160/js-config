@@ -12,13 +12,21 @@ const reactSettings = !hasReact
 			}
 	  };
 
+const controlFilePlugins = controlFile.eslintPlugins.filter(
+	(plugin) =>
+		!(
+			process.env.NO_VITEST === 'true' &&
+			plugin === 'plugin:vitest/recommended'
+		)
+);
+
 module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:prettier/recommended',
 		'plugin:import/recommended',
 		'plugin:sonarjs/recommended',
-		...controlFile.eslintPlugins
+		...controlFilePlugins
 	],
 	parserOptions: {
 		ecmaVersion: 2022,
