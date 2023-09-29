@@ -32,7 +32,9 @@ export const execute = (process: NodeJS.Process) => {
 			runCommandSync(`${command} --fix --max-warnings=0 ${SRC_TEST_PATH}`)
 		),
 		either.chain((command) =>
-			runCommandSync(`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`)
+			runCommandSync(
+				`${command} --fix --max-warnings=0 --allow-empty-input ${CYPRESS_PATH}`
+			)
 		),
 		either.fold(terminate, terminate)
 	);
