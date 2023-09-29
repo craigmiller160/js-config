@@ -11,18 +11,18 @@ const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/jsx-runtime'
 ];
 
+const REACT_TESTING_LIBRARY_PLUGINS: ReadonlyArray<string> = [
+	'plugin:testing-library/react'
+];
+
 const TESTING_LIBRARY_PLUGINS: ReadonlyArray<string> = [
-	'plugin:testing-library/recommended',
+	'plugin:testing-library/dom',
 	'plugin:jest-dom/recommended'
 ];
 
 const VITEST_PLUGINS: ReadonlyArray<string> = ['plugin:vitest/recommended'];
 
 const CYPRESS_PLUGINS: ReadonlyArray<string> = ['plugin:cypress/recommended'];
-
-const isTestingLibraryPresent = (isLibraryPresent: IsLibraryPresent): boolean =>
-	isLibraryPresent('@testing-library/react') ||
-	isLibraryPresent('@testing-library/jest-dom');
 
 export const setupEslintPlugins = (
 	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
@@ -31,10 +31,13 @@ export const setupEslintPlugins = (
 	const plugins: ReadonlyArray<ReadonlyArray<string>> = [
 		isLibraryPresent('react') ? REACT_PLUGINS : [],
 		isLibraryPresent('vitest') ? VITEST_PLUGINS : [],
-		isTestingLibraryPresent(isLibraryPresent)
+		isLibraryPresent('@testing-library/jest-dom')
 			? TESTING_LIBRARY_PLUGINS
 			: [],
-		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : []
+		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : [],
+		isLibraryPresent('@testing-library/react')
+			? REACT_TESTING_LIBRARY_PLUGINS
+			: []
 	];
 	return plugins.flat();
 };
