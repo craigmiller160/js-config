@@ -37,7 +37,13 @@ export const execute = (process: NodeJS.Process) => {
 		either.chain((command) => {
 			if (fs.existsSync(cypressDir)) {
 				return runCommandSync(
-					`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`
+					`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`,
+					{
+						env: {
+							...process.env,
+							NO_VITEST: 'true'
+						}
+					}
 				);
 			}
 			return either.right('');
