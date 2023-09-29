@@ -6,16 +6,33 @@ import { findCommand } from './utils/command';
 import { ESLINT } from './commandPaths';
 import { logger } from './logger';
 
-const DEFAULT_PATH = '{src,test,cypress}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
+const SRC_TEST_PATH = '{src,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
+const CYPRESS_PATH = 'cypress/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
 
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running eslint');
 	const args = getRealArgs(process);
-	const lintPath = args.length > 0 ? args[0] : DEFAULT_PATH;
+
+	const eslintEither = findCommand(process, ESLINT);
+
+	if (args.length > 0) {
+		func.pipe(
+			eslintEither,
+			either.chain((command) =>
+				runCommandSync(`${command} --fix --max-warnings=0 ${args[0]}`)
+			),
+			either.fold(terminate, terminate)
+		);
+		return;
+	}
+
 	func.pipe(
-		findCommand(process, ESLINT),
+		eslintEither,
 		either.chain((command) =>
-			runCommandSync(`${command} --fix --max-warnings=0 ${lintPath}`)
+			runCommandSync(`${command} --fix --max-warnings=0 ${SRC_TEST_PATH}`)
+		),
+		either.chain((command) =>
+			runCommandSync(`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`)
 		),
 		either.fold(terminate, terminate)
 	);
