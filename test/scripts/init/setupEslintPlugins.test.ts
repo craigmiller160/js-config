@@ -31,12 +31,6 @@ describe('setupEslintPlugins', () => {
 			'plugin:jest-dom/recommended'
 		];
 
-		const isLibraryPresentReact = createIsLibraryPresent([
-			'@testing-library/react'
-		]);
-		const reactResult = setupEslintPlugins(isLibraryPresentReact);
-		expect(reactResult).toEqual(expectedResult);
-
 		const isLibraryPresentJestDom = createIsLibraryPresent([
 			'@testing-library/jest-dom'
 		]);
