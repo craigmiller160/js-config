@@ -11,6 +11,7 @@ const runCommandAsyncMock = runCommandAsync as MockedFunction<
 
 const VITE_CMD = path.join(process.cwd(), 'node_modules', VITE);
 const TSC_CMD = path.join(process.cwd(), 'node_modules', TSC);
+const CONFIG = path.join(process.cwd(), 'vite.config.mts');
 
 describe('c-start', () => {
 	beforeEach(() => {
@@ -20,7 +21,9 @@ describe('c-start', () => {
 	it('starts vite dev server', () => {
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
 		execute(process);
-		expect(runCommandAsyncMock).toHaveBeenCalledWith(`${VITE_CMD} start `);
+		expect(runCommandAsyncMock).toHaveBeenCalledWith(
+			`${VITE_CMD} start  -c ${CONFIG}`
+		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
 		);
@@ -33,7 +36,7 @@ describe('c-start', () => {
 			argv: ['', '', '--force']
 		});
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
-			`${VITE_CMD} start --force`
+			`${VITE_CMD} start --force -c ${CONFIG}`
 		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
