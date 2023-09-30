@@ -15,6 +15,12 @@ const COMMAND = path.join(
 	'bin',
 	'eslint.js'
 );
+const CYPRESS_WORKING_DIR = path.join(
+	process.cwd(),
+	'test',
+	'__working_directories__',
+	'eslintWithCypress'
+);
 
 describe('c-eslint', () => {
 	beforeEach(() => {
@@ -32,7 +38,10 @@ describe('c-eslint', () => {
 	});
 
 	it('runs with default path and cypress', () => {
-		execute(process);
+		execute({
+			...process,
+			cwd: () => CYPRESS_WORKING_DIR
+		});
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(2);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
@@ -66,10 +75,11 @@ describe('c-eslint', () => {
 	});
 
 	it('runs with explicit path that is a cypress path', () => {
-		const thePath = 'foo/bar.js';
+		const thePath = `${CYPRESS_WORKING_DIR}/cypress/foo/bar.js`;
 		execute({
 			...process,
-			argv: ['', '', thePath]
+			argv: ['', '', thePath],
+			cwd: () => CYPRESS_WORKING_DIR
 		});
 		expect(runCommandSyncMock).toHaveBeenCalledWith(
 			`${COMMAND} --fix --max-warnings=0 ${thePath}`,
