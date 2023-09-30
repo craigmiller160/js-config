@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "declaration": false,
-    "module": "Node16"
+    "module": "Node16",
+    "verbatimModuleSyntax": true
   }
 }
