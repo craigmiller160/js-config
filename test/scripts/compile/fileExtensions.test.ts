@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { fixTypeFileExtensions } from '../../../src/scripts/compile/fileExtensions';
@@ -11,22 +11,29 @@ const TYPE_EXTENSION_DIR = path.join(
 	'types'
 );
 
+const cleanup = () =>
+	fs
+		.readdir(TYPE_EXTENSION_DIR)
+		.then((files) =>
+			files
+				.filter((file) => '.gitkeep' !== file)
+				.map((file) => path.join(TYPE_EXTENSION_DIR, file))
+				.map((file) => fs.rm(file))
+		)
+		.then((promises) => Promise.all(promises));
+
 describe('compile file extension utilities', () => {
 	beforeEach(async () => {
-		await fs
-			.readdir(TYPE_EXTENSION_DIR)
-			.then((files) =>
-				files
-					.filter((file) => '.gitkeep' !== file)
-					.map((file) => path.join(TYPE_EXTENSION_DIR, file))
-					.map((file) => fs.rm(file))
-			)
-			.then((promises) => Promise.all(promises));
+		await cleanup();
 		await Promise.all([
 			fs.writeFile(path.join(TYPE_EXTENSION_DIR, 'file1.d.ts'), ''),
 			fs.writeFile(path.join(TYPE_EXTENSION_DIR, 'file2.d.mts'), ''),
 			fs.writeFile(path.join(TYPE_EXTENSION_DIR, 'file3.d.cts'), '')
 		]);
+	});
+
+	afterEach(async () => {
+		await cleanup();
 	});
 
 	describe('fixFileExtension', () => {
