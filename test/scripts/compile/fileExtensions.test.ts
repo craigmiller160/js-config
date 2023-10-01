@@ -47,12 +47,12 @@ describe('compile file extension utilities', () => {
 
 		it('.d.mts', () => {
 			const result = fixFileExtension('file.d.mts');
-			expect(result).toBe('file.d.mts');
+			expect(result).toBe('file.d.ts');
 		});
 
 		it('.d.cts', () => {
 			const result = fixFileExtension('file.d.cts');
-			expect(result).toBe('file.d.cts');
+			expect(result).toBe('file.d.ts');
 		});
 
 		it('.ts', () => {
