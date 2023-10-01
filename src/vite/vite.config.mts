@@ -47,11 +47,36 @@ const JEST_FP_TS_BUILD_PATH = path.join(
 	'jest-fp-ts.mts'
 );
 
+const JEST_DOM_SRC_PATH = path.join(
+	__dirname,
+	'..',
+	'..',
+	'configs',
+	'test-support',
+	'testing-library-jest-dom.mts'
+);
+const JEST_DOM_BUILD_PATH = path.join(
+	__dirname,
+	'..',
+	'..',
+	'..',
+	'configs',
+	'test-support',
+	'testing-library-jest-dom.mts'
+);
+
 const getJestFpTsPath = () => {
 	if (fs.existsSync(JEST_FP_TS_SRC_PATH)) {
 		return JEST_FP_TS_SRC_PATH;
 	}
 	return JEST_FP_TS_BUILD_PATH;
+};
+
+const getJestDomPath = () => {
+	if (fs.existsSync(JEST_DOM_SRC_PATH)) {
+		return JEST_DOM_SRC_PATH;
+	}
+	return JEST_DOM_BUILD_PATH;
 };
 
 const noop = path.join(__dirname, 'noop.js');
@@ -60,13 +85,17 @@ const createDefaultConfig = async () => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
+	const hasJestDom = await hasLibrary('@testing-library/jest-dom');
 	return {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),
 		envDir: path.join(process.cwd(), 'environment'),
 		test: {
 			root: path.join(process.cwd(), 'test'),
-			setupFiles: [hasJestFpTs ? getJestFpTsPath() : noop]
+			setupFiles: [
+				hasJestFpTs ? getJestFpTsPath() : noop,
+				hasJestDom ? getJestDomPath() : noop
+			]
 		},
 		server: {
 			port: 3000,
