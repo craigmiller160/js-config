@@ -11,30 +11,10 @@ import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
 import { getRealArgs } from './utils/process';
 import { createCompile } from './compile';
+import { fixFileExtension, fixTypeFileExtensions } from './compile/utils';
 
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
-const EXTENSION = /\.[^/.]+$/;
-
-const fixFileExtension = (filePath: string): string => {
-	const filePathWithoutExtension = filePath.replace(EXTENSION, '');
-	if (
-		filePath.endsWith('.d.ts') ||
-		filePath.endsWith('.d.mts') ||
-		filePath.endsWith('.d.cts')
-	) {
-		return `${filePathWithoutExtension}.ts`;
-	}
-	const originalExtension = path.extname(filePath);
-	const newExtension = match(originalExtension)
-		.with(
-			P.union('.ts', '.mts', '.cts', '.js', '.cjs', '.mjs'),
-			() => '.js'
-		)
-		.with(P.union('.tsx', '.jsx'), () => '.jsx')
-		.otherwise(() => originalExtension);
-	return `${filePathWithoutExtension}${newExtension}`;
-};
 
 const compileFiles =
 	(compileFn: (file: string) => taskEither.TaskEither<Error, unknown>) =>
@@ -194,32 +174,6 @@ const removeDestDir = (
 			}),
 		unknownToError
 	);
-
-const fixTypeFileExtensions = (
-	typesDir: string
-): taskEither.TaskEither<Error, unknown> => {
-	logger.debug('Fixing type declaration file extensions');
-	return func.pipe(
-		taskEither.tryCatch(() => walk(typesDir), unknownToError),
-		taskEither.map((files) =>
-			files.filter(
-				(file) => file.endsWith('.mts') || file.endsWith('.cts')
-			)
-		),
-		taskEither.chain(
-			func.flow(
-				readonlyArray.map((file) => {
-					const newFile = `${file.replace(EXTENSION, '')}.ts`;
-					return taskEither.tryCatch(
-						() => fs.rename(file, newFile),
-						unknownToError
-					);
-				}),
-				taskEither.sequenceArray
-			)
-		)
-	);
-};
 
 export const execute = (process: NodeJS.Process): Promise<unknown> => {
 	const args = getRealArgs(process);
