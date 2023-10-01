@@ -10,7 +10,9 @@ const hasLibrary = (name: string): Promise<boolean> =>
 	func.pipe(
 		taskEither.tryCatch(() => import(name), func.identity),
 		taskEither.fold(
-			() => task.of(false),
+			(ex) => {
+				throw ex;
+			},
 			() => task.of(true)
 		)
 	)();
@@ -85,7 +87,7 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
-	const hasJestDom = await hasLibrary('@testing-library/jest-dom/vitest');
+	const hasJestDom = await hasLibrary('@testing-library/jest-dom/matchers');
 	return {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),

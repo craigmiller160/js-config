@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import '@testing-library/jest-dom/vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+import { expect } from 'vitest';
 
-if (true) {
-    throw new Error('Dying');
-}
+expect.extend(matchers);
