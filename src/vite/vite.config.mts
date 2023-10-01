@@ -85,7 +85,7 @@ const createDefaultConfig = async () => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
-	const hasJestDom = await hasLibrary('@testing-library/jest-dom');
+	const hasJestDom = await hasLibrary('@testing-library/jest-dom/vitest');
 	return {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),
