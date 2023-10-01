@@ -4,7 +4,7 @@ import { transformFile } from '@swc/core';
 import { unknownToError } from '../utils/unknownToError';
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
-import baseFS from 'fs';
+import { getProjectRoot } from '../../root';
 
 type ModuleType = 'es6' | 'commonjs';
 type SwcConfigFileType = 'js' | 'ts';
@@ -14,21 +14,14 @@ const SWCRC_TS = '.swcrc_ts';
 const JS_FILE = /^.*\.(js|mjs|cjs|jsx)$/;
 const TS_FILE = /^.*(?<!\.d)\.(ts|mts|cts|tsx)$/;
 
-const getSwcConfigFile = (type: SwcConfigFileType): string =>
-	match({ type, srcExists: baseFS.existsSync(SWC_SRC_CONFIG_DIR) })
-		.with({ type: 'js', srcExists: true }, () =>
-			path.join(SWC_SRC_CONFIG_DIR, SWCRC_JS)
-		)
-		.with({ type: 'ts', srcExists: true }, () =>
-			path.join(SWC_SRC_CONFIG_DIR, SWCRC_TS)
-		)
-		.with({ type: 'js', srcExists: false }, () =>
-			path.join(SWC_BUILD_CONFIG_DIR, SWCRC_JS)
-		)
-		.with({ type: 'ts', srcExists: false }, () =>
-			path.join(SWC_BUILD_CONFIG_DIR, SWCRC_TS)
-		)
+const getSwcConfigFile = (type: SwcConfigFileType): string => {
+	const root = getProjectRoot();
+	const configDir = path.join(root, 'configs', 'swc');
+	return match(type)
+		.with('js', () => path.join(configDir, SWCRC_JS))
+		.with('ts', () => path.join(configDir, SWCRC_TS))
 		.exhaustive();
+};
 
 const getSwcCompileInfo = (filePath: string): CompileInfo =>
 	match<string, CompileInfo>(filePath)
