@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 
-const ROOT_SRC_PATH = path.join(__dirname, '..', '..');
-const ROOT_BUILD_PATH = path.join(__dirname, '..', '..', '..');
-export const getProjectRoot = (): string => {
-	if (fs.existsSync(path.join(ROOT_SRC_PATH, 'src'))) {
-		return ROOT_SRC_PATH;
+export const getProjectRoot = (currentDir: string = __dirname): string => {
+	const rootSrcPath = path.join(currentDir, '..', '..');
+	const rootBuildPath = path.join(currentDir, '..', '..', '..');
+	if (fs.existsSync(path.join(rootSrcPath, 'src'))) {
+		return rootSrcPath;
 	}
-	return ROOT_BUILD_PATH;
+	return rootBuildPath;
 };
