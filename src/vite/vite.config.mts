@@ -10,9 +10,7 @@ const hasLibrary = (name: string): Promise<boolean> =>
 	func.pipe(
 		taskEither.tryCatch(() => import(name), func.identity),
 		taskEither.fold(
-			(ex) => {
-				throw ex;
-			},
+			() => task.of(false),
 			() => task.of(true)
 		)
 	)();
@@ -30,55 +28,38 @@ const https: ServerOptions = {
 	key
 };
 
-const JEST_FP_TS_SRC_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'jest-fp-ts.mts'
-);
-
-const JEST_FP_TS_BUILD_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'jest-fp-ts.mts'
-);
-
-const JEST_DOM_SRC_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'testing-library-jest-dom.mts'
-);
-const JEST_DOM_BUILD_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'testing-library-jest-dom.mts'
-);
-
-const getJestFpTsPath = () => {
-	if (fs.existsSync(JEST_FP_TS_SRC_PATH)) {
-		return JEST_FP_TS_SRC_PATH;
+const ROOT_SRC_PATH = path.join(__dirname, '..', '..');
+const ROOT_BUILD_PATH = path.join(__dirname, '..', '..', '..');
+const getRoot = (): string => {
+	if (fs.existsSync(path.join(ROOT_SRC_PATH, 'src'))) {
+		return ROOT_SRC_PATH;
 	}
-	return JEST_FP_TS_BUILD_PATH;
+	return ROOT_BUILD_PATH;
 };
 
-const getJestDomPath = () => {
-	if (fs.existsSync(JEST_DOM_SRC_PATH)) {
-		return JEST_DOM_SRC_PATH;
-	}
-	return JEST_DOM_BUILD_PATH;
+const getJestFpTsPath = () => {
+	const root = getRoot();
+	return path.join(root, 'configs', 'test-support', 'jest-fp-ts.mts');
+};
+
+const getTestingLibraryJestDomPath = () => {
+	const root = getRoot();
+	return path.join(
+		root,
+		'configs',
+		'test-support',
+		'testing-library-jest-dom.mts'
+	);
+};
+
+const getTestingLibraryReactPath = () => {
+	const root = getRoot();
+	return path.join(
+		root,
+		'configs',
+		'test-support',
+		'testing-library-react.mts'
+	);
 };
 
 const noop = path.join(__dirname, 'noop.js');
@@ -88,6 +69,7 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
 	const hasJestDom = await hasLibrary('@testing-library/jest-dom/matchers');
+	const hasRtl = await hasLibrary('@testing-library/react');
 	return {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),
@@ -96,7 +78,8 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 			root: path.join(process.cwd(), 'test'),
 			setupFiles: [
 				hasJestFpTs ? getJestFpTsPath() : noop,
-				hasJestDom ? getJestDomPath() : noop
+				hasJestDom ? getTestingLibraryJestDomPath() : noop,
+				hasRtl ? getTestingLibraryReactPath() : noop
 			]
 		},
 		server: {
