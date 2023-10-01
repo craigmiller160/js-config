@@ -5,7 +5,7 @@ import { unknownToError } from '../utils/unknownToError';
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
 import { getProjectRoot } from '../../root';
-import { fixFileExtension } from './utils';
+import { fixFileExtension } from './fileExtensions';
 
 type ModuleType = 'es6' | 'commonjs';
 type SwcConfigFileType = 'js' | 'ts';

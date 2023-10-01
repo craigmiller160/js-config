@@ -11,7 +11,10 @@ import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
 import { getRealArgs } from './utils/process';
 import { createCompile } from './compile';
-import { fixFileExtension, fixTypeFileExtensions } from './compile/utils';
+import {
+	fixFileExtension,
+	fixTypeFileExtensions
+} from './compile/fileExtensions';
 
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
