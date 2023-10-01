@@ -3,6 +3,7 @@
   "version": "1.0.0-beta",
   "author": "craigmiller160",
   "license": "GPL",
+  "type": "commonjs",
   "publishConfig": {
     "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
   },
@@ -86,6 +87,7 @@
     "husky": "^8.0.3",
     "io-ts": "^2.2.20",
     "io-ts-reporters": "^2.0.1",
+    "jsdom": "^22.1.0",
     "lint-staged": "^14.0.1",
     "postcss": "^8.4.29",
     "prettier": "^3.0.3",

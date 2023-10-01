@@ -28,45 +28,59 @@ const https: ServerOptions = {
 	key
 };
 
-const JEST_FP_TS_SRC_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'jest-fp-ts.mts'
-);
-
-const JEST_FP_TS_BUILD_PATH = path.join(
-	__dirname,
-	'..',
-	'..',
-	'..',
-	'configs',
-	'test-support',
-	'jest-fp-ts.mts'
-);
+const ROOT_SRC_PATH = path.join(__dirname, '..', '..');
+const ROOT_BUILD_PATH = path.join(__dirname, '..', '..', '..');
+const getRoot = (): string => {
+	if (fs.existsSync(path.join(ROOT_SRC_PATH, 'src'))) {
+		return ROOT_SRC_PATH;
+	}
+	return ROOT_BUILD_PATH;
+};
 
 const getJestFpTsPath = () => {
-	if (fs.existsSync(JEST_FP_TS_SRC_PATH)) {
-		return JEST_FP_TS_SRC_PATH;
-	}
-	return JEST_FP_TS_BUILD_PATH;
+	const root = getRoot();
+	return path.join(root, 'configs', 'test-support', 'jest-fp-ts.mts');
+};
+
+const getTestingLibraryJestDomPath = () => {
+	const root = getRoot();
+	return path.join(
+		root,
+		'configs',
+		'test-support',
+		'testing-library-jest-dom.mts'
+	);
+};
+
+const getTestingLibraryReactPath = () => {
+	const root = getRoot();
+	return path.join(
+		root,
+		'configs',
+		'test-support',
+		'testing-library-react.mts'
+	);
 };
 
 const noop = path.join(__dirname, 'noop.js');
 
-const createDefaultConfig = async () => {
+const createDefaultConfig = async (): Promise<UserConfig> => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
+	const hasJestDom = await hasLibrary('@testing-library/jest-dom/matchers');
+	const hasRtl = await hasLibrary('@testing-library/react');
 	return {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),
 		envDir: path.join(process.cwd(), 'environment'),
 		test: {
 			root: path.join(process.cwd(), 'test'),
-			setupFiles: [hasJestFpTs ? getJestFpTsPath() : noop]
+			setupFiles: [
+				hasJestFpTs ? getJestFpTsPath() : noop,
+				hasJestDom ? getTestingLibraryJestDomPath() : noop,
+				hasRtl ? getTestingLibraryReactPath() : noop
+			]
 		},
 		server: {
 			port: 3000,
