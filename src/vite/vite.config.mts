@@ -81,7 +81,7 @@ const getJestDomPath = () => {
 
 const noop = path.join(__dirname, 'noop.js');
 
-const createDefaultConfig = async () => {
+const createDefaultConfig = async (): Promise<UserConfig> => {
 	const hasJestFpTs = await hasLibrary(
 		'@relmify/jest-fp-ts/dist/decodeMatchers/index.js'
 	);
