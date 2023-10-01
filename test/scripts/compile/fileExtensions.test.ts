@@ -1,7 +1,10 @@
 import { beforeEach, describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
-import { fixTypeFileExtensions } from '../../../src/scripts/compile/fileExtensions';
+import {
+	fixFileExtension,
+	fixTypeFileExtensions
+} from '../../../src/scripts/compile/fileExtensions';
 
 const TYPE_EXTENSION_DIR = path.join(
 	process.cwd(),
@@ -37,16 +40,50 @@ describe('compile file extension utilities', () => {
 	});
 
 	describe('fixFileExtension', () => {
-		it.fails('.d.ts');
-		it.fails('.d.mts');
-		it.fails('.d.cts');
-		it.fails('.ts');
-		it.fails('.mts');
-		it.fails('.cts');
-		it.fails('.tsx');
-		it.fails('.js');
+		it('.d.ts', () => {
+			const result = fixFileExtension('file.d.ts');
+			expect(result).toBe('file.d.ts');
+		});
+
+		it('.d.mts', () => {
+			const result = fixFileExtension('file.d.mts');
+			expect(result).toBe('file.d.mts');
+		});
+
+		it('.d.cts', () => {
+			const result = fixFileExtension('file.d.cts');
+			expect(result).toBe('file.d.cts');
+		});
+
+		it('.ts', () => {
+			const result = fixFileExtension('file.ts');
+			expect(result).toBe('file.js');
+		});
+
+		it('.mts', () => {
+			const result = fixFileExtension('file.mts');
+			expect(result).toBe('file.js');
+		});
+
+		it('.cts', () => {
+			const result = fixFileExtension('file.cts');
+			expect(result).toBe('file.js');
+		});
+
+		it('.tsx', () => {
+			const result = fixFileExtension('file.tsx');
+			expect(result).toBe('file.jsx');
+		});
+
+		it('.js', () => {
+			const result = fixFileExtension('file.js');
+			expect(result).toBe('file.js');
+		});
+
 		it.fails('.mjs');
+
 		it.fails('.cjs');
+
 		it.fails('.jsx');
 	});
 
