@@ -80,11 +80,20 @@ describe('compile file extension utilities', () => {
 			expect(result).toBe('file.js');
 		});
 
-		it.fails('.mjs');
+		it('.mjs', () => {
+			const result = fixFileExtension('file.mjs');
+			expect(result).toBe('file.js');
+		});
 
-		it.fails('.cjs');
+		it('.cjs', () => {
+			const result = fixFileExtension('file.cjs');
+			expect(result).toBe('file.js');
+		});
 
-		it.fails('.jsx');
+		it('.jsx', () => {
+			const result = fixFileExtension('file.jsx');
+			expect(result).toBe('file.jsx');
+		});
 	});
 
 	describe('fixTypeFileExtensions', () => {
