@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs/promises';
-import baseFS from 'fs';
 import { logger } from './logger';
 import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { unknownToError } from './utils/unknownToError';
@@ -13,26 +12,9 @@ import { TSC } from './commandPaths';
 import { getRealArgs } from './utils/process';
 import { createCompile } from './compile';
 
-type CompileType = 'ecmascript' | 'typescript' | 'none';
-type CompileInfo = Readonly<{
-	type: CompileType;
-	config: string;
-}>;
-
-const SWC_SRC_CONFIG_DIR = path.join(__dirname, '..', '..', 'configs', 'swc');
-const SWC_BUILD_CONFIG_DIR = path.join(
-	__dirname,
-	'..',
-	'..',
-	'..',
-	'configs',
-	'swc'
-);
-
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
 const EXTENSION = /\.[^/.]+$/;
-
 
 const fixFileExtension = (filePath: string): string => {
 	const filePathWithoutExtension = filePath.replace(EXTENSION, '');

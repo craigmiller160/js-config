@@ -8,6 +8,11 @@ import { getProjectRoot } from '../../root';
 
 type ModuleType = 'es6' | 'commonjs';
 type SwcConfigFileType = 'js' | 'ts';
+type CompileType = 'ecmascript' | 'typescript' | 'none';
+type CompileInfo = Readonly<{
+	type: CompileType;
+	config: string;
+}>;
 
 const SWCRC_JS = '.swcrc_js';
 const SWCRC_TS = '.swcrc_ts';
