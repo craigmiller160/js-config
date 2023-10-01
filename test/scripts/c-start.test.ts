@@ -22,7 +22,7 @@ describe('c-start', () => {
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
 		execute(process);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
-			`${VITE_CMD} start  -c ${CONFIG}`
+			`${VITE_CMD}  -c ${CONFIG}`
 		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
@@ -36,7 +36,7 @@ describe('c-start', () => {
 			argv: ['', '', '--force']
 		});
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
-			`${VITE_CMD} start --force -c ${CONFIG}`
+			`${VITE_CMD} --force -c ${CONFIG}`
 		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
