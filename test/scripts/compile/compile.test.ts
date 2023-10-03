@@ -16,7 +16,9 @@ const JS_INPUT_FILE = path.join(WORKING_DIR, 'example-js.js');
 const JS_OUTPUT_FILE = path.join(OUT_DIR, 'example-js.js');
 
 const fileExists = (file: string): Promise<boolean> =>
-	fs.stat(file).then((stats) => stats.isFile());
+	fs.stat(file)
+		.then((stats) => stats.isFile())
+		.catch(() => false);
 
 describe('compile file', () => {
 	beforeEach(async () => {
