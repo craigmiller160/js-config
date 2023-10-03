@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { createCompile } from '../../../src/scripts/compile';
@@ -16,20 +16,28 @@ const JS_INPUT_FILE = path.join(WORKING_DIR, 'example-js.js');
 const JS_OUTPUT_FILE = path.join(OUT_DIR, 'example-js.js');
 
 const fileExists = (file: string): Promise<boolean> =>
-	fs.stat(file)
+	fs
+		.stat(file)
 		.then((stats) => stats.isFile())
 		.catch(() => false);
 
+const clean = (): Promise<unknown> =>
+	fs
+		.readdir(OUT_DIR)
+		.then((files) =>
+			files
+				.filter((file) => '.gitkeep' !== file)
+				.map((file) => fs.rm(path.join(OUT_DIR, file)))
+		)
+		.then((promises) => Promise.all(promises));
+
 describe('compile file', () => {
 	beforeEach(async () => {
-		await fs
-			.readdir(OUT_DIR)
-			.then((files) =>
-				files
-					.filter((file) => '.gitkeep' !== file)
-					.map((file) => fs.rm(path.join(OUT_DIR, file)))
-			)
-			.then((promises) => Promise.all(promises));
+		await clean();
+	});
+
+	afterEach(async () => {
+		await clean();
 	});
 
 	it('compiles ts file with esmodules', async () => {
