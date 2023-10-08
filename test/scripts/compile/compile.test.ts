@@ -2,6 +2,7 @@ import { beforeEach, describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { createCompile } from '../../../src/scripts/compile';
+import { createEsmContent } from '../../testutils/compiledContent';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -48,9 +49,7 @@ describe('compile file', () => {
 		const existsAfter = await fileExists(TS_OUTPUT_FILE);
 		expect(existsAfter).toBe(true);
 		const content = await fs.readFile(TS_OUTPUT_FILE, 'utf8');
-		expect(content).toBe(
-			`/* eslint-disable */ export const hello = 'world';\n`
-		);
+		expect(content).toBe(createEsmContent('hello', 'world'));
 	});
 	it.fails('compiles ts file with commonjs');
 	it.fails('compiles js file with esmodules');

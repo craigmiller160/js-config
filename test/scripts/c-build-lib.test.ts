@@ -3,6 +3,10 @@ import { execute } from '../../src/scripts/c-build-lib';
 import path from 'path';
 import fs from 'fs';
 import { walk } from '../../src/scripts/utils/files';
+import {
+	createCjsContent,
+	createEsmContent
+} from '../testutils/compiledContent';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -17,43 +21,21 @@ const typesDir = path.join(libDir, 'types');
 
 vi.unmock('../../src/scripts/utils/runCommand');
 
-const createCjsContent = (
-	varName: string,
-	value: string
-) => `/* eslint-disable */ "use strict";
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-Object.defineProperty(exports, "${varName}", {
-    enumerable: true,
-    get: function() {
-        return ${varName};
-    }
-});
-const ${varName} = '${value}';
-`;
-
 type FileAndContents = [file: string, contents: string];
 const ESM_FILES: ReadonlyArray<FileAndContents> = [
-	[path.join('abc.js'), `/* eslint-disable */ export const qrs = 'tuv';\n`],
+	[path.join('abc.js'), createEsmContent('qrs', 'tuv')],
 	[path.join('child', 'def.css'), ''],
 	[path.join('child', 'grandchild', 'one.scss'), ''],
 	[
 		path.join('child', 'grandchild', 'weeee.js'),
-		`/* eslint-disable */ export const abc = 'def';\n`
+		createEsmContent('abc', 'def')
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
-	[
-		path.join('child', 'something.js'),
-		`/* eslint-disable */ export const foo = 'bar';\n`
-	],
+	[path.join('child', 'something.js'), createEsmContent('foo', 'bar')],
 	[path.join('def.js'), `/* eslint-disable */ export const wxz = 'abc';\n`],
-	[
-		'other-root.js',
-		`/* eslint-disable */ export const goodbye = 'universe';\n`
-	],
-	['root.js', `/* eslint-disable */ export const hello = 'world';\n`],
-	['vite.config.js', `/* eslint-disable */ export const vite = 'vite2';\n`]
+	['other-root.js', createEsmContent('goodbye', 'universe')],
+	['root.js', createEsmContent('hello', 'world')],
+	['vite.config.js', createEsmContent('vite', 'vite2')]
 ];
 
 const CJS_FILES: ReadonlyArray<FileAndContents> = [
