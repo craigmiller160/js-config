@@ -1,5 +1,5 @@
 export const createEsmContent = (varName: string, value: string): string =>
-	`/* eslint-disable */ export const ${value} = '${value}';\n`;
+	`/* eslint-disable */ export const ${varName} = '${value}';\n`;
 
 export const createCjsContent = (
 	varName: string,
