@@ -2,7 +2,10 @@ import { beforeEach, describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { createCompile } from '../../../src/scripts/compile';
-import { createEsmContent } from '../../testutils/compiledContent';
+import {
+	createCjsContent,
+	createEsmContent
+} from '../../testutils/compiledContent';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -51,7 +54,34 @@ describe('compile file', () => {
 		const content = await fs.readFile(TS_OUTPUT_FILE, 'utf8');
 		expect(content).toBe(createEsmContent('hello', 'world'));
 	});
-	it.fails('compiles ts file with commonjs');
-	it.fails('compiles js file with esmodules');
-	it.fails('compiles js file with commonjs');
+	it('compiles ts file with commonjs', async () => {
+		const existsBefore = await fileExists(TS_OUTPUT_FILE);
+		expect(existsBefore).toBe(false);
+		await createCompile(WORKING_DIR, OUT_DIR, 'commonjs')(TS_INPUT_FILE)();
+
+		const existsAfter = await fileExists(TS_OUTPUT_FILE);
+		expect(existsAfter).toBe(true);
+		const content = await fs.readFile(TS_OUTPUT_FILE, 'utf8');
+		expect(content).toBe(createCjsContent('hello', 'world'));
+	});
+	it('compiles js file with esmodules', async () => {
+		const existsBefore = await fileExists(JS_OUTPUT_FILE);
+		expect(existsBefore).toBe(false);
+		await createCompile(WORKING_DIR, OUT_DIR, 'es6')(JS_INPUT_FILE)();
+
+		const existsAfter = await fileExists(JS_OUTPUT_FILE);
+		expect(existsAfter).toBe(true);
+		const content = await fs.readFile(JS_OUTPUT_FILE, 'utf8');
+		expect(content).toBe(createEsmContent('hello', 'world'));
+	});
+	it('compiles js file with commonjs', async () => {
+		const existsBefore = await fileExists(JS_OUTPUT_FILE);
+		expect(existsBefore).toBe(false);
+		await createCompile(WORKING_DIR, OUT_DIR, 'commonjs')(JS_INPUT_FILE)();
+
+		const existsAfter = await fileExists(JS_OUTPUT_FILE);
+		expect(existsAfter).toBe(true);
+		const content = await fs.readFile(JS_OUTPUT_FILE, 'utf8');
+		expect(content).toBe(createCjsContent('hello', 'world'));
+	});
 });
