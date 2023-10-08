@@ -89,7 +89,7 @@
     "io-ts-reporters": "^2.0.1",
     "jsdom": "^22.1.0",
     "lint-staged": "^14.0.1",
-    "postcss": "^8.4.29",
+    "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "sass": "^1.66.1",
     "stylelint": "^15.10.3",
