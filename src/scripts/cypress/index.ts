@@ -1,4 +1,10 @@
-import { readonlyArray, taskEither, task, taskOption, func } from 'fp-ts';
+import {
+	readonlyArray,
+	taskEither,
+	task,
+	taskOption,
+	function as func
+} from 'fp-ts';
 import fs from 'fs/promises';
 
 type CypressConfigType = 'js' | 'ts';
@@ -18,12 +24,23 @@ const CYPRESS_CONFIG_FILES: ReadonlyArray<CypressConfigFile> = [
 
 const fileExists = (
 	configFile: CypressConfigFile
-): taskOption.TaskOption<CypressConfigFile> =>
+): task.Task<CypressConfigFile | undefined> =>
 	func.pipe(
-		taskOption.tryCatch(() => fs.stat(configFile.filename)),
-		taskOption.map(() => configFile)
+		taskEither.tryCatch(() => fs.stat(configFile.filename), func.identity),
+		taskEither.fold(
+			() => async () => undefined,
+			() => async () => configFile
+		)
 	);
 
 export const compileAndGetCypressConfig = () => {
-	func.pipe(CYPRESS_CONFIG_FILES, readonlyArray.map(fileExists));
+	const result = func.pipe(
+		CYPRESS_CONFIG_FILES,
+		readonlyArray.map(fileExists),
+		task.sequenceArray,
+		taskOption.fromTask,
+		taskOption.chainOptionK(
+			func.flow(readonlyArray.findFirst((result) => !!result))
+		)
+	);
 };
