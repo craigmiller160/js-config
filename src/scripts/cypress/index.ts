@@ -33,14 +33,15 @@ const fileExists = (
 		)
 	);
 
-export const compileAndGetCypressConfig = () => {
-	const result = func.pipe(
+export const compileAndGetCypressConfig = (): taskEither.TaskEither<
+	Error,
+	string
+> => {
+	func.pipe(
 		CYPRESS_CONFIG_FILES,
 		readonlyArray.map(fileExists),
 		task.sequenceArray,
 		taskOption.fromTask,
-		taskOption.chainOptionK(
-			func.flow(readonlyArray.findFirst((result) => !!result))
-		)
+		taskOption.chainOptionK(readonlyArray.findFirst((result) => !!result))
 	);
 };
