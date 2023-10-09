@@ -3,7 +3,8 @@ import {
 	taskEither,
 	task,
 	taskOption,
-	function as func
+	function as func,
+	option
 } from 'fp-ts';
 import fs from 'fs/promises';
 
@@ -33,15 +34,25 @@ const fileExists = (
 		)
 	);
 
+const compileCypressConfigFile = (
+	configFile: CypressConfigFile
+): taskEither.TaskEither<Error, string> => {
+	throw new Error();
+};
+
 export const compileAndGetCypressConfig = (): taskEither.TaskEither<
 	Error,
 	string
-> => {
+> =>
 	func.pipe(
 		CYPRESS_CONFIG_FILES,
 		readonlyArray.map(fileExists),
 		task.sequenceArray,
 		taskOption.fromTask,
-		taskOption.chainOptionK(readonlyArray.findFirst((result) => !!result))
+		taskOption.chainOptionK(readonlyArray.findFirst((result) => !!result)),
+		taskOption.chainOptionK(option.fromNullable),
+		taskEither.fromTaskOption(
+			() => new Error('Could not find cypress config file')
+		),
+		taskEither.chain(compileCypressConfigFile)
 	);
-};
