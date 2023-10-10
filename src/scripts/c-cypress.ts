@@ -22,5 +22,5 @@ export const execute = (process: NodeJS.Process) => {
 			(ex) => async () => terminate(ex),
 			() => async () => terminate('')
 		)
-	);
+	)();
 };
