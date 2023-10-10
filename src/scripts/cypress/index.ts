@@ -7,8 +7,11 @@ import {
 	option
 } from 'fp-ts';
 import fs from 'fs/promises';
+import path from 'path';
+import { createCompile } from '../compile';
 
 type CypressConfigType = 'js' | 'ts';
+// TODO probably don't need this type, just the filename
 type CypressConfigFile = Readonly<{
 	filename: string;
 	type: CypressConfigType;
@@ -34,16 +37,20 @@ const fileExists = (
 		)
 	);
 
-const compileCypressConfigFile = (
-	configFile: CypressConfigFile
-): taskEither.TaskEither<Error, string> => {
-	throw new Error();
-};
+const compileCypressConfigFile =
+	(process: NodeJS.Process) =>
+	(configFile: CypressConfigFile): taskEither.TaskEither<Error, string> => {
+		const destDir = path.join(process.cwd(), 'node_modules');
+		const file = path.join(process.cwd(), configFile.filename);
+		return func.pipe(
+			createCompile(process.cwd(), destDir, 'commonjs')(file),
+			taskEither.map(() => file)
+		);
+	};
 
-export const compileAndGetCypressConfig = (): taskEither.TaskEither<
-	Error,
-	string
-> =>
+export const compileAndGetCypressConfig = (
+	process: NodeJS.Process
+): taskEither.TaskEither<Error, string> =>
 	func.pipe(
 		CYPRESS_CONFIG_FILES,
 		readonlyArray.map(fileExists),
@@ -54,5 +61,5 @@ export const compileAndGetCypressConfig = (): taskEither.TaskEither<
 		taskEither.fromTaskOption(
 			() => new Error('Could not find cypress config file')
 		),
-		taskEither.chain(compileCypressConfigFile)
+		taskEither.chain(compileCypressConfigFile(process))
 	);
