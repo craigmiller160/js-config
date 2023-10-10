@@ -231,14 +231,8 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 		),
 		taskEither.chain(() => fixTypeFileExtensions(destTypesDir)),
 		taskEither.fold(
-			(ex) => () => {
-				terminate(ex);
-				return Promise.resolve();
-			},
-			() => () => {
-				terminate('');
-				return Promise.resolve();
-			}
+			(ex) => async () => terminate(ex),
+			() => async () => terminate('')
 		)
 	)();
 };
