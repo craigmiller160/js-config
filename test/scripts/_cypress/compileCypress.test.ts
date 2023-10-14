@@ -71,9 +71,54 @@ describe('compile cypress config', () => {
 		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
 		expect(content).toEqual(CJS_CONTENT);
 	});
-	it.fails('compiles cypress.config.mts');
-	it.fails('compiles cypress.config.cts');
-	it.fails('compiles cypress.config.js');
-	it.fails('compiles cypress.config.mjs');
-	it.fails('compiles cypress.config.cjs');
+	it('compiles cypress.config.mts', async () => {
+		await createCypressConfig('cypress.config.mts', 'ts');
+		const result = await compileAndGetCypressConfig({
+			...process,
+			cwd: () => WORKING_DIR
+		})();
+		expect(result).toBeRight();
+		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
+		expect(content).toEqual(CJS_CONTENT);
+	});
+	it('compiles cypress.config.cts', async () => {
+		await createCypressConfig('cypress.config.cts', 'ts');
+		const result = await compileAndGetCypressConfig({
+			...process,
+			cwd: () => WORKING_DIR
+		})();
+		expect(result).toBeRight();
+		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
+		expect(content).toEqual(CJS_CONTENT);
+	});
+	it('compiles cypress.config.js', async () => {
+		await createCypressConfig('cypress.config.js', 'js');
+		const result = await compileAndGetCypressConfig({
+			...process,
+			cwd: () => WORKING_DIR
+		})();
+		expect(result).toBeRight();
+		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
+		expect(content).toEqual(CJS_CONTENT);
+	});
+	it('compiles cypress.config.mjs', async () => {
+		await createCypressConfig('cypress.config.mjs', 'js');
+		const result = await compileAndGetCypressConfig({
+			...process,
+			cwd: () => WORKING_DIR
+		})();
+		expect(result).toBeRight();
+		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
+		expect(content).toEqual(CJS_CONTENT);
+	});
+	it('compiles cypress.config.cjs', async () => {
+		await createCypressConfig('cypress.config.cjs', 'js');
+		const result = await compileAndGetCypressConfig({
+			...process,
+			cwd: () => WORKING_DIR
+		})();
+		expect(result).toBeRight();
+		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
+		expect(content).toEqual(CJS_CONTENT);
+	});
 });
