@@ -1,37 +1,21 @@
 import fs from 'fs';
-import { function as func, either } from 'fp-ts';
+import { either, function as func } from 'fp-ts';
 import path from 'path';
 import { unknownToError } from '../utils/unknownToError';
-import {
-	parseTsConfig,
-	TsConfig,
-	TsConfigCompilerOptions
-} from '../files/TsConfig';
+import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
-const createRootTsConfig =
-	(hasCypress: boolean) =>
-	(existingTsConfig?: TsConfig): TsConfig => {
-		const cypresCompilerOptions: TsConfigCompilerOptions = {
-			module: 'ES2022',
-			moduleResolution: 'node'
-		};
-		return {
-			extends:
-				'@craigmiller160/js-config/configs/typescript/tsconfig.json',
-			compilerOptions: existingTsConfig?.compilerOptions,
-			include: ['src/**/*'],
-			exclude: ['node_modules', 'build', 'lib'],
-			'ts-node': hasCypress
-				? {
-						compilerOptions: cypresCompilerOptions
-				  }
-				: undefined
-		};
+const createRootTsConfig = (existingTsConfig?: TsConfig): TsConfig => {
+	return {
+		extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
+		compilerOptions: existingTsConfig?.compilerOptions,
+		include: ['src/**/*'],
+		exclude: ['node_modules', 'build', 'lib']
 	};
+};
 
 const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -103,7 +87,7 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig(hasCypressDir)),
+		createTsConfig(cwd, createRootTsConfig),
 		either.chain(() => {
 			if (hasTestDir) {
 				return func.pipe(

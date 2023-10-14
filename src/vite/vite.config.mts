@@ -5,6 +5,7 @@ import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
 import { ServerOptions } from 'https';
 import fs from 'fs';
+import { getProjectRoot } from '../root.js';
 
 const hasLibrary = (name: string): Promise<boolean> =>
 	func.pipe(
@@ -28,22 +29,13 @@ const https: ServerOptions = {
 	key
 };
 
-const ROOT_SRC_PATH = path.join(__dirname, '..', '..');
-const ROOT_BUILD_PATH = path.join(__dirname, '..', '..', '..');
-const getRoot = (): string => {
-	if (fs.existsSync(path.join(ROOT_SRC_PATH, 'src'))) {
-		return ROOT_SRC_PATH;
-	}
-	return ROOT_BUILD_PATH;
-};
-
 const getJestFpTsPath = () => {
-	const root = getRoot();
+	const root = getProjectRoot();
 	return path.join(root, 'configs', 'test-support', 'jest-fp-ts.mts');
 };
 
 const getTestingLibraryJestDomPath = () => {
-	const root = getRoot();
+	const root = getProjectRoot();
 	return path.join(
 		root,
 		'configs',
@@ -53,7 +45,7 @@ const getTestingLibraryJestDomPath = () => {
 };
 
 const getTestingLibraryReactPath = () => {
-	const root = getRoot();
+	const root = getProjectRoot();
 	return path.join(
 		root,
 		'configs',

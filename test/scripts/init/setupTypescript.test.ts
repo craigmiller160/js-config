@@ -168,25 +168,6 @@ describe('setupTypescript', () => {
 			fs.mkdirSync(CYPRESS_DIR);
 		});
 
-		it('writes the root tsconfig.json with special cypress compatibility properties', () => {
-			const result = setupTypescript(WORKING_DIR_PATH);
-			expect(result).toBeRight();
-
-			expect(fs.existsSync(TSCONFIG)).toBe(true);
-			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
-				extends:
-					'@craigmiller160/js-config/configs/typescript/tsconfig.json',
-				'ts-node': {
-					compilerOptions: {
-						module: 'ES2022',
-						moduleResolution: 'node'
-					}
-				},
-				include: ['src/**/*'],
-				exclude: ['node_modules', 'build', 'lib']
-			});
-		});
-
 		it('writes cypress/tsconfig.json to project without one', () => {
 			const result = setupTypescript(WORKING_DIR_PATH);
 			expect(result).toBeRight();
