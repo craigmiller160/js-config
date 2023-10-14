@@ -43,5 +43,10 @@ describe('compile cypress config', () => {
 		await clean();
 	});
 
-	it.fails('compiles cypress config');
+	it.fails('compiles cypress.config.ts');
+	it.fails('compiles cypress.config.mts');
+	it.fails('compiles cypress.config.cts');
+	it.fails('compiles cypress.config.js');
+	it.fails('compiles cypress.config.mjs');
+	it.fails('compiles cypress.config.cjs');
 });
