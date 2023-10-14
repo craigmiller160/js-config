@@ -23,7 +23,7 @@ const clean = (): Promise<unknown> => {
 				.map((file) => path.join(WORKING_DIR, file))
 				.map((file) => fs.rm(file))
 		)
-		.then(Promise.all);
+		.then((files) => Promise.all(files));
 	const nodeModulesDir = path.join(WORKING_DIR, 'node_modules');
 	const nodeModulesPromise = fs
 		.readdir(nodeModulesDir)
@@ -33,7 +33,7 @@ const clean = (): Promise<unknown> => {
 				.map((file) => path.join(nodeModulesDir, file))
 				.map((file) => fs.rm(file))
 		)
-		.then(Promise.all);
+		.then((files) => Promise.all(files));
 	return Promise.all([rootPromise, nodeModulesPromise]);
 };
 
