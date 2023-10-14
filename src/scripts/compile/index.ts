@@ -46,10 +46,10 @@ const getSwcCompileInfo = (filePath: string): CompileInfo =>
 
 export const createCompile =
 	(srcDir: string, destDir: string, moduleType: ModuleType) =>
-	(file: string): taskEither.TaskEither<Error, unknown> => {
+	(file: string): taskEither.TaskEither<Error, string> => {
 		const compileInfo = getSwcCompileInfo(file);
 		if (compileInfo.type === 'none') {
-			return taskEither.right(func.constVoid());
+			return taskEither.right('');
 		}
 		const outputPath = func.pipe(
 			path.relative(srcDir, file),
@@ -82,6 +82,7 @@ export const createCompile =
 					() => fs.writeFile(outputPath, output.code),
 					unknownToError
 				)
-			)
+			),
+			taskEither.map(() => outputPath)
 		);
 	};

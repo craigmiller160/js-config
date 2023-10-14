@@ -47,7 +47,12 @@ describe('compile file', () => {
 	it('compiles ts file with esmodules', async () => {
 		const existsBefore = await fileExists(TS_OUTPUT_FILE);
 		expect(existsBefore).toBe(false);
-		await createCompile(WORKING_DIR, OUT_DIR, 'es6')(TS_INPUT_FILE)();
+		const result = await createCompile(
+			WORKING_DIR,
+			OUT_DIR,
+			'es6'
+		)(TS_INPUT_FILE)();
+		expect(result).toEqualRight(TS_OUTPUT_FILE);
 
 		const existsAfter = await fileExists(TS_OUTPUT_FILE);
 		expect(existsAfter).toBe(true);
@@ -57,7 +62,12 @@ describe('compile file', () => {
 	it('compiles ts file with commonjs', async () => {
 		const existsBefore = await fileExists(TS_OUTPUT_FILE);
 		expect(existsBefore).toBe(false);
-		await createCompile(WORKING_DIR, OUT_DIR, 'commonjs')(TS_INPUT_FILE)();
+		const result = await createCompile(
+			WORKING_DIR,
+			OUT_DIR,
+			'commonjs'
+		)(TS_INPUT_FILE)();
+		expect(result).toEqualRight(TS_OUTPUT_FILE);
 
 		const existsAfter = await fileExists(TS_OUTPUT_FILE);
 		expect(existsAfter).toBe(true);
@@ -67,7 +77,12 @@ describe('compile file', () => {
 	it('compiles js file with esmodules', async () => {
 		const existsBefore = await fileExists(JS_OUTPUT_FILE);
 		expect(existsBefore).toBe(false);
-		await createCompile(WORKING_DIR, OUT_DIR, 'es6')(JS_INPUT_FILE)();
+		const result = await createCompile(
+			WORKING_DIR,
+			OUT_DIR,
+			'es6'
+		)(JS_INPUT_FILE)();
+		expect(result).toEqualRight(JS_OUTPUT_FILE);
 
 		const existsAfter = await fileExists(JS_OUTPUT_FILE);
 		expect(existsAfter).toBe(true);
@@ -77,7 +92,12 @@ describe('compile file', () => {
 	it('compiles js file with commonjs', async () => {
 		const existsBefore = await fileExists(JS_OUTPUT_FILE);
 		expect(existsBefore).toBe(false);
-		await createCompile(WORKING_DIR, OUT_DIR, 'commonjs')(JS_INPUT_FILE)();
+		const result = await createCompile(
+			WORKING_DIR,
+			OUT_DIR,
+			'commonjs'
+		)(JS_INPUT_FILE)();
+		expect(result).toEqualRight(JS_OUTPUT_FILE);
 
 		const existsAfter = await fileExists(JS_OUTPUT_FILE);
 		expect(existsAfter).toBe(true);
