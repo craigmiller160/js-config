@@ -10,27 +10,18 @@ import fs from 'fs/promises';
 import path from 'path';
 import { createCompile } from '../compile';
 
-type CypressConfigType = 'js' | 'ts';
-// TODO probably don't need this type, just the filename
-type CypressConfigFile = Readonly<{
-	filename: string;
-	type: CypressConfigType;
-}>;
-
-const CYPRESS_CONFIG_FILES: ReadonlyArray<CypressConfigFile> = [
-	{ filename: 'cypress.config.ts', type: 'ts' },
-	{ filename: 'cypress.config.mts', type: 'ts' },
-	{ filename: 'cypress.config.cts', type: 'ts' },
-	{ filename: 'cypress.config.js', type: 'js' },
-	{ filename: 'cypress.config.mjs', type: 'js' },
-	{ filename: 'cypress.config.cjs', type: 'js' }
+const CYPRESS_CONFIG_FILES: ReadonlyArray<string> = [
+	'cypress.config.ts',
+	'cypress.config.mts',
+	'cypress.config.cts',
+	'cypress.config.js',
+	'cypress.config.mjs',
+	'cypress.config.cjs'
 ];
 
-const fileExists = (
-	configFile: CypressConfigFile
-): task.Task<CypressConfigFile | undefined> =>
+const fileExists = (configFile: string): task.Task<string | undefined> =>
 	func.pipe(
-		taskEither.tryCatch(() => fs.stat(configFile.filename), func.identity),
+		taskEither.tryCatch(() => fs.stat(configFile), func.identity),
 		taskEither.fold(
 			() => async () => undefined,
 			() => async () => configFile
@@ -39,9 +30,9 @@ const fileExists = (
 
 const compileCypressConfigFile =
 	(process: NodeJS.Process) =>
-	(configFile: CypressConfigFile): taskEither.TaskEither<Error, string> => {
+	(configFile: string): taskEither.TaskEither<Error, string> => {
 		const destDir = path.join(process.cwd(), 'node_modules');
-		const file = path.join(process.cwd(), configFile.filename);
+		const file = path.join(process.cwd(), configFile);
 		return func.pipe(
 			createCompile(process.cwd(), destDir, 'commonjs')(file),
 			taskEither.map(() => file)
