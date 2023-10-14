@@ -9,16 +9,30 @@ const WORKING_DIR = path.join(
 	'compileCypress'
 );
 
-const clean = (): Promise<unknown> =>
-	fs
+const FILES_TO_KEEP = ['node_modules', '.gitignore', '.gitkeep'];
+
+const clean = (): Promise<unknown> => {
+	const rootPromise = fs
 		.readdir(WORKING_DIR)
 		.then((files) =>
 			files
-				.filter((file) => file !== '.gitkeep')
+				.filter((file) => !FILES_TO_KEEP.includes(file))
 				.map((file) => path.join(WORKING_DIR, file))
 				.map((file) => fs.rm(file))
 		)
 		.then(Promise.all);
+	const nodeModulesDir = path.join(WORKING_DIR, 'node_modules');
+	const nodeModulesPromise = fs
+		.readdir(nodeModulesDir)
+		.then((files) =>
+			files
+				.filter((file) => !FILES_TO_KEEP.includes(file))
+				.map((file) => path.join(nodeModulesDir, file))
+				.map((file) => fs.rm(file))
+		)
+		.then(Promise.all);
+	return Promise.all([rootPromise, nodeModulesPromise]);
+};
 
 describe('compile cypress config', () => {
 	beforeEach(async () => {
