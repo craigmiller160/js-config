@@ -19,14 +19,18 @@ const CYPRESS_CONFIG_FILES: ReadonlyArray<string> = [
 	'cypress.config.cjs'
 ];
 
-const fileExists = (configFile: string): task.Task<string | undefined> =>
-	func.pipe(
-		taskEither.tryCatch(() => fs.stat(configFile), func.identity),
-		taskEither.fold(
-			() => async () => undefined,
-			() => async () => configFile
-		)
-	);
+const fileExists =
+	(process: NodeJS.Process) =>
+	(configFile: string): task.Task<string | undefined> => {
+		const configFilePath = path.join(process.cwd(), configFile);
+		return func.pipe(
+			taskEither.tryCatch(() => fs.stat(configFilePath), func.identity),
+			taskEither.fold(
+				() => async () => undefined,
+				() => async () => configFile
+			)
+		);
+	};
 
 const compileCypressConfigFile =
 	(process: NodeJS.Process) =>
@@ -44,7 +48,7 @@ export const compileAndGetCypressConfig = (
 ): taskEither.TaskEither<Error, string> =>
 	func.pipe(
 		CYPRESS_CONFIG_FILES,
-		readonlyArray.map(fileExists),
+		readonlyArray.map(fileExists(process)),
 		task.sequenceArray,
 		taskOption.fromTask,
 		taskOption.chainOptionK(readonlyArray.findFirst((result) => !!result)),
