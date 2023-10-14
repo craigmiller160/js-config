@@ -37,10 +37,7 @@ const compileCypressConfigFile =
 	(configFile: string): taskEither.TaskEither<Error, string> => {
 		const destDir = path.join(process.cwd(), 'node_modules');
 		const file = path.join(process.cwd(), configFile);
-		return func.pipe(
-			createCompile(process.cwd(), destDir, 'commonjs')(file),
-			taskEither.map(() => file)
-		);
+		return createCompile(process.cwd(), destDir, 'commonjs')(file);
 	};
 
 export const compileAndGetCypressConfig = (
