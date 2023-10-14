@@ -63,10 +63,11 @@ describe('compile cypress config', () => {
 
 	it('compiles cypress.config.ts', async () => {
 		await createCypressConfig('cypress.config.ts', 'ts');
-		await compileAndGetCypressConfig({
+		const result = await compileAndGetCypressConfig({
 			...process,
 			cwd: () => WORKING_DIR
 		})();
+		expect(result).toBeRight();
 		const content = await fs.readFile(OUTPUT_PATH, 'utf8');
 		expect(content).toEqual(CJS_CONTENT);
 	});
