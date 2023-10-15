@@ -1,15 +1,24 @@
 import { logger } from './logger';
-import { either, function as func } from 'fp-ts';
+import { function as func, taskEither } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { CYPRESS } from './commandPaths';
 import { runCommandSync } from './utils/runCommand';
 import { terminate } from './utils/terminate';
+import { compileAndGetCypressConfig } from './cypress';
 
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running cypress dev server');
 	func.pipe(
 		findCommand(process, CYPRESS),
-		either.chain((command) => runCommandSync(`${command} open`)),
-		either.fold(terminate, terminate)
+		taskEither.fromEither,
+		taskEither.bindTo('command'),
+		taskEither.bind('config', () => compileAndGetCypressConfig(process)),
+		taskEither.chainEitherK(({ command, config }) =>
+			runCommandSync(`${command} open -C ${config}`)
+		),
+		taskEither.fold(
+			(ex) => async () => terminate(ex),
+			() => async () => terminate('')
+		)
 	);
 };
