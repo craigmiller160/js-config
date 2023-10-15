@@ -6,9 +6,9 @@ import { runCommandSync } from './utils/runCommand';
 import { terminate } from './utils/terminate';
 import { compileAndGetCypressConfig } from './cypress';
 
-export const execute = (process: NodeJS.Process) => {
+export const execute = (process: NodeJS.Process): Promise<void> => {
 	logger.info('Running cypress dev server');
-	func.pipe(
+	return func.pipe(
 		findCommand(process, CYPRESS),
 		taskEither.fromEither,
 		taskEither.bindTo('command'),
@@ -20,5 +20,5 @@ export const execute = (process: NodeJS.Process) => {
 			(ex) => async () => terminate(ex),
 			() => async () => terminate('')
 		)
-	);
+	)();
 };
