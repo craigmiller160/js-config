@@ -77,7 +77,7 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 		server: {
 			port: 3000,
 			host: true,
-			https
+			https: process.env.CYPRESS !== 'true' ? https : undefined
 		},
 		build: {
 			outDir: path.join(process.cwd(), 'build'),
