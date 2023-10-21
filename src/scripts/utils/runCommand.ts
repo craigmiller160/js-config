@@ -5,7 +5,7 @@ import { unknownToError } from './unknownToError';
 
 export const runCommandAsync = (
 	command: string,
-	options?: SpawnOptions
+	options?: Partial<SpawnOptions>
 ): taskEither.TaskEither<Error, string> => {
 	logger.debug(`Running command: ${command}`);
 
@@ -55,22 +55,16 @@ export const runCommandAsync = (
 
 export const runCommandSync = (
 	command: string,
-	options?: SpawnOptions
+	options?: Partial<SpawnOptions>
 ): either.Either<Error, string> => {
 	logger.debug(`Running command: ${command}`);
 	const commandParts = command.split(' ');
 	const result = spawnSync(commandParts[0], commandParts.slice(1), {
 		...(options ?? {}),
-		stdio: 'pipe'
+		stdio: options?.stdio ?? 'inherit'
 	});
 	const stdout = result.stdout?.toString('utf8') ?? '';
-	const stderr = result.stderr?.toString('utf8');
-	if (stdout) {
-		logger.debug(`  STDOUT: ${stdout}`);
-	}
-	if (stderr) {
-		logger.error(`  STDERR: ${stderr}`);
-	}
+	const stderr = result.stderr?.toString('utf8') ?? '';
 
 	if (result.status === 0) {
 		return either.right(stdout);
