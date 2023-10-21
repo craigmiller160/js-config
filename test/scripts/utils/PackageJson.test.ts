@@ -10,13 +10,25 @@ const packageJsonDirectory = path.join(
 );
 
 describe('PackageJson', () => {
-	it('parses a valid package.json', () => {
+	it('parses a valid package.json with no type field', () => {
 		const result = parsePackageJson(
 			path.join(packageJsonDirectory, 'valid.json')
 		);
 		expect(result).toEqualRight({
 			name: 'TheName',
-			version: '1.0.0'
+			version: '1.0.0',
+			type: 'commonjs'
+		});
+	});
+
+	it('parses a valid package.json with a type field', () => {
+		const result = parsePackageJson(
+			path.join(packageJsonDirectory, 'validWithType.json')
+		);
+		expect(result).toEqualRight({
+			name: 'TheName',
+			version: '1.0.0',
+			type: 'module'
 		});
 	});
 
