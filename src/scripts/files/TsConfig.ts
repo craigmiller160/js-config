@@ -24,7 +24,8 @@ const compilerOptionsCodec = t.readonly(
 			t.literal('classic'),
 			t.literal('nodenext'),
 			t.literal('bundler')
-		])
+		]),
+		verbatimModuleSyntax: t.boolean
 	})
 );
 
