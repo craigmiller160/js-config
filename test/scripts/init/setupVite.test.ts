@@ -49,7 +49,7 @@ describe('setupVite', () => {
 		expect(config.includes('foo')).toBe(false);
 	});
 
-	it('backs up and replaces old vite config', () => {
+	it('replaces old vite config', () => {
 		fs.writeFileSync(VITE_CONFIG_PATH, 'Hello World');
 		const result = setupVite(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
@@ -58,11 +58,6 @@ describe('setupVite', () => {
 		const config = fs.readFileSync(VITE_CONFIG_PATH, 'utf8');
 		expect(config.includes('@craigmiller160/js-config')).toBe(true);
 		expect(config.includes('foo')).toBe(false);
-
-		const backupConfigPath = path.join(WORKING_DIR, 'vite.config.backup');
-		expect(fs.existsSync(backupConfigPath)).toBe(true);
-		const backupConfig = fs.readFileSync(backupConfigPath, 'utf8');
-		expect(backupConfig).toBe('Hello World');
 	});
 
 	it('does nothing when valid vite config is present', () => {

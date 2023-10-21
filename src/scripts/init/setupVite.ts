@@ -37,18 +37,6 @@ const getExistingFileType = (
 	}, unknownToError);
 };
 
-const backupExistingFile = (
-	cwd: string,
-	viteConfigPath: string,
-	existingFileType: ExistingFileType
-): either.Either<Error, unknown> =>
-	either.tryCatch(() => {
-		if (existingFileType === 'invalid') {
-			logger.debug('Backing up old vite config');
-			fs.renameSync(viteConfigPath, path.join(cwd, 'vite.config.backup'));
-		}
-	}, unknownToError);
-
 const writeViteConfig = (
 	cwd: string,
 	viteConfigPath: string,
@@ -71,9 +59,6 @@ export const setupVite = (
 	const viteConfigPath = getViteConfigPath(cwd, packageJson.type);
 	return func.pipe(
 		getExistingFileType(viteConfigPath),
-		either.chainFirst((existingFileType) =>
-			backupExistingFile(cwd, viteConfigPath, existingFileType)
-		),
 		either.chainFirst((existingFileType) =>
 			writeViteConfig(cwd, viteConfigPath, existingFileType)
 		)
