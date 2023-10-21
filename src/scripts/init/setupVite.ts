@@ -68,10 +68,7 @@ export const setupVite = (
 	packageJson: PackageJson
 ): either.Either<Error, unknown> => {
 	logger.info('Setting up Vite');
-	const viteConfigPath = getViteConfigPath(
-		cwd,
-		packageJson.type ?? 'commonjs'
-	);
+	const viteConfigPath = getViteConfigPath(cwd, packageJson.type);
 	return func.pipe(
 		getExistingFileType(viteConfigPath),
 		either.chainFirst((existingFileType) =>

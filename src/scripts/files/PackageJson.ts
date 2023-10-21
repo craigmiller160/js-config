@@ -27,7 +27,9 @@ export const packageJsonCodec = t.readonly(
 	})
 );
 
-export type PackageJson = t.TypeOf<typeof packageJsonCodec>;
+export type PackageJson = t.TypeOf<typeof packageJsonCodec> & {
+	type: PackageJsonType;
+};
 
 export const parsePackageJson = (
 	packageJsonPath: string
@@ -39,5 +41,11 @@ export const parsePackageJson = (
 		),
 		either.chain(json.parse),
 		either.mapLeft(unknownToError),
-		either.chain(decode(packageJsonCodec))
+		either.chain(decode(packageJsonCodec)),
+		either.map(
+			(packageJson): PackageJson => ({
+				...packageJson,
+				type: packageJson.type ?? 'commonjs'
+			})
+		)
 	);
