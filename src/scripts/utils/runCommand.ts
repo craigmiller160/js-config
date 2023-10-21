@@ -59,7 +59,7 @@ export const runCommandSync = (
 	const commandParts = command.split(' ');
 	const result = spawnSync(commandParts[0], commandParts.slice(1), {
 		...(options ?? {}),
-		stdio: options?.stdio ?? 'pipe'
+		stdio: options?.stdio ?? 'inherit'
 	});
 	const stdout = result.stdout?.toString('utf8') ?? '';
 	const stderr = result.stderr?.toString('utf8') ?? '';
