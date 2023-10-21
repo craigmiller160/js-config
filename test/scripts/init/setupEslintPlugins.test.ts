@@ -51,4 +51,14 @@ describe('setupEslintPlugins', () => {
 		const result = setupEslintPlugins(isLibraryPresent);
 		expect(result).toEqual(['plugin:cypress/recommended']);
 	});
+
+	it('adds tanstack query plugins', () => {
+		const isLibraryPresent = createIsLibraryPresent([
+			'@tanstack/react-query'
+		]);
+		const result = setupEslintPlugins(isLibraryPresent);
+		expect(result).toEqual([
+			'plugin:@tanstack/eslint-plugin-query/recommended'
+		]);
+	});
 });
