@@ -18,23 +18,21 @@ export const runCommandAsync = (
 					commandParts.slice(1),
 					{
 						...(options ?? {}),
-						stdio: 'pipe'
+						stdio: options?.stdio ?? 'inherit'
 					}
 				);
 
 				let output = '';
 				let error = '';
 
-				childProcess.stdout.on('data', (data: Buffer) => {
+				childProcess.stdout?.on('data', (data: Buffer) => {
 					const text = data.toString('utf8');
 					output += `${text}\n`;
-					logger.debug(`  STDOUT: ${text.trim()}`);
 				});
 
-				childProcess.stderr.on('data', (data: Buffer) => {
+				childProcess.stderr?.on('data', (data: Buffer) => {
 					const text = data.toString('utf8');
 					error += `${text}\n`;
-					logger.debug(`  STDERR: ${text.trim()}`);
 				});
 
 				childProcess.on('exit', (code) => {
@@ -61,7 +59,7 @@ export const runCommandSync = (
 	const commandParts = command.split(' ');
 	const result = spawnSync(commandParts[0], commandParts.slice(1), {
 		...(options ?? {}),
-		stdio: options?.stdio ?? 'inherit'
+		stdio: options?.stdio ?? 'pipe'
 	});
 	const stdout = result.stdout?.toString('utf8') ?? '';
 	const stderr = result.stderr?.toString('utf8') ?? '';
