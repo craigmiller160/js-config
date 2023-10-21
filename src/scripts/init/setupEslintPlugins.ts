@@ -23,6 +23,9 @@ const TESTING_LIBRARY_PLUGINS: ReadonlyArray<string> = [
 const VITEST_PLUGINS: ReadonlyArray<string> = ['plugin:vitest/recommended'];
 
 const CYPRESS_PLUGINS: ReadonlyArray<string> = ['plugin:cypress/recommended'];
+const TANSTACK_QUERY_PLUGINS: ReadonlyArray<string> = [
+	'plugin:@tanstack/eslint-plugin-query/recommended'
+];
 
 export const setupEslintPlugins = (
 	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
@@ -37,7 +40,8 @@ export const setupEslintPlugins = (
 		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : [],
 		isLibraryPresent('@testing-library/react')
 			? REACT_TESTING_LIBRARY_PLUGINS
-			: []
+			: [],
+		isLibraryPresent('@tanstack/react-query') ? TANSTACK_QUERY_PLUGINS : []
 	];
 	return plugins.flat();
 };
