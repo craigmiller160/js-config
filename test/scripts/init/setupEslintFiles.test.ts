@@ -85,7 +85,7 @@ describe('setupEslint', () => {
 		);
 
 		expect(fs.existsSync(prettierrcPath)).toBe(false);
-		expect(fs.existsSync(correctPrettierrcPath)).toBe(false);
+		expect(fs.existsSync(correctPrettierrcPath)).toBe(true);
 		const prettierConfig = fs.readFileSync(correctPrettierrcPath, 'utf8');
 		expect(prettierConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
