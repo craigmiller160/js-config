@@ -69,7 +69,10 @@ describe('setupVite', () => {
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(false);
-		const config = fs.readFileSync(path.join('vite.config.mts'), 'utf8');
+		const config = fs.readFileSync(
+			path.join(WORKING_DIR, 'vite.config.mts'),
+			'utf8'
+		);
 		expect(config.includes('@craigmiller160/js-config')).toBe(true);
 		expect(config.includes('foo')).toBe(false);
 	});
