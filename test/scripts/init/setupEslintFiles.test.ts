@@ -51,6 +51,10 @@ describe('setupEslint', () => {
 		);
 	});
 
+	it.fails(
+		'writes default eslint & prettier config files and deletes ones with wrong extension'
+	);
+
 	it("writes default eslint & prettier config files, replacing existing ones that don't reference this lib", () => {
 		fs.writeFileSync(
 			eslintrcPath,
