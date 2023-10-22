@@ -68,6 +68,7 @@ const removeInvalidViteConfig = (
 	const configPath = getInvalidViteConfigPath(cwd, packageJson.type);
 	return either.tryCatch(() => {
 		if (fs.existsSync(configPath)) {
+			logger.debug(`Removing invalid vite config: ${configPath}`);
 			fs.rmSync(configPath);
 		}
 	}, unknownToError);
