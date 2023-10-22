@@ -18,6 +18,16 @@ const getViteConfigPath = (cwd: string, type: PackageJsonType): string => {
 	return path.join(cwd, 'vite.config.ts');
 };
 
+const getInvalidViteConfigPath = (
+	cwd: string,
+	type: PackageJsonType
+): string => {
+	if (type === 'commonjs') {
+		return path.join(cwd, 'vite.config.ts');
+	}
+	return path.join(cwd, 'vite.config.mts');
+};
+
 type ExistingFileType = 'invalid' | 'valid' | 'none';
 
 const getExistingFileType = (
@@ -51,6 +61,19 @@ const writeViteConfig = (
 		}
 	}, unknownToError);
 
+const removeInvalidViteConfig = (
+	cwd: string,
+	packageJson: PackageJson
+): either.Either<Error, unknown> => {
+	const configPath = getInvalidViteConfigPath(cwd, packageJson.type);
+	return either.tryCatch(() => {
+		if (fs.existsSync(configPath)) {
+			logger.debug(`Removing invalid vite config: ${configPath}`);
+			fs.rmSync(configPath);
+		}
+	}, unknownToError);
+};
+
 export const setupVite = (
 	cwd: string,
 	packageJson: PackageJson
@@ -61,6 +84,7 @@ export const setupVite = (
 		getExistingFileType(viteConfigPath),
 		either.chainFirst((existingFileType) =>
 			writeViteConfig(cwd, viteConfigPath, existingFileType)
-		)
+		),
+		either.chain(() => removeInvalidViteConfig(cwd, packageJson))
 	);
 };

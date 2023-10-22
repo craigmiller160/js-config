@@ -60,6 +60,23 @@ describe('setupVite', () => {
 		expect(config.includes('foo')).toBe(false);
 	});
 
+	it('sets up vite config and deletes file with wrong extension', () => {
+		fs.writeFileSync(VITE_CONFIG_PATH, 'Hello World');
+		const result = setupVite(WORKING_DIR, {
+			...packageJson,
+			type: 'commonjs'
+		});
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(VITE_CONFIG_PATH)).toBe(false);
+		const config = fs.readFileSync(
+			path.join(WORKING_DIR, 'vite.config.mts'),
+			'utf8'
+		);
+		expect(config.includes('@craigmiller160/js-config')).toBe(true);
+		expect(config.includes('foo')).toBe(false);
+	});
+
 	it('does nothing when valid vite config is present', () => {
 		fs.writeFileSync(VITE_CONFIG_PATH, `${VITE_CONFIG.trim()}\n// foo`);
 		const result = setupVite(WORKING_DIR, packageJson);
