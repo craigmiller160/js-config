@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
+import { PackageJson } from '../../../src/scripts/files/PackageJson';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -25,6 +26,14 @@ const wipeWorkingDir = () =>
 const eslintrcPath = path.join(WORKING_DIR, '.eslintrc.js');
 const prettierrcPath = path.join(WORKING_DIR, '.prettierrc.js');
 
+const packageJson: PackageJson = {
+	name: 'name',
+	version: '1.0.0',
+	type: 'commonjs',
+	dependencies: undefined,
+	devDependencies: undefined
+};
+
 describe('setupEslint', () => {
 	beforeEach(() => {
 		wipeWorkingDir();
@@ -35,7 +44,7 @@ describe('setupEslint', () => {
 	});
 
 	it('writes default eslint & prettier config files when none exist', () => {
-		const result = setupEslintFiles(WORKING_DIR);
+		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(eslintrcPath)).toBe(true);
@@ -65,7 +74,7 @@ describe('setupEslint', () => {
 			`module.exports = require('@craigmiller160/prettier-config/.prettierrc.js');`
 		);
 
-		const result = setupEslintFiles(WORKING_DIR);
+		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(eslintrcPath)).toBe(true);
@@ -91,7 +100,7 @@ describe('setupEslint', () => {
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js'); \\ foo`
 		);
 
-		const result = setupEslintFiles(WORKING_DIR);
+		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(eslintrcPath)).toBe(true);

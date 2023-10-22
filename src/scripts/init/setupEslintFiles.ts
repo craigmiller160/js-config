@@ -2,6 +2,7 @@ import { either, function as func } from 'fp-ts';
 import path from 'path';
 import fs from 'fs';
 import { logger } from '../logger';
+import { PackageJson } from '../files/PackageJson';
 
 const getEslintrcPath = (cwd: string): string => path.join(cwd, '.eslintrc.js');
 const getPrettierrcPath = (cwd: string): string =>
@@ -15,7 +16,10 @@ const shouldWriteConfig = (configPath: string): boolean => {
 	return true;
 };
 
-export const setupEslintFiles = (cwd: string): either.Either<Error, void> => {
+export const setupEslintFiles = (
+	cwd: string,
+	packageJson: PackageJson
+): either.Either<Error, void> => {
 	logger.info('Setting up eslint files');
 	try {
 		const eslintrcPath = getEslintrcPath(cwd);
