@@ -63,6 +63,12 @@ module.exports = {
 					typescript: {}
 				}
 			}
+		},
+		{
+			files: ['**/*.cjs'],
+			env: {
+				node: true
+			}
 		}
 	]
 };
