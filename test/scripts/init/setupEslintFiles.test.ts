@@ -60,9 +60,37 @@ describe('setupEslint', () => {
 		);
 	});
 
-	it.fails(
-		'writes default eslint & prettier config files and deletes ones with wrong extension'
-	);
+	it('writes default eslint & prettier config files and deletes ones with wrong extension', () => {
+		const correctEslintrcPath = path.join(WORKING_DIR, '.eslintrc.cjs');
+		const correctPrettierrcPath = path.join(WORKING_DIR, '.prettierrc.cjs');
+		fs.writeFileSync(eslintrcPath, 'eslint');
+		fs.writeFileSync(prettierrcPath, 'prettier');
+
+		expect(fs.existsSync(eslintrcPath)).toBe(true);
+		expect(fs.existsSync(prettierrcPath)).toBe(true);
+		expect(fs.existsSync(correctEslintrcPath)).toBe(false);
+		expect(fs.existsSync(correctPrettierrcPath)).toBe(false);
+
+		const result = setupEslintFiles(WORKING_DIR, {
+			...packageJson,
+			type: 'module'
+		});
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(eslintrcPath)).toBe(false);
+		expect(fs.existsSync(correctEslintrcPath)).toBe(true);
+		const eslintConfig = fs.readFileSync(correctEslintrcPath, 'utf8');
+		expect(eslintConfig.trim()).toBe(
+			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+		);
+
+		expect(fs.existsSync(prettierrcPath)).toBe(false);
+		expect(fs.existsSync(correctPrettierrcPath)).toBe(false);
+		const prettierConfig = fs.readFileSync(correctPrettierrcPath, 'utf8');
+		expect(prettierConfig.trim()).toBe(
+			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
+		);
+	});
 
 	it("writes default eslint & prettier config files, replacing existing ones that don't reference this lib", () => {
 		fs.writeFileSync(
