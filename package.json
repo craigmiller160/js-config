@@ -49,6 +49,9 @@
     },
     "@relmify/jest-fp-ts": {
       "optional": true
+    },
+    "vitest": {
+      "optional": true
     }
   },
   "peerDependencies": {
