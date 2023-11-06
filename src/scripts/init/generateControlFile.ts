@@ -14,7 +14,7 @@ export const generateControlFile = (
 	logger.info('Generating control file');
 	const controlFile: ControlFile = {
 		workingDirectoryPath: cwd,
-		projectType: packageJson.type ?? 'commonjs',
+		projectType: packageJson.type,
 		eslintPlugins
 	};
 	return either.tryCatch(
