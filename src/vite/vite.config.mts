@@ -66,6 +66,11 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 		root: path.join(process.cwd(), 'src'),
 		publicDir: path.join(process.cwd(), 'public'),
 		envDir: path.join(process.cwd(), 'environment'),
+		css: {
+			modules: {
+				localsConvention: 'camelCase'
+			}
+		},
 		test: {
 			root: path.join(process.cwd(), 'test'),
 			setupFiles: [
