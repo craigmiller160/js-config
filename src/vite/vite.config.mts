@@ -73,6 +73,11 @@ const createDefaultConfig = async (): Promise<UserConfig> => {
 		},
 		test: {
 			root: path.join(process.cwd(), 'test'),
+			css: {
+				modules: {
+					classNameStrategy: 'non-scoped'
+				}
+			},
 			setupFiles: [
 				hasJestFpTs ? getJestFpTsPath() : noop,
 				hasJestDom ? getTestingLibraryJestDomPath() : noop,
