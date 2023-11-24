@@ -26,8 +26,8 @@ const fileExists =
 		return func.pipe(
 			taskEither.tryCatch(() => fs.stat(configFilePath), func.identity),
 			taskEither.fold(
-				() => async () => undefined,
-				() => async () => configFile
+				() => () => Promise.resolve(undefined),
+				() => () => Promise.resolve(configFile)
 			)
 		);
 	};

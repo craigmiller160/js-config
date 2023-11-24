@@ -65,7 +65,7 @@ const createTsConfig = (
 		existingTsConfig = func.pipe(
 			parseTsConfig(tsConfigPath),
 			either.fold((error): TsConfig | undefined => {
-				logger.error(`Error parsing ${tsConfigPath}: ${error}`);
+				logger.error(`Error parsing ${tsConfigPath}: ${error.message}`);
 				return undefined;
 			}, func.identity)
 		);
