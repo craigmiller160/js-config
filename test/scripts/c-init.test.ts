@@ -93,7 +93,7 @@ describe('c-init', () => {
 		const packageJson: PackageJson = {
 			name: '',
 			version: '',
-			type: undefined,
+			type: 'module',
 			dependencies: {},
 			devDependencies: {}
 		};
@@ -121,6 +121,7 @@ describe('c-init', () => {
 			cwd,
 			packageJson,
 			plugins,
+			false,
 			process
 		);
 		expect(terminate).toHaveBeenCalled();
