@@ -12,6 +12,11 @@ const reactSettings = !hasReact
 			}
 	  };
 
+const tsConfiguration =
+	process.env.ESLINT_FAST === 'true'
+		? 'plugin:@typescript-eslint/recommended'
+		: 'plugin:@typescript-eslint/recommended-type-checked';
+
 const tsConfigPath = controlFile.hasTestDirectory
 	? path.join(process.cwd(), 'test', 'tsconfig.json')
 	: path.join(process.cwd(), 'tsconfig.json');
@@ -61,10 +66,7 @@ module.exports = {
 			parserOptions: {
 				project: tsConfigPath
 			},
-			extends: [
-				'plugin:@typescript-eslint/recommended',
-				'plugin:import/typescript'
-			],
+			extends: [tsConfiguration, 'plugin:import/typescript'],
 			settings: {
 				'import/resolver': {
 					typescript: {}
