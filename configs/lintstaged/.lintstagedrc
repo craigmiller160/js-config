@@ -1,4 +1,4 @@
 {
-  "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "ESLINT_FAST=true c-eslint",
+  "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "cross-env ESLINT_FAST=true c-eslint",
   "*.{css,scss}": "c-stylelint"
 }

@@ -17,10 +17,6 @@ const tsConfiguration =
 		? 'plugin:@typescript-eslint/recommended'
 		: 'plugin:@typescript-eslint/recommended-type-checked';
 
-const tsConfigPath = controlFile.hasTestDirectory
-	? path.join(process.cwd(), 'test', 'tsconfig.json')
-	: path.join(process.cwd(), 'tsconfig.json');
-
 const controlFilePlugins = controlFile.eslintPlugins.filter(
 	(plugin) =>
 		!(
@@ -64,7 +60,7 @@ module.exports = {
 			files: ['**/*.{ts,tsx,mts,cts}'],
 			parser: '@typescript-eslint/parser',
 			parserOptions: {
-				project: tsConfigPath
+				project: true
 			},
 			extends: [tsConfiguration, 'plugin:import/typescript'],
 			settings: {
