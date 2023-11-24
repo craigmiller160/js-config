@@ -2,4 +2,4 @@
 
 import { execute } from '../scripts/c-build-lib';
 
-execute(process);
+void execute(process);

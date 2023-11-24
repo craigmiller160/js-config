@@ -18,8 +18,8 @@ export const execute = (process: NodeJS.Process) => {
 		either.bindTo('viteCommand'),
 		either.bind('tscCommand', () => findCommand(process, TSC)),
 		either.fold(terminate, ({ viteCommand, tscCommand }) => {
-			runCommandAsync(`${viteCommand} ${args} -c ${config}`)();
-			runCommandAsync(`${tscCommand} --noEmit --watch`)();
+			void runCommandAsync(`${viteCommand} ${args} -c ${config}`)();
+			void runCommandAsync(`${tscCommand} --noEmit --watch`)();
 		})
 	);
 };
