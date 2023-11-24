@@ -45,7 +45,9 @@ vi.mock('../../src/scripts/utils/cwd', () => ({
 	findCwd: vi.fn()
 }));
 vi.mock('../../src/scripts/files/PackageJson', async () => {
-	const actual = await vi.importActual('../../src/scripts/files/PackageJson');
+	const actual = await vi.importActual<object>(
+		'../../src/scripts/files/PackageJson'
+	);
 	return {
 		...actual,
 		parsePackageJson: vi.fn()

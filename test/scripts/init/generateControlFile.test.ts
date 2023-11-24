@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs';
-import { getControlFilePath } from '../../../src/scripts/files/ControlFile';
+import {
+	ControlFile,
+	getControlFilePath
+} from '../../../src/scripts/files/ControlFile';
 import { generateControlFile } from '../../../src/scripts/init/generateControlFile';
 import { PackageJson } from '../../../src/scripts/files/PackageJson';
 
@@ -50,7 +53,9 @@ describe('generateControlFile', () => {
 		expect(result).toBeRight();
 
 		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
-		const controlFile = JSON.parse(fs.readFileSync(CONTROL_FILE, 'utf8'));
+		const controlFile = JSON.parse(
+			fs.readFileSync(CONTROL_FILE, 'utf8')
+		) as ControlFile;
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
 			projectType: 'module',

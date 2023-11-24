@@ -37,7 +37,9 @@ describe('setupStylelint', () => {
 	it('sets up stylelint config file', () => {
 		setupStylelint(WORKING_DIR);
 		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
-		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		const content = JSON.parse(
+			fs.readFileSync(STYLELINT_PATH, 'utf8')
+		) as Stylelintrc;
 		expect(content).toEqual(EXPECTED_CONFIG);
 	});
 
@@ -50,7 +52,9 @@ describe('setupStylelint', () => {
 
 		setupStylelint(WORKING_DIR);
 		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
-		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		const content = JSON.parse(
+			fs.readFileSync(STYLELINT_PATH, 'utf8')
+		) as Stylelintrc;
 		expect(content).toEqual(EXPECTED_CONFIG);
 	});
 
@@ -65,7 +69,9 @@ describe('setupStylelint', () => {
 
 		setupStylelint(WORKING_DIR);
 		expect(fs.existsSync(STYLELINT_PATH)).toBe(true);
-		const content = JSON.parse(fs.readFileSync(STYLELINT_PATH, 'utf8'));
+		const content = JSON.parse(
+			fs.readFileSync(STYLELINT_PATH, 'utf8')
+		) as Stylelintrc;
 		expect(content).toEqual(config);
 	});
 });

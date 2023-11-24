@@ -11,6 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
 import { isLibraryPresent } from '../../../src/scripts/utils/library';
+import { TsConfig } from '../../../src/scripts/files/TsConfig';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -107,7 +108,9 @@ describe('setupTypescript', () => {
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
-			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+			const tsconfig = JSON.parse(
+				fs.readFileSync(TEST_TSCONFIG, 'utf8')
+			) as TsConfig;
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				include: ['../src/**/*', '**/*']
@@ -131,7 +134,9 @@ describe('setupTypescript', () => {
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
-			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+			const tsconfig = JSON.parse(
+				fs.readFileSync(TEST_TSCONFIG, 'utf8')
+			) as TsConfig;
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				compilerOptions: {
@@ -148,7 +153,9 @@ describe('setupTypescript', () => {
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
-			const tsconfig = JSON.parse(fs.readFileSync(TEST_TSCONFIG, 'utf8'));
+			const tsconfig = JSON.parse(
+				fs.readFileSync(TEST_TSCONFIG, 'utf8')
+			) as TsConfig;
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				include: ['../src/**/*', '**/*']
@@ -175,7 +182,7 @@ describe('setupTypescript', () => {
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(
 				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
-			);
+			) as TsConfig;
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				compilerOptions: {
@@ -203,7 +210,7 @@ describe('setupTypescript', () => {
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
 			const tsconfig = JSON.parse(
 				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
-			);
+			) as TsConfig;
 			expect(tsconfig).toEqual({
 				extends: '../tsconfig.json',
 				compilerOptions: {
