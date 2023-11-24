@@ -45,9 +45,9 @@ vi.mock('../../src/scripts/utils/cwd', () => ({
 	findCwd: vi.fn()
 }));
 vi.mock('../../src/scripts/files/PackageJson', async () => {
-	const actual = (await vi.importActual(
+	const actual = await vi.importActual<object>(
 		'../../src/scripts/files/PackageJson'
-	)) as object;
+	);
 	return {
 		...actual,
 		parsePackageJson: vi.fn()
@@ -93,7 +93,7 @@ describe('c-init', () => {
 		const packageJson: PackageJson = {
 			name: '',
 			version: '',
-			type: undefined,
+			type: 'module',
 			dependencies: {},
 			devDependencies: {}
 		};
@@ -121,6 +121,7 @@ describe('c-init', () => {
 			cwd,
 			packageJson,
 			plugins,
+			false,
 			process
 		);
 		expect(terminate).toHaveBeenCalled();

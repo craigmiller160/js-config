@@ -12,6 +12,11 @@ const reactSettings = !hasReact
 			}
 	  };
 
+const tsConfiguration =
+	process.env.ESLINT_FAST === 'true'
+		? 'plugin:@typescript-eslint/recommended'
+		: 'plugin:@typescript-eslint/recommended-type-checked';
+
 const controlFilePlugins = controlFile.eslintPlugins.filter(
 	(plugin) =>
 		!(
@@ -54,10 +59,10 @@ module.exports = {
 		{
 			files: ['**/*.{ts,tsx,mts,cts}'],
 			parser: '@typescript-eslint/parser',
-			extends: [
-				'plugin:@typescript-eslint/recommended',
-				'plugin:import/typescript'
-			],
+			parserOptions: {
+				project: true
+			},
+			extends: [tsConfiguration, 'plugin:import/typescript'],
 			settings: {
 				'import/resolver': {
 					typescript: {}

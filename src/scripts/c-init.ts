@@ -11,6 +11,7 @@ import { setupEslintPlugins } from './init/setupEslintPlugins';
 import { setupGitHooks } from './init/setupGitHooks';
 import { setupVite } from './init/setupVite';
 import { setupStylelint } from './init/setupStylelint';
+import fs from 'fs';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
@@ -20,19 +21,29 @@ const performInitialization =
 			return either.right(func.constVoid());
 		}
 
+		const hasTestDirectory = fs.existsSync(path.join(cwd, 'test'));
+
 		return func.pipe(
 			parsePackageJson(path.join(cwd, 'package.json')),
 			either.bindTo('packageJson'),
 			either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
 			either.chainFirst(() => setupTypescript(cwd)),
-			either.chainFirst(({ packageJson }) => setupEslintFiles(cwd, packageJson)),
+			either.chainFirst(({ packageJson }) =>
+				setupEslintFiles(cwd, packageJson)
+			),
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
 			),
 			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() => setupGitHooks(cwd, process)),
 			either.chainFirst(({ packageJson, eslintPlugins }) =>
-				generateControlFile(cwd, packageJson, eslintPlugins, process)
+				generateControlFile(
+					cwd,
+					packageJson,
+					eslintPlugins,
+					hasTestDirectory,
+					process
+				)
 			)
 		);
 	};

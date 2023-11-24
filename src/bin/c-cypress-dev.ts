@@ -2,4 +2,4 @@
 
 import { execute } from '../scripts/c-cypress-dev';
 
-execute(process);
+void execute(process);

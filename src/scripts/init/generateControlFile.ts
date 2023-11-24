@@ -9,13 +9,15 @@ export const generateControlFile = (
 	cwd: string,
 	packageJson: PackageJson,
 	eslintPlugins: ReadonlyArray<string>,
+	hasTestDirectory: boolean,
 	process: NodeJS.Process
 ): either.Either<Error, void> => {
 	logger.info('Generating control file');
 	const controlFile: ControlFile = {
 		workingDirectoryPath: cwd,
 		projectType: packageJson.type,
-		eslintPlugins
+		eslintPlugins,
+		hasTestDirectory
 	};
 	return either.tryCatch(
 		() =>

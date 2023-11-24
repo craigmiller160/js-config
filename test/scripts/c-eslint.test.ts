@@ -53,7 +53,7 @@ describe('c-eslint', () => {
 			{
 				env: expect.objectContaining({
 					NO_VITEST: 'true'
-				})
+				}) as object
 			}
 		);
 	});
@@ -69,7 +69,7 @@ describe('c-eslint', () => {
 			{
 				env: expect.objectContaining({
 					NO_VITEST: 'false'
-				})
+				}) as object
 			}
 		);
 	});
@@ -86,7 +86,7 @@ describe('c-eslint', () => {
 			{
 				env: expect.objectContaining({
 					NO_VITEST: 'true'
-				})
+				}) as object
 			}
 		);
 	});

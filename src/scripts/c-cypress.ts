@@ -19,8 +19,14 @@ export const execute = (process: NodeJS.Process): Promise<void> => {
 			)
 		),
 		taskEither.fold(
-			(ex) => async () => terminate(ex),
-			() => async () => terminate('')
+			(ex) => () => {
+				terminate(ex);
+				return Promise.resolve();
+			},
+			() => () => {
+				terminate('');
+				return Promise.resolve();
+			}
 		)
 	)();
 };
