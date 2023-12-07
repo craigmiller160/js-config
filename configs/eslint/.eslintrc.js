@@ -67,6 +67,20 @@ module.exports = {
 				'import/resolver': {
 					typescript: {}
 				}
+			},
+			rules: {
+				'@typescript-eslint/no-misused-promises': [
+					'error',
+					{
+						checksVoidReturn: {
+							arguments: false,
+							attributes: false,
+							properties: true,
+							returns: true,
+							variables: true
+						}
+					}
+				]
 			}
 		},
 		{
