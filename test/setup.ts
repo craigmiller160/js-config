@@ -1,7 +1,6 @@
 import { vi } from 'vitest';
 import path from 'path';
 import '../configs/test-support/jest-fp-ts.mjs';
-import '../configs/test-support/jest-fp-ts-types';
 
 vi.mock('../src/scripts/utils/runCommand', () => ({
 	runCommandSync: vi.fn(),
