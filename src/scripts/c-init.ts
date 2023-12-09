@@ -27,7 +27,9 @@ const performInitialization =
 			parsePackageJson(path.join(cwd, 'package.json')),
 			either.bindTo('packageJson'),
 			either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
-			either.chainFirst(() => setupTypescript(cwd)),
+			either.chainFirst(({ packageJson }) =>
+				setupTypescript(cwd, packageJson.type)
+			),
 			either.chainFirst(({ packageJson }) =>
 				setupEslintFiles(cwd, packageJson)
 			),

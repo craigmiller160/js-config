@@ -5,17 +5,24 @@ import { unknownToError } from '../utils/unknownToError';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
+import { PackageJsonType } from '../files/PackageJson';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
-const createRootTsConfig = (existingTsConfig?: TsConfig): TsConfig => {
-	return {
-		extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
-		compilerOptions: existingTsConfig?.compilerOptions,
-		include: ['src/**/*'],
-		exclude: ['node_modules', 'build', 'lib']
+const createRootTsConfig =
+	(packageJsonType: PackageJsonType): TsConfigCreator =>
+	(existingTsConfig?: TsConfig): TsConfig => {
+		const tsConfigFile =
+			packageJsonType === 'module'
+				? 'tsconfig.module.json'
+				: 'tsconfig.commonjs.json';
+		return {
+			extends: `@craigmiller160/js-config/configs/typescript/${tsConfigFile}`,
+			compilerOptions: existingTsConfig?.compilerOptions,
+			include: ['src/**/*'],
+			exclude: ['node_modules', 'build', 'lib']
+		};
 	};
-};
 
 const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -78,10 +85,20 @@ const createTsConfig = (
 	);
 };
 
-const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
+const createViteTsconfig = (
+	cwd: string,
+	packageJsonType: PackageJsonType
+): either.Either<Error, void> => {
+	const viteConfigFile =
+		packageJsonType === 'module' ? './vite.config.ts' : './vite.config.mts';
 	const config: TsConfig = {
 		extends: './tsconfig.json',
-		include: ['./vite.config.ts', './vite.config.cts', './vite.config.mts']
+		compilerOptions: {
+			module: 'ESNext',
+			moduleResolution: 'bundler',
+			verbatimModuleSyntax: true
+		},
+		include: [viteConfigFile]
 	};
 	const tsConfigPath = path.join(cwd, 'tsconfig.vite.json');
 	return either.tryCatch(
@@ -90,7 +107,10 @@ const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
 	);
 };
 
-export const setupTypescript = (cwd: string): either.Either<Error, void> => {
+export const setupTypescript = (
+	cwd: string,
+	packageJsonType: PackageJsonType
+): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
@@ -99,8 +119,8 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig),
-		either.chain(() => createViteTsconfig(cwd)),
+		createTsConfig(cwd, createRootTsConfig(packageJsonType)),
+		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (hasTestDir) {
 				return func.pipe(

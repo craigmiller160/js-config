@@ -112,7 +112,7 @@ describe('c-init', () => {
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
 		);
-		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd);
+		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd, 'module');
 		expect(setupViteMock).toHaveBeenCalledWith(cwd, packageJson);
 		expect(setupEslintPluginsMock).toHaveBeenCalled();
 		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, process);
