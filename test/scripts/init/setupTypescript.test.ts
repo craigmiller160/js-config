@@ -62,7 +62,9 @@ describe('setupTypescript', () => {
 			const result = setupTypescript(WORKING_DIR_PATH, 'module');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
-			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
+			expect(
+				JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))
+			).toEqual<TsConfig>({
 				extends:
 					'@craigmiller160/js-config/configs/typescript/tsconfig.module.json',
 				include: ['src/**/*'],
@@ -70,13 +72,16 @@ describe('setupTypescript', () => {
 			});
 
 			expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
-			expect(JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))).toEqual({
+			expect(
+				JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))
+			).toEqual<TsConfig>({
 				extends: './tsconfig.json',
-				include: [
-					'./vite.config.ts',
-					'./vite.config.cts',
-					'./vite.config.mts'
-				]
+				compilerOptions: {
+					module: 'ESNext',
+					moduleResolution: 'bundler',
+					verbatimModuleSyntax: true
+				},
+				include: ['./vite.config.ts']
 			});
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
@@ -95,13 +100,16 @@ describe('setupTypescript', () => {
 			});
 
 			expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
-			expect(JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))).toEqual({
+			expect(
+				JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))
+			).toEqual<TsConfig>({
 				extends: './tsconfig.json',
-				include: [
-					'./vite.config.ts',
-					'./vite.config.cts',
-					'./vite.config.mts'
-				]
+				compilerOptions: {
+					module: 'ESNext',
+					moduleResolution: 'bundler',
+					verbatimModuleSyntax: true
+				},
+				include: ['./vite.config.mts']
 			});
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);

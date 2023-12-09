@@ -9,14 +9,20 @@ import { PackageJsonType } from '../files/PackageJson';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
-const createRootTsConfig = (existingTsConfig?: TsConfig): TsConfig => {
-	return {
-		extends: '@craigmiller160/js-config/configs/typescript/tsconfig.json',
-		compilerOptions: existingTsConfig?.compilerOptions,
-		include: ['src/**/*'],
-		exclude: ['node_modules', 'build', 'lib']
+const createRootTsConfig =
+	(packageJsonType: PackageJsonType): TsConfigCreator =>
+	(existingTsConfig?: TsConfig): TsConfig => {
+		const tsConfigFile =
+			packageJsonType === 'module'
+				? 'tsconfig.module.json'
+				: 'tsconfig.commonjs.json';
+		return {
+			extends: `@craigmiller160/js-config/configs/typescript/${tsConfigFile}`,
+			compilerOptions: existingTsConfig?.compilerOptions,
+			include: ['src/**/*'],
+			exclude: ['node_modules', 'build', 'lib']
+		};
 	};
-};
 
 const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -113,7 +119,7 @@ export const setupTypescript = (
 	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig),
+		createTsConfig(cwd, createRootTsConfig(packageJsonType)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (hasTestDir) {
