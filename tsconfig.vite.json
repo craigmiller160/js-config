@@ -6,8 +6,6 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "./vite.config.ts",
-    "./vite.config.cts",
-    "./vite.config.mts"
+    "**/vite.config.mts"
   ]
 }

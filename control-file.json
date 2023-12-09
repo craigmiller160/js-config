@@ -1,5 +1,7 @@
 {
   "workingDirectoryPath": ".",
   "projectType": "commonjs",
-  "eslintPlugins": []
+  "eslintPlugins": [],
+  "hasCypressDirectory": false,
+  "hasTestDirectory": true
 }

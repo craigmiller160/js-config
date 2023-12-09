@@ -1,4 +1,4 @@
-import { runCommandSync } from './utils/runCommand';
+import { runCommandSync as defaultRunCommandSync } from './utils/runCommand';
 import path from 'path';
 import fs from 'fs';
 import { logger } from './logger';
@@ -6,52 +6,64 @@ import { terminate } from './utils/terminate';
 import { either, function as func } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
+import { ControlFile, parseControlFile } from './files/ControlFile';
+import { TsConfig } from './files/TsConfig';
+import { unknownToError } from './utils/unknownToError';
 
-const runRootTypeCheck = (
+const runTypeCheck = (
 	process: NodeJS.Process,
-	command: string
-): either.Either<Error, unknown> => {
-	const testTsconfigPath = path.join(process.cwd(), 'test', 'tsconfig.json');
-	if (fs.existsSync(testTsconfigPath)) {
-		logger.debug('Using test tsconfig.json for type check');
-		return runCommandSync(
-			`${command} --noEmit --project ./test/tsconfig.json`
-		);
-	}
-
-	logger.debug('Using base tsconfig.json for type check');
-	return runCommandSync(`${command} --noEmit`);
-};
-
-const runCypressTypeCheck = (
-	process: NodeJS.Process,
-	command: string
-): either.Either<Error, unknown> => {
-	const cypressTsconfigPath = path.join(
+	runCommandSync: typeof defaultRunCommandSync,
+	command: string,
+	controlFile: ControlFile
+): either.Either<Error, string> => {
+	const checkTsConfig: TsConfig = {
+		extends: '../tsconfig.json',
+		include: [
+			'../src/**/*',
+			controlFile.hasTestDirectory ? '../test/**/*' : undefined,
+			controlFile.hasCypressDirectory ? '../cypress/**/*' : undefined
+		].flatMap((item) => (item ? [item] : []))
+	};
+	const checkTsConfigPath = path.join(
 		process.cwd(),
-		'cypress',
-		'tsconfig.json'
+		'node_modules',
+		'tsconfig.check.json'
 	);
-	if (fs.existsSync(cypressTsconfigPath)) {
-		logger.debug('Cypress detected, performing cypress type check');
-		return runCommandSync(
-			`${command} --noEmit --project ./cypress/tsconfig.json`
-		);
-	}
-
-	logger.debug('Cypress not present, skipping cypress type check');
-	return either.right(func.constVoid());
+	return func.pipe(
+		either.tryCatch(
+			() =>
+				fs.writeFileSync(
+					checkTsConfigPath,
+					JSON.stringify(checkTsConfig, null, 2)
+				),
+			unknownToError
+		),
+		either.chain(() =>
+			runCommandSync(`${command} --noEmit --project ${checkTsConfigPath}`)
+		)
+	);
 };
 
-export const execute = (process: NodeJS.Process) => {
+export type Dependencies = Readonly<{
+	process: NodeJS.Process;
+	runCommandSync: typeof defaultRunCommandSync;
+}>;
+
+export const execute = (
+	dependencies: Dependencies = {
+		process,
+		runCommandSync: defaultRunCommandSync
+	}
+) => {
+	const { process, runCommandSync } = dependencies;
 	logger.info('Performing typescript type check');
 
 	func.pipe(
 		findCommand(process, TSC),
 		either.bindTo('command'),
-		either.chainFirst(({ command }) => runRootTypeCheck(process, command)),
-		either.chainFirst(({ command }) =>
-			runCypressTypeCheck(process, command)
+		either.bind('controlFile', () => parseControlFile(process)),
+		either.chain(({ command, controlFile }) =>
+			runTypeCheck(process, runCommandSync, command, controlFile)
 		),
 		either.fold(terminate, terminate)
 	);

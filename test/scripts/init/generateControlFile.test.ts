@@ -45,6 +45,7 @@ describe('generateControlFile', () => {
 			packageJson,
 			['plugin1', 'plugin2'],
 			false,
+			false,
 			{
 				...process,
 				cwd: () => WORKING_DIR
@@ -60,7 +61,8 @@ describe('generateControlFile', () => {
 			workingDirectoryPath: cwd,
 			projectType: 'module',
 			eslintPlugins: ['plugin1', 'plugin2'],
-			hasTestDirectory: false
+			hasTestDirectory: false,
+			hasCypressDirectory: false
 		});
 	});
 });

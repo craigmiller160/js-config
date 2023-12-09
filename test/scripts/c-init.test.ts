@@ -122,6 +122,7 @@ describe('c-init', () => {
 			packageJson,
 			plugins,
 			false,
+			false,
 			process
 		);
 		expect(terminate).toHaveBeenCalled();

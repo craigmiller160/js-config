@@ -22,6 +22,7 @@ const performInitialization =
 		}
 
 		const hasTestDirectory = fs.existsSync(path.join(cwd, 'test'));
+		const hasCypressDirectory = fs.existsSync(path.join(cwd, 'cypress'));
 
 		return func.pipe(
 			parsePackageJson(path.join(cwd, 'package.json')),
@@ -44,6 +45,7 @@ const performInitialization =
 					packageJson,
 					eslintPlugins,
 					hasTestDirectory,
+					hasCypressDirectory,
 					process
 				)
 			)

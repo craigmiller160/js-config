@@ -10,6 +10,7 @@ export const generateControlFile = (
 	packageJson: PackageJson,
 	eslintPlugins: ReadonlyArray<string>,
 	hasTestDirectory: boolean,
+	hasCypressDirectory: boolean,
 	process: NodeJS.Process
 ): either.Either<Error, void> => {
 	logger.info('Generating control file');
@@ -17,7 +18,8 @@ export const generateControlFile = (
 		workingDirectoryPath: cwd,
 		projectType: packageJson.type,
 		eslintPlugins,
-		hasTestDirectory
+		hasTestDirectory,
+		hasCypressDirectory
 	};
 	return either.tryCatch(
 		() =>
