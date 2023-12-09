@@ -79,10 +79,20 @@ const createTsConfig = (
 	);
 };
 
-const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
+const createViteTsconfig = (
+	cwd: string,
+	packageJsonType: PackageJsonType
+): either.Either<Error, void> => {
+	const viteConfigFile =
+		packageJsonType === 'module' ? './vite.config.ts' : './vite.config.mts';
 	const config: TsConfig = {
 		extends: './tsconfig.json',
-		include: ['./vite.config.ts', './vite.config.cts', './vite.config.mts']
+		compilerOptions: {
+			module: 'ESNext',
+			moduleResolution: 'bundler',
+			verbatimModuleSyntax: true
+		},
+		include: [viteConfigFile]
 	};
 	const tsConfigPath = path.join(cwd, 'tsconfig.vite.json');
 	return either.tryCatch(
@@ -104,7 +114,7 @@ export const setupTypescript = (
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig),
-		either.chain(() => createViteTsconfig(cwd)),
+		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (hasTestDir) {
 				return func.pipe(
