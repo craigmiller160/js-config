@@ -78,6 +78,18 @@ const createTsConfig = (
 	);
 };
 
+const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
+	const config: TsConfig = {
+		extends: './tsconfig.json',
+		include: ['./vite.config.ts', './vite.config.cts', './vite.config.mts']
+	};
+	const tsConfigPath = path.join(cwd, 'tsconfig.vite.json');
+	return either.tryCatch(
+		() => fs.writeFileSync(tsConfigPath, JSON.stringify(config, null, 2)),
+		unknownToError
+	);
+};
+
 export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
@@ -88,6 +100,7 @@ export const setupTypescript = (cwd: string): either.Either<Error, void> => {
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig),
+		either.chain(() => createViteTsconfig(cwd)),
 		either.chain(() => {
 			if (hasTestDir) {
 				return func.pipe(
