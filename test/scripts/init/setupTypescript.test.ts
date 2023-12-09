@@ -20,6 +20,7 @@ const WORKING_DIR_PATH = path.join(
 	'typescript'
 );
 const TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.json');
+const VITE_TSCONFIG = path.join(WORKING_DIR_PATH, 'tsconfig.vite.json');
 const TEST_DIR = path.join(WORKING_DIR_PATH, 'test');
 const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
 const TEST_SUPPORT_TYPES_PATH = path.join(TEST_DIR, 'test-support.d.ts');
@@ -68,6 +69,7 @@ describe('setupTypescript', () => {
 				exclude: ['node_modules', 'build', 'lib']
 			});
 
+			expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
 		});
