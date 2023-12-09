@@ -5,6 +5,7 @@ import { unknownToError } from '../utils/unknownToError';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
+import { PackageJsonType } from '../files/PackageJson';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -90,7 +91,10 @@ const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
 	);
 };
 
-export const setupTypescript = (cwd: string): either.Either<Error, void> => {
+export const setupTypescript = (
+	cwd: string,
+	packageJsonType: PackageJsonType
+): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
