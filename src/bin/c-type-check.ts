@@ -2,4 +2,4 @@
 
 import { execute } from '../scripts/c-type-check';
 
-execute(process);
+execute();

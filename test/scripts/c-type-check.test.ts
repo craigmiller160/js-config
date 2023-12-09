@@ -15,6 +15,7 @@ import {
 	ControlFile,
 	parseControlFile
 } from '../../src/scripts/files/ControlFile';
+import fs from 'fs';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -22,6 +23,7 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'typeCheck'
 );
+const CONTROL_FILE = path.join(WORKING_DIR, 'control-file.json');
 const TSC = path.join(
 	process.cwd(),
 	'node_modules',
@@ -38,7 +40,14 @@ type TypeCheckTestParams = Readonly<{
 	additionalDirectories: ReadonlyArray<TypeCheckAdditionalDirectory>;
 }>;
 
+const deleteControlFile = () => {
+	if (fs.existsSync(CONTROL_FILE)) {
+		fs.rmSync(CONTROL_FILE);
+	}
+};
+
 beforeEach(() => {
+	deleteControlFile();
 	vi.resetAllMocks();
 	runCommandSyncMock.mockReturnValue(either.right(''));
 });
@@ -58,17 +67,21 @@ test.each<TypeCheckTestParams>([
 			hasTestDirectory: additionalDirectories.includes('test'),
 			hasCypressDirectory: additionalDirectories.includes('cypress')
 		};
+		fs.writeFileSync(CONTROL_FILE, JSON.stringify(controlFile));
 		parseControlFileMock.mockReturnValue(either.right(controlFile));
 		execute({
 			process: {
 				...process,
-				cwd: () => cwd
+				cwd: () => WORKING_DIR
 			},
-			runCommandSync: runCommandSyncMock,
-			parseControlFile: parseControlFileMock
+			runCommandSync: runCommandSyncMock
 		});
 
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
+		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
+			1,
+			`${TSC} --noEmit --project ./node_modules/tsconfig.check.json`
+		);
 		// TODO need to validate what was done for the command
 	}
 );

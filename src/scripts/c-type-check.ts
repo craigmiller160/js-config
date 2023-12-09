@@ -6,7 +6,7 @@ import { terminate } from './utils/terminate';
 import { either, function as func } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
-import { parseControlFile as defaultParseControlFile } from './files/ControlFile';
+import { parseControlFile } from './files/ControlFile';
 
 const runRootTypeCheck = (
 	process: NodeJS.Process,
@@ -48,18 +48,16 @@ const runCypressTypeCheck = (
 
 export type Dependencies = Readonly<{
 	process: NodeJS.Process;
-	parseControlFile: typeof defaultParseControlFile;
 	runCommandSync: typeof defaultRunCommandSync;
 }>;
 
 export const execute = (
 	dependencies: Dependencies = {
 		process,
-		parseControlFile: defaultParseControlFile,
 		runCommandSync: defaultRunCommandSync
 	}
 ) => {
-	const { process, parseControlFile, runCommandSync } = dependencies;
+	const { process, runCommandSync } = dependencies;
 	logger.info('Performing typescript type check');
 
 	func.pipe(
