@@ -25,6 +25,33 @@ const controlFilePlugins = controlFile.eslintPlugins.filter(
 		)
 );
 
+const typeScriptConfig = {
+	parser: '@typescript-eslint/parser',
+	parserOptions: {
+		project: true
+	},
+	extends: [tsConfiguration, 'plugin:import/typescript'],
+	settings: {
+		'import/resolver': {
+			typescript: {}
+		}
+	},
+	rules: {
+		'@typescript-eslint/no-misused-promises': [
+			'error',
+			{
+				checksVoidReturn: {
+					arguments: false,
+					attributes: false,
+					properties: true,
+					returns: true,
+					variables: true
+				}
+			}
+		]
+	}
+};
+
 module.exports = {
 	extends: [
 		'eslint:recommended',
@@ -58,29 +85,14 @@ module.exports = {
 	overrides: [
 		{
 			files: ['**/*.{ts,tsx,mts,cts}'],
-			parser: '@typescript-eslint/parser',
+			excludedFiles: ['vite.config.{ts,mts,cts}'],
+			...typeScriptConfig
+		},
+		{
+			files: ['vite.config.{ts,mts,cts}'],
+			...typeScriptConfig,
 			parserOptions: {
-				project: true
-			},
-			extends: [tsConfiguration, 'plugin:import/typescript'],
-			settings: {
-				'import/resolver': {
-					typescript: {}
-				}
-			},
-			rules: {
-				'@typescript-eslint/no-misused-promises': [
-					'error',
-					{
-						checksVoidReturn: {
-							arguments: false,
-							attributes: false,
-							properties: true,
-							returns: true,
-							variables: true
-						}
-					}
-				]
+				project: 'tsconfig.vite.json'
 			}
 		},
 		{
