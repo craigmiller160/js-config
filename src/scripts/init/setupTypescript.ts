@@ -80,7 +80,8 @@ const createTsConfig = (
 
 const createViteTsconfig = (cwd: string): either.Either<Error, void> => {
 	const config: TsConfig = {
-		extends: './tsconfig.json'
+		extends: './tsconfig.json',
+		include: ['./vite.config.{ts,mts,cts}']
 	};
 	const tsConfigPath = path.join(cwd, 'tsconfig.vite.json');
 	return either.tryCatch(
