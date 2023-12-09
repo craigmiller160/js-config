@@ -1,4 +1,12 @@
-import { beforeEach, describe, it, MockedFunction, vi, expect } from 'vitest';
+import {
+	beforeEach,
+	describe,
+	it,
+	MockedFunction,
+	vi,
+	expect,
+	test
+} from 'vitest';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import path from 'path';
 import { execute } from '../../src/scripts/c-type-check';
@@ -20,6 +28,25 @@ const TSC = path.join(
 	'bin',
 	'tsc'
 );
+
+type TypeCheckScenario = 'sources' | 'tests' | 'cypress';
+
+beforeEach(() => {
+	vi.resetAllMocks();
+	runCommandSyncMock.mockReturnValue(either.right(''));
+});
+
+test.each<ReadonlyArray<TypeCheckScenario>>([
+	['sources'],
+	['sources', 'tests'],
+	['sources', 'tests', 'cypress'],
+	['sources', 'cypress']
+])('c-type-check %s %s %s', (...args: ReadonlyArray<TypeCheckScenario>) => {
+	execute({
+		...process,
+		cwd: () => cwd
+	});
+});
 
 describe('c-type-check', () => {
 	beforeEach(() => {

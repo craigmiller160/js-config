@@ -1,4 +1,4 @@
-import { runCommandSync } from './utils/runCommand';
+import { runCommandSync as defaultRunCommandSync } from './utils/runCommand';
 import path from 'path';
 import fs from 'fs';
 import { logger } from './logger';
@@ -6,9 +6,11 @@ import { terminate } from './utils/terminate';
 import { either, function as func } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
+import { parseControlFile as defaultParseControlFile } from './files/ControlFile';
 
 const runRootTypeCheck = (
 	process: NodeJS.Process,
+	runCommandSync: typeof defaultRunCommandSync,
 	command: string
 ): either.Either<Error, unknown> => {
 	const testTsconfigPath = path.join(process.cwd(), 'test', 'tsconfig.json');
@@ -25,6 +27,7 @@ const runRootTypeCheck = (
 
 const runCypressTypeCheck = (
 	process: NodeJS.Process,
+	runCommandSync: typeof defaultRunCommandSync,
 	command: string
 ): either.Either<Error, unknown> => {
 	const cypressTsconfigPath = path.join(
@@ -43,15 +46,31 @@ const runCypressTypeCheck = (
 	return either.right(func.constVoid());
 };
 
-export const execute = (process: NodeJS.Process) => {
+export type Dependencies = Readonly<{
+	process: NodeJS.Process;
+	parseControlFile: typeof defaultParseControlFile;
+	runCommandSync: typeof defaultRunCommandSync;
+}>;
+
+export const execute = (
+	dependencies: Dependencies = {
+		process,
+		parseControlFile: defaultParseControlFile,
+		runCommandSync: defaultRunCommandSync
+	}
+) => {
+	const { process, parseControlFile, runCommandSync } = dependencies;
 	logger.info('Performing typescript type check');
 
 	func.pipe(
 		findCommand(process, TSC),
 		either.bindTo('command'),
-		either.chainFirst(({ command }) => runRootTypeCheck(process, command)),
+		either.bind('controlFile', () => parseControlFile(process)),
 		either.chainFirst(({ command }) =>
-			runCypressTypeCheck(process, command)
+			runRootTypeCheck(process, runCommandSync, command)
+		),
+		either.chainFirst(({ command }) =>
+			runCypressTypeCheck(process, runCommandSync, command)
 		),
 		either.fold(terminate, terminate)
 	);
