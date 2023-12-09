@@ -1,9 +1,10 @@
 /// <reference types="vitest" />
-import { mergeConfig, UserConfig, UserConfigFnPromise } from 'vite';
+import type { UserConfig, UserConfigFnPromise } from 'vite';
+import { mergeConfig } from 'vite';
 import path from 'path';
 import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
-import { ServerOptions } from 'https';
+import type { ServerOptions } from 'https';
 import fs from 'fs';
 import { getProjectRoot } from '../root.js';
 
