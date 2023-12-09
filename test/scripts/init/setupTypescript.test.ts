@@ -72,7 +72,11 @@ describe('setupTypescript', () => {
 			expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))).toEqual({
 				extends: './tsconfig.json',
-				include: ['./vite.config.{ts,mts,cts}']
+				include: [
+					'./vite.config.ts',
+					'./vite.config.cts',
+					'./vite.config.mts'
+				]
 			});
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
