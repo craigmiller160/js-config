@@ -11,7 +11,10 @@ import path from 'path';
 import { execute } from '../../src/scripts/c-type-check';
 import { either } from 'fp-ts';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
-import { parseControlFile } from '../../src/scripts/files/ControlFile';
+import {
+	ControlFile,
+	parseControlFile
+} from '../../src/scripts/files/ControlFile';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -30,28 +33,45 @@ const TSC = path.join(
 const runCommandSyncMock: MockedFunction<typeof runCommandSync> = vi.fn();
 const parseControlFileMock: MockedFunction<typeof parseControlFile> = vi.fn();
 
-type TypeCheckScenario = 'sources' | 'tests' | 'cypress';
+type TypeCheckAdditionalDirectory = 'test' | 'cypress';
+type TypeCheckTestParams = Readonly<{
+	additionalDirectories: ReadonlyArray<TypeCheckAdditionalDirectory>;
+}>;
 
 beforeEach(() => {
 	vi.resetAllMocks();
 	runCommandSyncMock.mockReturnValue(either.right(''));
 });
 
-test.each<ReadonlyArray<TypeCheckScenario>>([
-	['sources'],
-	['sources', 'tests'],
-	['sources', 'tests', 'cypress'],
-	['sources', 'cypress']
-])('c-type-check %s %s %s', (...args: ReadonlyArray<TypeCheckScenario>) => {
-	execute({
-		process: {
-			...process,
-			cwd: () => cwd
-		},
-		runCommandSync: runCommandSyncMock,
-		parseControlFile: parseControlFileMock
-	});
-});
+test.each<TypeCheckTestParams>([
+	{ additionalDirectories: [] },
+	{ additionalDirectories: ['test'] },
+	{ additionalDirectories: ['cypress'] },
+	{ additionalDirectories: ['test', 'cypress'] }
+])(
+	'c-type-check with additional directories $additionalDirectories',
+	({ additionalDirectories }) => {
+		const controlFile: ControlFile = {
+			workingDirectoryPath: '',
+			projectType: 'module',
+			eslintPlugins: [],
+			hasTestDirectory: additionalDirectories.includes('test'),
+			hasCypressDirectory: additionalDirectories.includes('cypress')
+		};
+		parseControlFileMock.mockReturnValue(either.right(controlFile));
+		execute({
+			process: {
+				...process,
+				cwd: () => cwd
+			},
+			runCommandSync: runCommandSyncMock,
+			parseControlFile: parseControlFileMock
+		});
+
+		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
+		// TODO need to validate what was done for the command
+	}
+);
 
 describe('c-type-check', () => {
 	beforeEach(() => {
