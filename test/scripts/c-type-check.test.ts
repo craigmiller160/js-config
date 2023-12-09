@@ -7,14 +7,12 @@ import {
 	expect,
 	test
 } from 'vitest';
-import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import path from 'path';
 import { execute } from '../../src/scripts/c-type-check';
 import { either } from 'fp-ts';
+import { runCommandSync } from '../../src/scripts/utils/runCommand';
+import { parseControlFile } from '../../src/scripts/files/ControlFile';
 
-const runCommandSyncMock = runCommandSync as MockedFunction<
-	typeof runCommandSync
->;
 const WORKING_DIR = path.join(
 	process.cwd(),
 	'test',
@@ -28,6 +26,9 @@ const TSC = path.join(
 	'bin',
 	'tsc'
 );
+
+const runCommandSyncMock: MockedFunction<typeof runCommandSync> = vi.fn();
+const parseControlFileMock: MockedFunction<typeof parseControlFile> = vi.fn();
 
 type TypeCheckScenario = 'sources' | 'tests' | 'cypress';
 
@@ -43,8 +44,12 @@ test.each<ReadonlyArray<TypeCheckScenario>>([
 	['sources', 'cypress']
 ])('c-type-check %s %s %s', (...args: ReadonlyArray<TypeCheckScenario>) => {
 	execute({
-		...process,
-		cwd: () => cwd
+		process: {
+			...process,
+			cwd: () => cwd
+		},
+		runCommandSync: runCommandSyncMock,
+		parseControlFile: parseControlFileMock
 	});
 });
 
