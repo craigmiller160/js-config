@@ -11,7 +11,8 @@ export const controlFileCodec = t.readonly(
 		workingDirectoryPath: t.string,
 		projectType: packageJsonTypeCodec,
 		eslintPlugins: t.readonlyArray(t.string),
-		hasTestDirectory: t.boolean
+		hasTestDirectory: t.boolean,
+		hasCypressDirectory: t.boolean
 	})
 );
 
