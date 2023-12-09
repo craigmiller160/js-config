@@ -39,8 +39,6 @@ const deleteControlFile = () => {
 	}
 };
 
-const notUndefined = (item: string | undefined): item is string => !!item;
-
 beforeEach(() => {
 	deleteControlFile();
 	vi.resetAllMocks();
@@ -90,7 +88,7 @@ test.each<TypeCheckTestParams>([
 				additionalDirectories.includes('cypress')
 					? '../cypress/**/*'
 					: undefined
-			].filter(notUndefined)
+			].flatMap((item) => (item ? [item] : []))
 		};
 		expect(tsConfigEither).toEqualRight(expectedTsConfig);
 	}
