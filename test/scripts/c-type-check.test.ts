@@ -70,10 +70,16 @@ test.each<TypeCheckTestParams>([
 			runCommandSync: runCommandSyncMock
 		});
 
+		const tsConfigPath = path.join(
+			WORKING_DIR,
+			'node_modules',
+			'tsconfig.check.json'
+		);
+
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
-			`${TSC} --noEmit --project ./node_modules/tsconfig.check.json`
+			`${TSC} --noEmit --project ${tsConfigPath}`
 		);
 		const tsConfigEither = parseTsConfig(
 			path.join(WORKING_DIR, 'node_modules', 'tsconfig.check.json')
