@@ -1,12 +1,4 @@
-import {
-	beforeEach,
-	describe,
-	it,
-	MockedFunction,
-	vi,
-	expect,
-	test
-} from 'vitest';
+import { beforeEach, expect, MockedFunction, test, vi } from 'vitest';
 import path from 'path';
 import { execute } from '../../src/scripts/c-type-check';
 import { either } from 'fp-ts';
@@ -16,6 +8,7 @@ import {
 	parseControlFile
 } from '../../src/scripts/files/ControlFile';
 import fs from 'fs';
+import { parseTsConfig, TsConfig } from '../../src/scripts/files/TsConfig';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -45,6 +38,8 @@ const deleteControlFile = () => {
 		fs.rmSync(CONTROL_FILE);
 	}
 };
+
+const notUndefined = (item: string | undefined): item is string => !!item;
 
 beforeEach(() => {
 	deleteControlFile();
@@ -82,56 +77,21 @@ test.each<TypeCheckTestParams>([
 			1,
 			`${TSC} --noEmit --project ./node_modules/tsconfig.check.json`
 		);
-		// TODO need to validate what was done for the command
+		const tsConfigEither = parseTsConfig(
+			path.join(WORKING_DIR, 'node_modules', 'tsconfig.check.json')
+		);
+		const expectedTsConfig: TsConfig = {
+			extends: '../tsconfig.json',
+			include: [
+				'../src/**/*',
+				additionalDirectories.includes('test')
+					? '../test/**/*'
+					: undefined,
+				additionalDirectories.includes('cypress')
+					? '../cypress/**/*'
+					: undefined
+			].filter(notUndefined)
+		};
+		expect(tsConfigEither).toEqualRight(expectedTsConfig);
 	}
 );
-
-describe('c-type-check', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-		runCommandSyncMock.mockReturnValue(either.right(''));
-	});
-
-	it('runs the base type check only', () => {
-		const cwd = path.join(WORKING_DIR, 'baseOnly');
-		execute({
-			...process,
-			cwd: () => cwd
-		});
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			1,
-			`${TSC} --noEmit`
-		);
-	});
-
-	it('runs the type check once using the test config', () => {
-		const cwd = path.join(WORKING_DIR, 'testOnly');
-		execute({
-			...process,
-			cwd: () => cwd
-		});
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			1,
-			`${TSC} --noEmit --project ./test/tsconfig.json`
-		);
-	});
-
-	it('runs the type check twice, using the base config and cypress config', () => {
-		const cwd = path.join(WORKING_DIR, 'baseAndCypress');
-		execute({
-			...process,
-			cwd: () => cwd
-		});
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(2);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			1,
-			`${TSC} --noEmit`
-		);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
-			2,
-			`${TSC} --noEmit --project ./cypress/tsconfig.json`
-		);
-	});
-});
