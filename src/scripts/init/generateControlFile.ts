@@ -1,4 +1,4 @@
-import { ControlFile, getControlFilePath } from '../files/ControlFile';
+import { ControlFile, getLocalControlFile } from '../files/ControlFile';
 import fs from 'fs';
 import { either } from 'fp-ts';
 import { unknownToError } from '../utils/unknownToError';
@@ -24,7 +24,8 @@ export const generateControlFile = (
 	return either.tryCatch(
 		() =>
 			fs.writeFileSync(
-				getControlFilePath(process.cwd()),
+				// It's not really local, pnpm has cwd being the node_modules location of this lib
+				getLocalControlFile(process.cwd()),
 				JSON.stringify(controlFile, null, 2)
 			),
 		unknownToError
