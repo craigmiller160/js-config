@@ -19,7 +19,7 @@ export const controlFileCodec = t.readonly(
 
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
-const getLocalControlFile = (cwd: string): string =>
+export const getLocalControlFile = (cwd: string): string =>
 	path.join(cwd, 'control-file.json');
 
 export const getControlFilePath = (cwd: string): string =>

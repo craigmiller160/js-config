@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import {
 	ControlFile,
-	getControlFilePath
+	getLocalControlFile
 } from '../../../src/scripts/files/ControlFile';
 import { generateControlFile } from '../../../src/scripts/init/generateControlFile';
 import { PackageJson } from '../../../src/scripts/files/PackageJson';
@@ -14,7 +14,7 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'generateControlFile'
 );
-const CONTROL_FILE = getControlFilePath(WORKING_DIR);
+const CONTROL_FILE = getLocalControlFile(WORKING_DIR);
 
 const deleteControlFileIfExists = () => {
 	if (fs.existsSync(CONTROL_FILE)) {
