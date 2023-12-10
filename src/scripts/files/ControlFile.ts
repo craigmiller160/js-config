@@ -5,6 +5,7 @@ import { unknownToError } from '../utils/unknownToError';
 import { decode } from '../utils/decode';
 import path from 'path';
 import { packageJsonTypeCodec } from './PackageJson';
+import { match } from 'ts-pattern';
 
 export const controlFileCodec = t.readonly(
 	t.type({
@@ -18,7 +19,10 @@ export const controlFileCodec = t.readonly(
 
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
-export const getControlFilePath = (cwd: string) =>
+const getLocalControlFile = (cwd: string): string =>
+	path.join(cwd, 'control-file.json');
+
+export const getControlFilePath = (cwd: string): string =>
 	path.join(
 		cwd,
 		'node_modules',
@@ -27,13 +31,35 @@ export const getControlFilePath = (cwd: string) =>
 		'control-file.json'
 	);
 
+const findControlFile = (
+	process: NodeJS.Process
+): either.Either<Error, string> =>
+	match({
+		local: getLocalControlFile(process.cwd()),
+		main: getControlFilePath(process.cwd())
+	})
+		.when(
+			({ local }) => fs.existsSync(local),
+			({ local }) => either.right(local)
+		)
+		.when(
+			({ main }) => fs.existsSync(main),
+			({ main }) => either.right(main)
+		)
+		.otherwise(() =>
+			either.left(new Error('Cannot find valid control file'))
+		);
+
 export const parseControlFile = (
 	process: NodeJS.Process
 ): either.Either<Error, ControlFile> =>
 	func.pipe(
-		either.tryCatch(
-			() => fs.readFileSync(getControlFilePath(process.cwd()), 'utf8'),
-			unknownToError
+		findControlFile(process),
+		either.chain((controlFile) =>
+			either.tryCatch(
+				() => fs.readFileSync(controlFile, 'utf8'),
+				unknownToError
+			)
 		),
 		either.chain(json.parse),
 		either.mapLeft(unknownToError),
