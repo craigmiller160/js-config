@@ -19,7 +19,13 @@ export const controlFileCodec = t.readonly(
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
 export const getControlFilePath = (cwd: string) =>
-	path.join(cwd, 'control-file.json');
+	path.join(
+		cwd,
+		'node_modules',
+		'@craigmiller160',
+		'js-config',
+		'control-file.json'
+	);
 
 export const parseControlFile = (
 	process: NodeJS.Process
