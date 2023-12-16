@@ -17,7 +17,7 @@ const directoryCodec = t.readonly(
 const eslintPluginsCodec = t.readonly(
 	t.type({
 		react: t.boolean,
-		testingLibrary: t.boolean,
+		jestDom: t.boolean,
 		testingLibraryReact: t.boolean,
 		vitest: t.boolean,
 		cypress: t.boolean,

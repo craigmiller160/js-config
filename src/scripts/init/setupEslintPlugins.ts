@@ -35,7 +35,7 @@ export const setupEslintPlugins = (
 	return {
 		react: isLibraryPresent('react'),
 		vitest: isLibraryPresent('vitest'),
-		testingLibrary: isLibraryPresent('@testing-library/jest-dom'),
+		jestDom: isLibraryPresent('@testing-library/jest-dom'),
 		cypress: isLibraryPresent('cypress'),
 		testingLibraryReact: isLibraryPresent('@testing-library/react'),
 		tanstackQuery: isLibraryPresent('@tanstack/react-query')

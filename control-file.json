@@ -3,7 +3,7 @@
   "projectType": "commonjs",
   "eslintPlugins": {
     "react": false,
-    "testingLibrary": false,
+    "jestDom": false,
     "testingLibraryReact": false,
     "vitest": true,
     "cypress": false,

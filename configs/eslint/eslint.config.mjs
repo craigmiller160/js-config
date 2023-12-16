@@ -12,6 +12,9 @@ import eslintReactHooks from 'eslint-plugin-react-hooks';
 import eslintJsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintVitest from 'eslint-plugin-vitest';
 import eslintCypress from 'eslint-plugin-cypress';
+import eslintJestDom from 'eslint-plugin-jest-dom';
+import eslintTestingLibrary from 'eslint-plugin-testing-library';
+import { configs as eslintTanstackQueryConfigs, rules as eslintTanstackQueryRules } from '@tanstack/eslint-plugin-query';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -137,5 +140,41 @@ if (controlFile.eslintPlugins.react) {
 		}
 	});
 }
+
+if (controlFile.eslintPlugins.jestDom) {
+	eslintConfigs.push({
+		files: ['test/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+		plugins: {
+			'jest-dom': eslintJestDom
+		},
+		rules: {
+			...eslintJestDom.configs.recommended.rules
+		}
+	});
+}
+
+if (controlFile.eslintPlugins.testingLibraryReact) {
+	eslintConfigs.push({
+		files: ['test/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+		plugins: {
+			'tesing-library': eslintTestingLibrary
+		},
+		rules: {
+			...eslintTestingLibrary.configs.react.rules
+		}
+	});
+}
+
+// if (controlFile.eslintPlugins.tanstackQuery) {
+// 	eslintConfigs.push({
+// 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+// 		plugins: {
+// 			'@tanstack/eslint-plugin-query': eslintTanstackQueryConfigs.plugins
+// 		},
+// 		rules: {
+// 			...eslintTanstackQueryRules
+// 		}
+// 	});
+// }
 
 export default eslintConfigs;
