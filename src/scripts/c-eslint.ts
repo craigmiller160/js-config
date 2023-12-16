@@ -7,6 +7,7 @@ import { ESLINT } from './commandPaths';
 import { logger } from './logger';
 import { parseControlFile } from './files/ControlFile';
 import { match } from 'ts-pattern';
+import path from 'path';
 
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running eslint');
@@ -20,6 +21,7 @@ export const execute = (process: NodeJS.Process) => {
 				.with('module', () => 'eslint.config.js')
 				.otherwise(() => 'eslint.config.mjs')
 		),
+		either.map((configFile) => path.join(process.cwd(), configFile)),
 		either.bindTo('configFile'),
 		either.bind('targetFile', () =>
 			either.right(args[0] ? args[0] : undefined)
@@ -27,7 +29,13 @@ export const execute = (process: NodeJS.Process) => {
 		either.bind('command', () => findCommand(process, ESLINT)),
 		either.chain(({ configFile, targetFile, command }) =>
 			runCommandSync(
-				`${command} --config ${configFile} --fix --max-warnings=0 ${targetFile}`
+				`${command} --config ${configFile} --fix --max-warnings=0 ${targetFile}`,
+				{
+					env: {
+						...process.env,
+						ESLINT_USE_FLAT_CONFIG: 'true'
+					}
+				}
 			)
 		),
 		either.fold(terminate, terminate)
