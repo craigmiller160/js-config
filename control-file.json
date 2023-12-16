@@ -1,7 +1,16 @@
 {
   "workingDirectoryPath": ".",
   "projectType": "commonjs",
-  "eslintPlugins": [],
-  "hasCypressDirectory": false,
-  "hasTestDirectory": true
+  "eslintPlugins": {
+    "react": false,
+    "testingLibrary": false,
+    "testingLibraryReact": false,
+    "vitest": true,
+    "cypress": false,
+    "tanstackQuery": false
+  },
+  "directories": {
+    "cypress": false,
+    "test": true
+  }
 }
