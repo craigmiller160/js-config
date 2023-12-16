@@ -3,7 +3,7 @@ import {
 	isLibraryPresent as realIsLibraryPresent
 } from '../utils/library';
 import { logger } from '../logger';
-import {EslintPlugins} from '../files/ControlFile';
+import { EslintPlugins } from '../files/ControlFile';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
@@ -38,6 +38,6 @@ export const setupEslintPlugins = (
 		testingLibrary: isLibraryPresent('@testing-library/jest-dom'),
 		cypress: isLibraryPresent('cypress'),
 		testingLibraryReact: isLibraryPresent('@testing-library/react'),
-		tanstackQuery: 	isLibraryPresent('@tanstack/react-query')
+		tanstackQuery: isLibraryPresent('@tanstack/react-query')
 	};
 };

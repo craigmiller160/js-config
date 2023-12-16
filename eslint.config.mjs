@@ -1,2 +1,1 @@
-import config from './configs/eslint/eslint.config.mjs';
-export default config;
+export { default } from './configs/eslint/eslint.config.mjs';

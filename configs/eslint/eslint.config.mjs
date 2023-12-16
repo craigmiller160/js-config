@@ -12,12 +12,12 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
-const hasReact = controlFile.eslintPlugins.includes('plugin:react/recommended');
+// const hasReact = controlFile.eslintPlugins.includes('plugin:react/recommended');
 
 // TODO explore import plugin again
 
 export default (async () => {
-	const defaultConfig = [
+	return [
 		{
 			files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
 			languageOptions: {
@@ -88,6 +88,4 @@ export default (async () => {
 			}
 		}
 	];
-
-	return defaultConfig;
 })();

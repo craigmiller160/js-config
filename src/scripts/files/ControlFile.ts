@@ -7,19 +7,23 @@ import path from 'path';
 import { packageJsonTypeCodec } from './PackageJson';
 import { match } from 'ts-pattern';
 
-const directoryCodec = t.readonly(t.type({
-	test: t.boolean,
-	cypress: t.boolean
-}));
+const directoryCodec = t.readonly(
+	t.type({
+		test: t.boolean,
+		cypress: t.boolean
+	})
+);
 
-const eslintPluginsCodec = t.readonly(t.type({
-	react: t.boolean,
-	testingLibrary: t.boolean,
-	testingLibraryReact: t.boolean,
-	vitest: t.boolean,
-	cypress: t.boolean,
-	tanstackQuery: t.boolean
-}));
+const eslintPluginsCodec = t.readonly(
+	t.type({
+		react: t.boolean,
+		testingLibrary: t.boolean,
+		testingLibraryReact: t.boolean,
+		vitest: t.boolean,
+		cypress: t.boolean,
+		tanstackQuery: t.boolean
+	})
+);
 
 export const controlFileCodec = t.readonly(
 	t.type({
