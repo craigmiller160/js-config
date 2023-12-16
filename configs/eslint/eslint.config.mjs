@@ -10,6 +10,8 @@ import url from 'url';
 import eslintReact from 'eslint-plugin-react';
 import eslintReactHooks from 'eslint-plugin-react-hooks';
 import eslintJsxA11y from 'eslint-plugin-jsx-a11y';
+import eslintVitest from 'eslint-plugin-vitest';
+import eslintCypress from 'eslint-plugin-cypress';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -89,6 +91,30 @@ const eslintConfigs = [
 		}
 	}
 ];
+
+if (controlFile.eslintPlugins.vitest) {
+	eslintConfigs.push({
+		files: ['test/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+		plugins: {
+			vitest: eslintVitest
+		},
+		rules: {
+			...eslintVitest.configs.recommended.rules
+		}
+	});
+}
+
+if (controlFile.eslintPlugins.cypress) {
+	eslintConfigs.push({
+		files: ['cypress/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+		plugins: {
+			cypress: eslintCypress
+		},
+		rules: {
+			...eslintCypress.configs.recommended.rules
+		}
+	});
+}
 
 if (controlFile.eslintPlugins.react) {
 	eslintConfigs.push({
