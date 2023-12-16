@@ -3,7 +3,6 @@ import parserTs from '@typescript-eslint/parser';
 import eslintTs from '@typescript-eslint/eslint-plugin';
 
 export default [
-    eslintJs.configs.recommended,
     {
         files: [
             '**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'
@@ -12,9 +11,10 @@ export default [
             ecmaVersion: 'latest'
         },
         linterOptions: {
-            reportUnusedDisableDirectives: 'error'
+            reportUnusedDisableDirectives: true
         },
         rules: {
+            ...eslintJs.configs.recommended.rules,
             'no-console': [
                 'error',
                 {
@@ -32,6 +32,12 @@ export default [
             parserOptions: {
                 project: true
             }
+        },
+        plugins: {
+            '@typescript-eslint': eslintTs
+        },
+        rules: {
+            ...eslintTs.configs.recommended.rules
         }
     }
 ]
