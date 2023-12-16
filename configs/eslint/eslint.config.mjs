@@ -44,6 +44,7 @@ export default [
             '@typescript-eslint': eslintTs
         },
         rules: {
+            ...eslintTs.configs['eslint-recommended'].overrides[0].rules,
             ...eslintTs.configs.recommended.rules
         }
     },
