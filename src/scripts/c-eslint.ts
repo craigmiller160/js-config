@@ -11,6 +11,7 @@ import { logger } from './logger';
 const SRC_TEST_PATH = '{src,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
 const CYPRESS_PATH = 'cypress/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
 
+// TODO need to fix this to get the right config file extension
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running eslint');
 	const args = getRealArgs(process);
@@ -23,7 +24,7 @@ export const execute = (process: NodeJS.Process) => {
 		func.pipe(
 			eslintEither,
 			either.chain((command) =>
-				runCommandSync(`${command} --fix --max-warnings=0 ${args[0]}`, {
+				runCommandSync(`${command} --config eslint.config.mjs --fix --max-warnings=0 ${args[0]}`, {
 					env: {
 						...process.env,
 						NO_VITEST: noVitest
@@ -38,12 +39,12 @@ export const execute = (process: NodeJS.Process) => {
 	func.pipe(
 		eslintEither,
 		either.chainFirst((command) =>
-			runCommandSync(`${command} --fix --max-warnings=0 ${SRC_TEST_PATH}`)
+			runCommandSync(`${command} --config eslint.config.mjs --fix --max-warnings=0 ${SRC_TEST_PATH}`)
 		),
 		either.chain((command) => {
 			if (fs.existsSync(cypressDir)) {
 				return runCommandSync(
-					`${command} --fix --max-warnings=0 ${CYPRESS_PATH}`,
+					`${command} --config eslint.config.mjs --fix --max-warnings=0 ${CYPRESS_PATH}`,
 					{
 						env: {
 							...process.env,

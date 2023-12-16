@@ -23,7 +23,7 @@ const wipeWorkingDir = () =>
 			})
 		);
 
-const eslintrcPath = path.join(WORKING_DIR, '.eslintrc.js');
+const eslintrcPath = path.join(WORKING_DIR, '.eslintrc.js_backup');
 const prettierrcPath = path.join(WORKING_DIR, '.prettierrc.js');
 
 const packageJson: PackageJson = {

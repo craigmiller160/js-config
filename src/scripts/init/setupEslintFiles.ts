@@ -7,7 +7,7 @@ import { unknownToError } from '../utils/unknownToError';
 
 const getEslintrcPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
-		return path.join(cwd, '.eslintrc.js');
+		return path.join(cwd, '.eslintrc.js_backup');
 	}
 	return path.join(cwd, '.eslintrc.cjs');
 };
@@ -22,7 +22,7 @@ const getRemoveEslintrcPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
 		return path.join(cwd, '.eslintrc.cjs');
 	}
-	return path.join(cwd, '.eslintrc.js');
+	return path.join(cwd, '.eslintrc.js_backup');
 };
 
 const getRemovePrettierrcPath = (
