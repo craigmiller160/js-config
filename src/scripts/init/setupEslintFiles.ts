@@ -5,11 +5,11 @@ import { logger } from '../logger';
 import { PackageJson, PackageJsonType } from '../files/PackageJson';
 import { unknownToError } from '../utils/unknownToError';
 
-const getEslintrcPath = (cwd: string, type: PackageJsonType): string => {
+const getEslintConfigPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
-		return path.join(cwd, '.eslintrc.js_backup');
+		return path.join(cwd, 'eslint.config.mjs');
 	}
-	return path.join(cwd, '.eslintrc.cjs');
+	return path.join(cwd, 'eslint.config.js');
 };
 const getPrettierrcPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
@@ -73,11 +73,11 @@ const writeEslintFiles = (
 	packageJson: PackageJson
 ): either.Either<Error, void> =>
 	either.tryCatch(() => {
-		const eslintrcPath = getEslintrcPath(cwd, packageJson.type);
-		if (shouldWriteConfig(eslintrcPath)) {
+		const eslintConfigPath = getEslintConfigPath(cwd, packageJson.type);
+		if (shouldWriteConfig(eslintConfigPath)) {
 			fs.writeFileSync(
-				eslintrcPath,
-				`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+				eslintConfigPath,
+				`export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';`
 			);
 		}
 
