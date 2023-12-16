@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
-import {either, function as func, json} from 'fp-ts';
+import { either, function as func, json } from 'fp-ts';
 import fs from 'fs';
-import {decode} from '../utils/decode';
+import { decode } from '../utils/decode';
 
 const dependenciesCodec = t.union([
 	t.readonly(t.record(t.string, t.string)),

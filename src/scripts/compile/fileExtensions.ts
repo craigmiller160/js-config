@@ -1,6 +1,6 @@
 import path from 'path';
 import { match, P } from 'ts-pattern';
-import { function as func, readonlyArray, taskEither } from 'fp-ts';
+import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { logger } from '../logger';
 import { walk } from '../utils/files';
 import fs from 'fs/promises';

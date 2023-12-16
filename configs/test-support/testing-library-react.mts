@@ -4,5 +4,6 @@ import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
 afterEach(() => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 	cleanup();
 });
