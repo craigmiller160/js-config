@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import { logger } from '../logger';
 import { PackageJson, PackageJsonType } from '../files/PackageJson';
-import { unknownToError } from '../utils/unknownToError';
 
 const getEslintConfigPath = (cwd: string, type: PackageJsonType): string => {
 	if (type === 'commonjs') {
@@ -66,7 +65,7 @@ const removeInvalidEslintFiles = (
 			);
 			fs.rmSync(removePrettierrcPath);
 		}
-	}, unknownToError);
+	}, either.toError);
 
 const writeEslintFiles = (
 	cwd: string,
@@ -88,7 +87,7 @@ const writeEslintFiles = (
 				`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
 			);
 		}
-	}, unknownToError);
+	}, either.toError);
 
 export const setupEslintFiles = (
 	cwd: string,

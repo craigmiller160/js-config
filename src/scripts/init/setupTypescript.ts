@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { either, function as func } from 'fp-ts';
 import path from 'path';
-import { unknownToError } from '../utils/unknownToError';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
@@ -41,7 +40,7 @@ const createTestSupportTypes = (
 					supportFilePath,
 					`import '@relmify/jest-fp-ts';\n`
 				),
-			unknownToError
+			either.toError
 		);
 	}
 	return either.right(func.constVoid());
@@ -81,7 +80,7 @@ const createTsConfig = (
 	const tsConfig = creator(existingTsConfig);
 	return either.tryCatch(
 		() => fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2)),
-		unknownToError
+		either.toError
 	);
 };
 
@@ -103,7 +102,7 @@ const createViteTsconfig = (
 	const tsConfigPath = path.join(cwd, 'tsconfig.vite.json');
 	return either.tryCatch(
 		() => fs.writeFileSync(tsConfigPath, JSON.stringify(config, null, 2)),
-		unknownToError
+		either.toError
 	);
 };
 

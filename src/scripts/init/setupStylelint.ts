@@ -3,7 +3,6 @@ import { parseStylelintrc, Stylelintrc } from '../files/Stylelintrc';
 import path from 'path';
 import fs from 'fs';
 import { logger } from '../logger';
-import { unknownToError } from '../utils/unknownToError';
 
 const DEFAULT_CONFIG: Stylelintrc = {
 	extends: '@craigmiller160/js-config/configs/stylelint/.stylelintrc.json',
@@ -42,6 +41,6 @@ export const setupStylelint = (cwd: string): either.Either<Error, unknown> => {
 				stylelintrcPath,
 				JSON.stringify(DEFAULT_CONFIG, null, 2)
 			),
-		unknownToError
+		either.toError
 	);
 };

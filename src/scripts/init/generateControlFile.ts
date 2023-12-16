@@ -5,7 +5,6 @@ import {
 } from '../files/ControlFile';
 import fs from 'fs';
 import { either } from 'fp-ts';
-import { unknownToError } from '../utils/unknownToError';
 import { PackageJson } from '../files/PackageJson';
 import { logger } from '../logger';
 
@@ -34,6 +33,6 @@ export const generateControlFile = (
 				getLocalControlFile(process.cwd()),
 				JSON.stringify(controlFile, null, 2)
 			),
-		unknownToError
+		either.toError
 	);
 };

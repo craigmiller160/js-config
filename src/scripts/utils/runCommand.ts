@@ -1,7 +1,6 @@
 import { spawnSync, SpawnOptions, spawn } from 'child_process';
 import { either, taskEither } from 'fp-ts';
 import { logger } from '../logger';
-import { unknownToError } from './unknownToError';
 
 export const runCommandAsync = (
 	command: string,
@@ -47,7 +46,7 @@ export const runCommandAsync = (
 					}
 				});
 			}),
-		unknownToError
+		either.toError
 	);
 };
 

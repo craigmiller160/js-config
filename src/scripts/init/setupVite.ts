@@ -3,7 +3,6 @@ import { PackageJson, PackageJsonType } from '../files/PackageJson';
 import { logger } from '../logger';
 import fs from 'fs';
 import path from 'path';
-import { unknownToError } from '../utils/unknownToError';
 
 export const VITE_CONFIG = `
 import { defineConfig } from '@craigmiller160/js-config/configs/vite/vite.config.mjs';
@@ -44,7 +43,7 @@ const getExistingFileType = (
 		}
 
 		return 'invalid';
-	}, unknownToError);
+	}, either.toError);
 };
 
 const writeViteConfig = (
@@ -59,7 +58,7 @@ const writeViteConfig = (
 		} else {
 			logger.debug('Valid vite config already exists');
 		}
-	}, unknownToError);
+	}, either.toError);
 
 const removeInvalidViteConfig = (
 	cwd: string,
@@ -71,7 +70,7 @@ const removeInvalidViteConfig = (
 			logger.debug(`Removing invalid vite config: ${configPath}`);
 			fs.rmSync(configPath);
 		}
-	}, unknownToError);
+	}, either.toError);
 };
 
 export const setupVite = (

@@ -5,7 +5,6 @@ import { findCommand } from '../utils/command';
 import { HUSKY, LINT_STAGED } from '../commandPaths';
 import path from 'path';
 import fs from 'fs';
-import { unknownToError } from '../utils/unknownToError';
 
 const createPreCommit = (commandPath: string): string =>
 	`
@@ -53,7 +52,7 @@ const writePreCommitScript = (
 			createPreCommit(relativeLintStagedCommand)
 		);
 		fs.chmodSync(preCommitPath, 0o755);
-	}, unknownToError);
+	}, either.toError);
 };
 
 export const setupGitHooks = (

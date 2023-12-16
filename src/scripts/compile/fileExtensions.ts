@@ -3,7 +3,6 @@ import { match, P } from 'ts-pattern';
 import { function as func, readonlyArray, taskEither } from 'fp-ts';
 import { logger } from '../logger';
 import { walk } from '../utils/files';
-import { unknownToError } from '../utils/unknownToError';
 import fs from 'fs/promises';
 
 const EXTENSION = /\.[^/.]+$/;
@@ -33,7 +32,7 @@ export const fixTypeFileExtensions = (
 ): taskEither.TaskEither<Error, unknown> => {
 	logger.debug('Fixing type declaration file extensions');
 	return func.pipe(
-		taskEither.tryCatch(() => walk(typesDir), unknownToError),
+		taskEither.tryCatch(() => walk(typesDir), either.toError),
 		taskEither.map((files) =>
 			files.filter(
 				(file) => file.endsWith('.mts') || file.endsWith('.cts')
@@ -45,7 +44,7 @@ export const fixTypeFileExtensions = (
 					const newFile = `${file.replace(EXTENSION, '')}.ts`;
 					return taskEither.tryCatch(
 						() => fs.rename(file, newFile),
-						unknownToError
+						either.toError
 					);
 				}),
 				taskEither.sequenceArray

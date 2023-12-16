@@ -1,8 +1,7 @@
 import * as t from 'io-ts';
-import { either, json, function as func } from 'fp-ts';
-import { unknownToError } from '../utils/unknownToError';
+import {either, function as func, json} from 'fp-ts';
 import fs from 'fs';
-import { decode } from '../utils/decode';
+import {decode} from '../utils/decode';
 
 const dependenciesCodec = t.union([
 	t.readonly(t.record(t.string, t.string)),
@@ -37,10 +36,10 @@ export const parsePackageJson = (
 	func.pipe(
 		either.tryCatch(
 			() => fs.readFileSync(packageJsonPath, 'utf8'),
-			unknownToError
+			either.toError
 		),
 		either.chain(json.parse),
-		either.mapLeft(unknownToError),
+		either.mapLeft(either.toError),
 		either.chain(decode(packageJsonCodec)),
 		either.map(
 			(packageJson): PackageJson => ({

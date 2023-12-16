@@ -8,7 +8,6 @@ import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
 import { ControlFile, parseControlFile } from './files/ControlFile';
 import { TsConfig } from './files/TsConfig';
-import { unknownToError } from './utils/unknownToError';
 
 const runTypeCheck = (
 	process: NodeJS.Process,
@@ -36,7 +35,7 @@ const runTypeCheck = (
 					checkTsConfigPath,
 					JSON.stringify(checkTsConfig, null, 2)
 				),
-			unknownToError
+			either.toError
 		),
 		either.chain(() =>
 			runCommandSync(`${command} --noEmit --project ${checkTsConfigPath}`)

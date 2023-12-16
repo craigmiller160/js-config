@@ -1,7 +1,6 @@
 import * as t from 'io-ts';
 import { either, function as func, json } from 'fp-ts';
 import fs from 'fs';
-import { unknownToError } from '../utils/unknownToError';
 import { decode } from '../utils/decode';
 import path from 'path';
 import { packageJsonTypeCodec } from './PackageJson';
@@ -76,10 +75,10 @@ export const parseControlFile = (
 		either.chain((controlFile) =>
 			either.tryCatch(
 				() => fs.readFileSync(controlFile, 'utf8'),
-				unknownToError
+				either.toError
 			)
 		),
 		either.chain(json.parse),
-		either.mapLeft(unknownToError),
+		either.mapLeft(either.toError),
 		either.chain(decode(controlFileCodec))
 	);
