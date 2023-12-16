@@ -10,6 +10,17 @@ export default [
         ],
         languageOptions: {
             ecmaVersion: 'latest'
+        },
+        linterOptions: {
+            reportUnusedDisableDirectives: 'error'
+        },
+        rules: {
+            'no-console': [
+                'error',
+                {
+                    allow: ['error']
+                }
+            ]
         }
     },
     {
