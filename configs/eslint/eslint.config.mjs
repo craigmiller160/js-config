@@ -27,6 +27,9 @@ export default [
         files: [
             '**/*.{ts,tsx,mts,cts}'
         ],
+        ignores: [
+            'vite.config.{ts,mts,cts}'
+        ],
         languageOptions: {
             parser: parserTs,
             parserOptions: {
@@ -38,6 +41,16 @@ export default [
         },
         rules: {
             ...eslintTs.configs.recommended.rules
+        }
+    },
+    {
+        files: [
+            'vite.config.{ts,mts,cts}'
+        ],
+        languageOptions: {
+            parserOptions: {
+                project: 'tsconfig.vite.json'
+            }
         }
     }
 ]
