@@ -24,13 +24,16 @@ export const execute = (process: NodeJS.Process) => {
 		func.pipe(
 			eslintEither,
 			either.chain((command) =>
-				runCommandSync(`${command} --config eslint.config.mjs --fix --max-warnings=0 ${args[0]}`, {
-					env: {
-						...process.env,
-						NO_VITEST: noVitest,
-						ESLINT_USE_FLAT_CONFIG: 'true'
+				runCommandSync(
+					`${command} --config eslint.config.mjs --fix --max-warnings=0 ${args[0]}`,
+					{
+						env: {
+							...process.env,
+							NO_VITEST: noVitest,
+							ESLINT_USE_FLAT_CONFIG: 'true'
+						}
 					}
-				})
+				)
 			),
 			either.fold(terminate, terminate)
 		);
@@ -40,12 +43,15 @@ export const execute = (process: NodeJS.Process) => {
 	func.pipe(
 		eslintEither,
 		either.chainFirst((command) =>
-			runCommandSync(`${command} --config eslint.config.mjs --fix --max-warnings=0 ${SRC_TEST_PATH}`, {
-				env: {
-					...process.env,
-					ESLINT_USE_FLAT_CONFIG: 'true'
+			runCommandSync(
+				`${command} --config eslint.config.mjs --fix --max-warnings=0 ${SRC_TEST_PATH}`,
+				{
+					env: {
+						...process.env,
+						ESLINT_USE_FLAT_CONFIG: 'true'
+					}
 				}
-			})
+			)
 		),
 		either.chain((command) => {
 			if (fs.existsSync(cypressDir)) {
