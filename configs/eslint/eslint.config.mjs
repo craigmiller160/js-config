@@ -74,7 +74,7 @@ const eslintConfigs = [
 			// TODO need to have type-sensitive rules too
 			...(process.env.ESLINT_FAST === 'true'
 				? eslintTs.configs.recommended.rules
-				: eslintTs.configs['recommended-type-checked']),
+				: eslintTs.configs['recommended-type-checked'].rules),
 			'@typescript-eslint/no-misused-promises': [
 				'error',
 				{
