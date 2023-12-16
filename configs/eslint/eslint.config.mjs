@@ -4,7 +4,6 @@ import eslintTs from '@typescript-eslint/eslint-plugin';
 import globals from 'globals';
 import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSonar from 'eslint-plugin-sonarjs';
-import eslintImport from 'eslint-plugin-import';
 
 export default [
 	{
@@ -17,8 +16,7 @@ export default [
 		},
 		plugins: {
 			prettier: eslintPrettier,
-			sonarjs: eslintSonar,
-			import: eslintImport
+			sonarjs: eslintSonar
 		},
 		linterOptions: {
 			reportUnusedDisableDirectives: true
@@ -26,7 +24,6 @@ export default [
 		rules: {
 			...eslintJs.configs.recommended.rules,
 			...eslintSonar.configs.recommended.rules,
-			...eslintImport.configs.recommended.rules,
 			'prettier/prettier': ['error', {}, { usePrettierrc: true }],
 			'no-console': [
 				'error',
@@ -53,12 +50,6 @@ export default [
 			...eslintTs.configs['eslint-recommended'].overrides[0].rules,
 			// TODO need to have type-sensitive rules too
 			...eslintTs.configs.recommended.rules
-		},
-		settings: {
-			...eslintImport.configs.typescript.settings,
-			'import/resolver': {
-				typescript: {}
-			}
 		}
 	},
 	{
