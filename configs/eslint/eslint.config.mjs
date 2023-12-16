@@ -5,6 +5,8 @@ import globals from 'globals';
 import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSonar from 'eslint-plugin-sonarjs';
 
+// TODO explore import plugin again
+
 export default [
 	{
 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
