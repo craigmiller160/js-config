@@ -3,6 +3,7 @@ import {
 	isLibraryPresent as realIsLibraryPresent
 } from '../utils/library';
 import { logger } from '../logger';
+import {EslintPlugins} from '../files/ControlFile';
 
 const REACT_PLUGINS: ReadonlyArray<string> = [
 	'plugin:react/recommended',
@@ -29,19 +30,14 @@ const TANSTACK_QUERY_PLUGINS: ReadonlyArray<string> = [
 
 export const setupEslintPlugins = (
 	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
-): ReadonlyArray<string> => {
+): EslintPlugins => {
 	logger.info('Setting up eslint plugins');
-	const plugins: ReadonlyArray<ReadonlyArray<string>> = [
-		isLibraryPresent('react') ? REACT_PLUGINS : [],
-		isLibraryPresent('vitest') ? VITEST_PLUGINS : [],
-		isLibraryPresent('@testing-library/jest-dom')
-			? TESTING_LIBRARY_PLUGINS
-			: [],
-		isLibraryPresent('cypress') ? CYPRESS_PLUGINS : [],
-		isLibraryPresent('@testing-library/react')
-			? REACT_TESTING_LIBRARY_PLUGINS
-			: [],
-		isLibraryPresent('@tanstack/react-query') ? TANSTACK_QUERY_PLUGINS : []
-	];
-	return plugins.flat();
+	return {
+		react: isLibraryPresent('react'),
+		vitest: isLibraryPresent('vitest'),
+		testingLibrary: isLibraryPresent('@testing-library/jest-dom'),
+		cypress: isLibraryPresent('cypress'),
+		testingLibraryReact: isLibraryPresent('@testing-library/react'),
+		tanstackQuery: 	isLibraryPresent('@tanstack/react-query')
+	};
 };

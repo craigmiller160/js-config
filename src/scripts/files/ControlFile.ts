@@ -12,7 +12,7 @@ const directoryCodec = t.readonly(t.type({
 	cypress: t.boolean
 }));
 
-const eslintPluginCodec = t.readonly(t.type({
+const eslintPluginsCodec = t.readonly(t.type({
 	react: t.boolean,
 	testingLibrary: t.boolean,
 	testingLibraryReact: t.boolean,
@@ -26,10 +26,11 @@ export const controlFileCodec = t.readonly(
 		workingDirectoryPath: t.string,
 		projectType: packageJsonTypeCodec,
 		directories: directoryCodec,
-		eslintPlugins: eslintPluginCodec
+		eslintPlugins: eslintPluginsCodec
 	})
 );
 
+export type EslintPlugins = t.TypeOf<typeof eslintPluginsCodec>;
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
 export const getLocalControlFile = (cwd: string): string =>

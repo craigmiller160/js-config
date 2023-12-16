@@ -6,6 +6,9 @@ import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSonar from 'eslint-plugin-sonarjs';
 import path from 'path';
 import fs from 'fs';
+import url from 'url';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
