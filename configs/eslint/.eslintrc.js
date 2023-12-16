@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+// TODO delete this if the new config works
 
 const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
