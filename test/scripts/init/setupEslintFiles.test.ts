@@ -23,7 +23,7 @@ const wipeWorkingDir = () =>
 			})
 		);
 
-const eslintrcPath = path.join(WORKING_DIR, '.eslintrc.js_backup');
+const eslintConfigPath = path.join(WORKING_DIR, 'eslint.config.mjs');
 const prettierrcPath = path.join(WORKING_DIR, '.prettierrc.js');
 
 const packageJson: PackageJson = {
@@ -47,10 +47,10 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
+		expect(fs.existsSync(eslintConfigPath)).toBe(true);
+		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
 		expect(eslintConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+			`export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';`
 		);
 
 		expect(fs.existsSync(prettierrcPath)).toBe(true);
@@ -60,41 +60,9 @@ describe('setupEslint', () => {
 		);
 	});
 
-	it('writes default eslint & prettier config files and deletes ones with wrong extension', () => {
-		const correctEslintrcPath = path.join(WORKING_DIR, '.eslintrc.cjs');
-		const correctPrettierrcPath = path.join(WORKING_DIR, '.prettierrc.cjs');
-		fs.writeFileSync(eslintrcPath, 'eslint');
-		fs.writeFileSync(prettierrcPath, 'prettier');
-
-		expect(fs.existsSync(eslintrcPath)).toBe(true);
-		expect(fs.existsSync(prettierrcPath)).toBe(true);
-		expect(fs.existsSync(correctEslintrcPath)).toBe(false);
-		expect(fs.existsSync(correctPrettierrcPath)).toBe(false);
-
-		const result = setupEslintFiles(WORKING_DIR, {
-			...packageJson,
-			type: 'module'
-		});
-		expect(result).toBeRight();
-
-		expect(fs.existsSync(eslintrcPath)).toBe(false);
-		expect(fs.existsSync(correctEslintrcPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(correctEslintrcPath, 'utf8');
-		expect(eslintConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
-		);
-
-		expect(fs.existsSync(prettierrcPath)).toBe(false);
-		expect(fs.existsSync(correctPrettierrcPath)).toBe(true);
-		const prettierConfig = fs.readFileSync(correctPrettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
-		);
-	});
-
 	it("writes default eslint & prettier config files, replacing existing ones that don't reference this lib", () => {
 		fs.writeFileSync(
-			eslintrcPath,
+			eslintConfigPath,
 			`module.exports = require('@craigmiller160/eslint-config-js/.eslintrc.js');`
 		);
 		fs.writeFileSync(
@@ -105,10 +73,10 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
+		expect(fs.existsSync(eslintConfigPath)).toBe(true);
+		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
 		expect(eslintConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js');`
+			`export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';`
 		);
 
 		expect(fs.existsSync(prettierrcPath)).toBe(true);
@@ -120,7 +88,7 @@ describe('setupEslint', () => {
 
 	it('do nothing when eslint & prettier config files that reference this lib exist', () => {
 		fs.writeFileSync(
-			eslintrcPath,
+			eslintConfigPath,
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js'); \\ foo`
 		);
 		fs.writeFileSync(
@@ -131,8 +99,8 @@ describe('setupEslint', () => {
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(eslintrcPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintrcPath, 'utf8');
+		expect(fs.existsSync(eslintConfigPath)).toBe(true);
+		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
 		expect(eslintConfig.trim()).toBe(
 			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js'); \\ foo`
 		);
