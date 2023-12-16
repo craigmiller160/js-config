@@ -3,6 +3,7 @@ import parserTs from '@typescript-eslint/parser';
 import eslintTs from '@typescript-eslint/eslint-plugin';
 import globals from 'globals';
 import eslintPrettier from 'eslint-plugin-prettier';
+import eslintSonar from 'eslint-plugin-sonarjs';
 
 export default [
 	{
@@ -14,20 +15,23 @@ export default [
 			}
 		},
 		plugins: {
-			prettier: eslintPrettier
+			prettier: eslintPrettier,
+			sonarjs: eslintSonar
 		},
 		linterOptions: {
 			reportUnusedDisableDirectives: true
 		},
 		rules: {
 			...eslintJs.configs.recommended.rules,
+			...eslintSonar.configs.recommended.rules,
 			'prettier/prettier': ['error', {}, { usePrettierrc: true }],
 			'no-console': [
 				'error',
 				{
 					allow: ['error']
 				}
-			]
+			],
+			'sonarjs/no-duplicate-string': 0
 		}
 	},
 	{
