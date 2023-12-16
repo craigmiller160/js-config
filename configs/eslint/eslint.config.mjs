@@ -1,6 +1,7 @@
 import eslintJs from '@eslint/js';
 import parserTs from '@typescript-eslint/parser';
 import eslintTs from '@typescript-eslint/eslint-plugin';
+import globals from 'globals';
 
 export default [
     {
@@ -8,7 +9,10 @@ export default [
             '**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'
         ],
         languageOptions: {
-            ecmaVersion: 'latest'
+            ecmaVersion: 'latest',
+            globals: {
+                ...globals.node
+            }
         },
         linterOptions: {
             reportUnusedDisableDirectives: true
