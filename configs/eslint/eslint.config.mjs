@@ -14,10 +14,12 @@ import eslintVitest from 'eslint-plugin-vitest';
 import eslintCypress from 'eslint-plugin-cypress';
 import eslintJestDom from 'eslint-plugin-jest-dom';
 import eslintTestingLibrary from 'eslint-plugin-testing-library';
-import {
-	configs as eslintTanstackQueryConfigs,
-	rules as eslintTanstackQueryRules
-} from '@tanstack/eslint-plugin-query';
+// import {
+// 	configs as eslintTanstackQueryConfigs,
+// 	rules as eslintTanstackQueryRules
+// } from '@tanstack/eslint-plugin-query';
+
+// TODO need tanstack to work
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -70,7 +72,9 @@ const eslintConfigs = [
 		rules: {
 			...eslintTs.configs['eslint-recommended'].overrides[0].rules,
 			// TODO need to have type-sensitive rules too
-			...eslintTs.configs.recommended.rules,
+			...(process.env.ESLINT_FAST === 'true'
+				? eslintTs.configs.recommended.rules
+				: eslintTs.configs['recommended-type-checked']),
 			'@typescript-eslint/no-misused-promises': [
 				'error',
 				{
