@@ -32,10 +32,7 @@ const eslintConfigs = [
 	{
 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
 		languageOptions: {
-			ecmaVersion: 'latest',
-			globals: {
-				...globals.node
-			}
+			ecmaVersion: 'latest'
 		},
 		plugins: {
 			prettier: eslintPrettier,
@@ -100,6 +97,19 @@ const eslintConfigs = [
 		}
 	}
 ];
+
+const nodeJsConfig = {
+	files: [],
+	languageOptions: {
+		globals: globals.node
+	}
+};
+if (controlFile.projectType === 'commonjs') {
+	nodeJsConfig.files.push('**/*.{js,ts,jsx,tsx}');
+} else {
+	nodeJsConfig.files.push('**/*.{cjs,cts}');
+}
+eslintConfigs.push(nodeJsConfig);
 
 if (controlFile.eslintPlugins.vitest) {
 	eslintConfigs.push({
