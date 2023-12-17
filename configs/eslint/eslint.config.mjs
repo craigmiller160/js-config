@@ -71,7 +71,6 @@ const eslintConfigs = [
 		},
 		rules: {
 			...eslintTs.configs['eslint-recommended'].overrides[0].rules,
-			// TODO need to have type-sensitive rules too
 			...(process.env.ESLINT_FAST === 'true'
 				? eslintTs.configs.recommended.rules
 				: eslintTs.configs['recommended-type-checked'].rules),
