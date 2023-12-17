@@ -17,23 +17,6 @@ const getPrettierrcPath = (cwd: string, type: PackageJsonType): string => {
 	return path.join(cwd, '.prettierrc.cjs');
 };
 
-const getRemoveEslintrcPath = (cwd: string, type: PackageJsonType): string => {
-	if (type === 'commonjs') {
-		return path.join(cwd, '.eslintrc.cjs');
-	}
-	return path.join(cwd, '.eslintrc.js_backup');
-};
-
-const getRemovePrettierrcPath = (
-	cwd: string,
-	type: PackageJsonType
-): string => {
-	if (type === 'commonjs') {
-		return path.join(cwd, '.prettierrc.cjs');
-	}
-	return path.join(cwd, '.prettierrc.js');
-};
-
 const shouldWriteConfig = (configPath: string): boolean => {
 	if (fs.existsSync(configPath)) {
 		const config = fs.readFileSync(configPath, 'utf8');
@@ -41,31 +24,6 @@ const shouldWriteConfig = (configPath: string): boolean => {
 	}
 	return true;
 };
-
-const removeInvalidEslintFiles = (
-	cwd: string,
-	packageJson: PackageJson
-): either.Either<Error, void> =>
-	either.tryCatch(() => {
-		const removeEslintrcPath = getRemoveEslintrcPath(cwd, packageJson.type);
-		if (fs.existsSync(removeEslintrcPath)) {
-			logger.debug(
-				`Removing invalid eslintrc file: ${removeEslintrcPath}`
-			);
-			fs.rmSync(removeEslintrcPath);
-		}
-
-		const removePrettierrcPath = getRemovePrettierrcPath(
-			cwd,
-			packageJson.type
-		);
-		if (fs.existsSync(removePrettierrcPath)) {
-			logger.debug(
-				`Removing invalid prettierrc file: ${removePrettierrcPath}`
-			);
-			fs.rmSync(removePrettierrcPath);
-		}
-	}, either.toError);
 
 const writeEslintFiles = (
 	cwd: string,
