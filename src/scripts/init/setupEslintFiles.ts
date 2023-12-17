@@ -1,4 +1,4 @@
-import { either, function as func } from 'fp-ts';
+import { either } from 'fp-ts';
 import path from 'path';
 import fs from 'fs';
 import { logger } from '../logger';
@@ -52,8 +52,5 @@ export const setupEslintFiles = (
 	packageJson: PackageJson
 ): either.Either<Error, void> => {
 	logger.info('Setting up eslint files');
-	return func.pipe(
-		writeEslintFiles(cwd, packageJson),
-		either.chain(() => removeInvalidEslintFiles(cwd, packageJson))
-	);
+	return writeEslintFiles(cwd, packageJson);
 };
