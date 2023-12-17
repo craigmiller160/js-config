@@ -6,7 +6,6 @@ import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSonar from 'eslint-plugin-sonarjs';
 import path from 'path';
 import fs from 'fs';
-import url from 'url';
 import eslintReact from 'eslint-plugin-react';
 import eslintReactHooks from 'eslint-plugin-react-hooks';
 import eslintJsxA11y from 'eslint-plugin-jsx-a11y';
@@ -21,9 +20,12 @@ import eslintTestingLibrary from 'eslint-plugin-testing-library';
 
 // TODO need tanstack to work
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-
-const controlFilePath = path.join(__dirname, '..', '..', 'control-file.json');
+const controlFilePath = path.join(
+	import.meta.dirname,
+	'..',
+	'..',
+	'control-file.json'
+);
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
 
 // TODO explore import plugin again
@@ -32,7 +34,11 @@ const eslintConfigs = [
 	{
 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
 		languageOptions: {
-			ecmaVersion: 'latest'
+			ecmaVersion: 'latest',
+			globals: {
+				...globals.node,
+				...globals.browser
+			}
 		},
 		plugins: {
 			prettier: eslintPrettier,
@@ -97,19 +103,6 @@ const eslintConfigs = [
 		}
 	}
 ];
-
-const nodeJsConfig = {
-	files: [],
-	languageOptions: {
-		globals: globals.node
-	}
-};
-if (controlFile.projectType === 'commonjs') {
-	nodeJsConfig.files.push('**/*.{js,ts,jsx,tsx}');
-} else {
-	nodeJsConfig.files.push('**/*.{cjs,cts}');
-}
-eslintConfigs.push(nodeJsConfig);
 
 if (controlFile.eslintPlugins.vitest) {
 	eslintConfigs.push({
