@@ -13,10 +13,7 @@ import eslintVitest from 'eslint-plugin-vitest';
 import eslintCypress from 'eslint-plugin-cypress';
 import eslintJestDom from 'eslint-plugin-jest-dom';
 import eslintTestingLibrary from 'eslint-plugin-testing-library';
-// import {
-// 	configs as eslintTanstackQueryConfigs,
-// 	rules as eslintTanstackQueryRules
-// } from '@tanstack/eslint-plugin-query';
+import * as eslintTanstackQuery from '@tanstack/eslint-plugin-query';
 
 // TODO need tanstack to work
 
@@ -174,16 +171,16 @@ if (controlFile.eslintPlugins.testingLibraryReact) {
 	});
 }
 
-// if (controlFile.eslintPlugins.tanstackQuery) {
-// 	eslintConfigs.push({
-// 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
-// 		plugins: {
-// 			'@tanstack/eslint-plugin-query': eslintTanstackQueryConfigs.plugins
-// 		},
-// 		rules: {
-// 			...eslintTanstackQueryRules
-// 		}
-// 	});
-// }
+if (controlFile.eslintPlugins.tanstackQuery) {
+	eslintConfigs.push({
+		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
+		plugins: {
+			'@tanstack/query': eslintTanstackQuery
+		},
+		rules: {
+			...eslintTanstackQuery.configs.recommended.rules
+		}
+	});
+}
 
 export default eslintConfigs;
