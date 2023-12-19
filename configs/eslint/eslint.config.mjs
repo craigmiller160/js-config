@@ -15,8 +15,6 @@ import eslintJestDom from 'eslint-plugin-jest-dom';
 import eslintTestingLibrary from 'eslint-plugin-testing-library';
 import * as eslintTanstackQuery from '@tanstack/eslint-plugin-query';
 
-// TODO need tanstack to work
-
 const controlFilePath = path.join(
 	import.meta.dirname,
 	'..',
