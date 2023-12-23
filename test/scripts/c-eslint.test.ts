@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
+import { beforeEach, describe, expect, it, MockedFunction, vi, test } from 'vitest';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
 import { execute } from '../../src/scripts/c-eslint';
 import path from 'path';
+import {ControlFile} from '../../src/scripts/files/ControlFile';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync
@@ -21,6 +22,21 @@ const CYPRESS_WORKING_DIR = path.join(
 	'__working_directories__',
 	'eslintWithCypress'
 );
+
+type EslintPathArgs = Readonly<{
+	directories: ControlFile['directories'],
+	customPath: string | null;
+}>;
+
+test.each<EslintPathArgs>([
+	{ directories: { test: false, cypress: false }, customPath: null },
+	{ directories: { test: false, cypress: false }, customPath: '/foo/bar/abc.ts' },
+	{ directories: { test: true, cypress: false }, customPath: null },
+	{ directories: { test: false, cypress: true }, customPath: null },
+	{ directories: { test: true, cypress: true }, customPath: null }
+])('runs c-eslint for the directories $directories and with the custom path $customPath', () => {
+	throw new Error();
+});
 
 describe('c-eslint', () => {
 	beforeEach(() => {
