@@ -43,6 +43,8 @@ describe('setupEslint', () => {
 		wipeWorkingDir();
 	});
 
+	it.fails('handle writing module & commonjs files');
+
 	it('writes default eslint & prettier config files when none exist', () => {
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
