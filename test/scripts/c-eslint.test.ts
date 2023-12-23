@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it, MockedFunction, vi, test } from 'vitest';
+import {beforeEach, describe, expect, it, MockedFunction, vi, test, afterEach} from 'vitest';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import { either } from 'fp-ts';
 import { execute } from '../../src/scripts/c-eslint';
 import path from 'path';
+import fs from 'fs/promises';
 import {ControlFile} from '../../src/scripts/files/ControlFile';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
@@ -16,22 +17,31 @@ const COMMAND = path.join(
 	'bin',
 	'eslint.js'
 );
-const CYPRESS_WORKING_DIR = path.join(
-	process.cwd(),
-	'test',
-	'__working_directories__',
-	'eslintWithCypress'
-);
+
+const WORKING_DIR = path.join(process.cwd(), 'test', '__working_directories__', 'eslint');
+const JS_CONFIG_DIR = path.join(WORKING_DIR, 'node_modules', '@craigmiller160', 'js-config');
 
 type EslintPathArgs = Readonly<{
 	directories: ControlFile['directories'],
 	customPath: string | null;
 }>;
 
-beforeEach(() => {
+const cleanDirectory = async () => {
+	const files = await fs.readdir(JS_CONFIG_DIR);
+	const promises = files.filter((file) => '.gitkeep' !== file)
+		.map((file) => fs.rm(file));
+	await Promise.all(promises);
+}
+
+beforeEach(async () => {
 	vi.resetAllMocks();
 	runCommandSyncMock.mockReturnValue(either.right(''));
+	await cleanDirectory();
 });
+
+afterEach(async () => {
+	await cleanDirectory();
+})
 
 test.each<EslintPathArgs>([
 	{ directories: { test: false, cypress: false }, customPath: null },
@@ -67,7 +77,7 @@ describe('c-eslint', () => {
 	it('runs with default path and cypress', () => {
 		execute({
 			...process,
-			cwd: () => CYPRESS_WORKING_DIR
+			// cwd: () => CYPRESS_WORKING_DIR
 		});
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(2);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
