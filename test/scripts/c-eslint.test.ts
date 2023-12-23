@@ -148,7 +148,13 @@ test.each<EslintPathArgs>([
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
-			`${COMMAND} --config ${configFile} --fix --max-warnings=0 ${targetPath}`
+			`${COMMAND} --config ${configFile} --fix --max-warnings=0 ${targetPath}`,
+			{
+				env: {
+					...process.env,
+					ESLINT_USE_FLAT_CONFIG: 'true'
+				}
+			}
 		);
 	}
 );
