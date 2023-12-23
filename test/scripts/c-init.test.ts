@@ -15,6 +15,7 @@ import { setupEslintPlugins } from '../../src/scripts/init/setupEslintPlugins';
 import { setupVite } from '../../src/scripts/init/setupVite';
 import { setupGitHooks } from '../../src/scripts/init/setupGitHooks';
 import { setupStylelint } from '../../src/scripts/init/setupStylelint';
+import { ControlFile } from '../../src/scripts/files/ControlFile';
 
 const findCwdMock = findCwd as MockedFunction<typeof findCwd>;
 const setupTypescriptMock = setupTypescript as MockedFunction<
@@ -98,7 +99,14 @@ describe('c-init', () => {
 			devDependencies: {}
 		};
 		const cwd = 'cwd';
-		const plugins: ReadonlyArray<string> = ['plugin1', 'plugin2'];
+		const plugins: ControlFile['eslintPlugins'] = {
+			react: false,
+			vitest: false,
+			jestDom: false,
+			tanstackQuery: false,
+			cypress: false,
+			testingLibraryReact: false
+		};
 		findCwdMock.mockReturnValue(either.right(cwd));
 		setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
 		generateControlFileMock.mockReturnValue(either.right(func.constVoid()));

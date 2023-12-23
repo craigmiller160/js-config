@@ -43,7 +43,14 @@ describe('generateControlFile', () => {
 		const result = generateControlFile(
 			cwd,
 			packageJson,
-			['plugin1', 'plugin2'],
+			{
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
 			false,
 			false,
 			{
@@ -60,7 +67,14 @@ describe('generateControlFile', () => {
 		expect(controlFile).toEqual({
 			workingDirectoryPath: cwd,
 			projectType: 'module',
-			eslintPlugins: ['plugin1', 'plugin2'],
+			eslintPlugins: {
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
 			hasTestDirectory: false,
 			hasCypressDirectory: false
 		});

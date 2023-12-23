@@ -56,9 +56,18 @@ test.each<TypeCheckTestParams>([
 		const controlFile: ControlFile = {
 			workingDirectoryPath: '',
 			projectType: 'module',
-			eslintPlugins: [],
-			hasTestDirectory: additionalDirectories.includes('test'),
-			hasCypressDirectory: additionalDirectories.includes('cypress')
+			eslintPlugins: {
+				cypress: false,
+				testingLibraryReact: false,
+				tanstackQuery: false,
+				jestDom: false,
+				vitest: false,
+				react: false
+			},
+			directories: {
+				test: additionalDirectories.includes('test'),
+				cypress: additionalDirectories.includes('cypress')
+			}
 		};
 		fs.writeFileSync(CONTROL_FILE, JSON.stringify(controlFile));
 		parseControlFileMock.mockReturnValue(either.right(controlFile));
