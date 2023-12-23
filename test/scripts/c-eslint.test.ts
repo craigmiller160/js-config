@@ -51,8 +51,8 @@ type EslintPathArgs = Readonly<{
 const cleanDirectory = async () => {
 	const files = await fs.readdir(JS_CONFIG_DIR);
 	const promises = files
-		.filter((file) => '.gitkeep' !== file)
-		.map((file) => fs.rm(file));
+		.filter((file) => '.gitkeep' !== file && '.gitignore' !== file)
+		.map((file) => fs.rm(path.join(JS_CONFIG_DIR, file)));
 	await Promise.all(promises);
 };
 
