@@ -142,6 +142,9 @@ test.each<EslintPathArgs>([
 
 		execute({
 			...process,
+			argv: ['', '', customPath].filter(
+				(item): item is string => item !== null
+			),
 			cwd: () => WORKING_DIR
 		});
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
