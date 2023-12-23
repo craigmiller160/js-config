@@ -1,10 +1,10 @@
 export const createEsmContent = (varName: string, value: string): string =>
-	`/* eslint-disable */ export const ${varName} = '${value}';\n`;
+	`export const ${varName} = '${value}';\n`;
 
 export const createCjsContent = (
 	varName: string,
 	value: string
-) => `/* eslint-disable */ "use strict";
+) => `"use strict";
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
