@@ -28,6 +28,11 @@ type EslintPathArgs = Readonly<{
 	customPath: string | null;
 }>;
 
+beforeEach(() => {
+	vi.resetAllMocks();
+	runCommandSyncMock.mockReturnValue(either.right(''));
+});
+
 test.each<EslintPathArgs>([
 	{ directories: { test: false, cypress: false }, customPath: null },
 	{ directories: { test: false, cypress: false }, customPath: '/foo/bar/abc.ts' },
@@ -39,10 +44,6 @@ test.each<EslintPathArgs>([
 });
 
 describe('c-eslint', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-		runCommandSyncMock.mockReturnValue(either.right(''));
-	});
 
 	it('runs with default path and no additional directories', () => {
 		execute(process);
