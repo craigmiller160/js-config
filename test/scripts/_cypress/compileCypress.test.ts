@@ -50,7 +50,7 @@ export const hello${type} = 'world';`;
 	await fs.stat(filePath);
 };
 
-const CJS_CONTENT = createCjsContent('hello', 'world');
+const CJS_CONTENT = createCjsContent('hello', 'world', true);
 
 describe('compile cypress config', () => {
 	beforeEach(async () => {
