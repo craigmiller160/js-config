@@ -64,7 +64,7 @@ describe('generateControlFile', () => {
 		const controlFile = JSON.parse(
 			fs.readFileSync(CONTROL_FILE, 'utf8')
 		) as ControlFile;
-		expect(controlFile).toEqual({
+		expect(controlFile).toEqual<ControlFile>({
 			workingDirectoryPath: cwd,
 			projectType: 'module',
 			eslintPlugins: {
@@ -75,8 +75,10 @@ describe('generateControlFile', () => {
 				tanstackQuery: true,
 				testingLibraryReact: false
 			},
-			hasTestDirectory: false,
-			hasCypressDirectory: false
+			directories: {
+				test: false,
+				cypress: false
+			}
 		});
 	});
 });
