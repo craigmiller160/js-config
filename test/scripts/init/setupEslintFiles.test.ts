@@ -8,7 +8,7 @@ const WORKING_DIR = path.join(
 	process.cwd(),
 	'test',
 	'__working_directories__',
-	'eslint'
+	'eslint_files'
 );
 
 const wipeWorkingDir = () =>
