@@ -33,7 +33,13 @@ describe('c-eslint', () => {
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
-			`${COMMAND} --fix --max-warnings=0 {src,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`
+			`${COMMAND} --fix --max-warnings=0 {src,test}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`,
+			{
+				env: {
+					...process.env,
+					ESLINT_USE_FLAT_CONFIG: 'true'
+				}
+			}
 		);
 	});
 

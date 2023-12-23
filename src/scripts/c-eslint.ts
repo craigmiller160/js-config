@@ -29,7 +29,9 @@ export const execute = (process: NodeJS.Process) => {
 		either.bind('command', () => findCommand(process, ESLINT)),
 		either.chain(({ configFile, targetFile, command }) =>
 			runCommandSync(
-				`${command} --config ${configFile} --fix --max-warnings=0 ${targetFile}`,
+				`${command} --config ${configFile} --fix --max-warnings=0 ${
+					targetFile ?? ''
+				}`,
 				{
 					env: {
 						...process.env,
