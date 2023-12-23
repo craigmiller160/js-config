@@ -38,7 +38,8 @@ const eslintConfigs = [
 		},
 		plugins: {
 			prettier: eslintPrettier,
-			sonarjs: eslintSonar
+			sonarjs: eslintSonar,
+			import: eslintImport
 		},
 		linterOptions: {
 			reportUnusedDisableDirectives: true
@@ -46,6 +47,7 @@ const eslintConfigs = [
 		rules: {
 			...eslintJs.configs.recommended.rules,
 			...eslintSonar.configs.recommended.rules,
+			...eslintImport.configs.recommended.rules,
 			'prettier/prettier': ['error', {}, { usePrettierrc: true }],
 			'no-console': [
 				'error',
@@ -54,6 +56,11 @@ const eslintConfigs = [
 				}
 			],
 			'sonarjs/no-duplicate-string': 0
+		},
+		settings: {
+			'import/resolver': {
+				typescript: {}
+			}
 		}
 	},
 	{
