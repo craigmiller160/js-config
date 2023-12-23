@@ -5,33 +5,55 @@ import { getRealArgs } from './utils/process';
 import { findCommand } from './utils/command';
 import { ESLINT } from './commandPaths';
 import { logger } from './logger';
-import { parseControlFile } from './files/ControlFile';
+import { ControlFile, parseControlFile } from './files/ControlFile';
 import { match } from 'ts-pattern';
 import path from 'path';
+
+const getConfigFilePath =
+	(process: NodeJS.Process) =>
+	(controlFile: ControlFile): string => {
+		const configFileName = match(controlFile.projectType)
+			.with('module', () => 'eslint.config.js')
+			.otherwise(() => 'eslint.config.mjs');
+		return path.join(process.cwd(), configFileName);
+	};
+
+const getTargetPaths =
+	(args: ReadonlyArray<string>) =>
+	(controlFile: ControlFile): string => {
+		if (args.length > 0) {
+			return args[0];
+		}
+
+		const rootDirs = [
+			'src',
+			controlFile.directories.test ? 'test' : undefined,
+			controlFile.directories.cypress ? 'cypress' : undefined
+		]
+			.filter((dir): dir is string => !!dir)
+			.join(',');
+		return `{${rootDirs}}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`;
+	};
 
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running eslint');
 	const args = getRealArgs(process);
+	const getConfigFileWithProcess = getConfigFilePath(process);
+	const getTargetPathsWithArgs = getTargetPaths(args);
 
 	func.pipe(
 		parseControlFile(process),
-		either.map((controlFile) => controlFile.projectType),
-		either.map((type) =>
-			match(type)
-				.with('module', () => 'eslint.config.js')
-				.otherwise(() => 'eslint.config.mjs')
+		either.bindTo('controlFile'),
+		either.bind('configFile', ({ controlFile }) =>
+			either.right(getConfigFileWithProcess(controlFile))
 		),
-		either.map((configFile) => path.join(process.cwd(), configFile)),
-		either.bindTo('configFile'),
-		either.bind('targetFile', () =>
-			either.right(args[0] ? args[0] : undefined)
+		either.bind('targetPaths', ({ controlFile }) =>
+			either.right(getTargetPathsWithArgs(controlFile))
 		),
 		either.bind('command', () => findCommand(process, ESLINT)),
-		either.chain(({ configFile, targetFile, command }) =>
+		either.chain(({ configFile, targetPaths, command }) =>
 			runCommandSync(
-				`${command} --config ${configFile} --fix --max-warnings=0 ${
-					targetFile ?? ''
-				}`,
+				`${command} --config ${configFile} --fix --max-warnings=0 ${targetPaths}`,
 				{
 					env: {
 						...process.env,
