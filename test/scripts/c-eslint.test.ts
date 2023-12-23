@@ -140,6 +140,7 @@ test.each<EslintPathArgs>([
 		const configFile = match(projectType)
 			.with('module', () => 'eslint.config.js')
 			.otherwise(() => 'eslint.config.mjs');
+		const configPath = path.join(WORKING_DIR, configFile);
 
 		execute({
 			...process,
@@ -148,7 +149,7 @@ test.each<EslintPathArgs>([
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
-			`${COMMAND} --config ${configFile} --fix --max-warnings=0 ${targetPath}`,
+			`${COMMAND} --config ${configPath} --fix --max-warnings=0 ${targetPath}`,
 			{
 				env: {
 					...process.env,
