@@ -14,6 +14,7 @@ import eslintCypress from 'eslint-plugin-cypress';
 import eslintJestDom from 'eslint-plugin-jest-dom';
 import eslintTestingLibrary from 'eslint-plugin-testing-library';
 import * as eslintTanstackQuery from '@tanstack/eslint-plugin-query';
+import eslintImport from 'eslint-plugin-import';
 
 const controlFilePath = path.join(
 	import.meta.dirname,
