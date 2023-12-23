@@ -32,7 +32,7 @@ const ESM_FILES: ReadonlyArray<FileAndContents> = [
 	],
 	[path.join('child', 'pics', 'abc.png'), ''],
 	[path.join('child', 'something.js'), createEsmContent('foo', 'bar')],
-	[path.join('def.js'), `/* eslint-disable */ export const wxz = 'abc';\n`],
+	[path.join('def.js'), `export const wxz = 'abc';\n`],
 	['other-root.js', createEsmContent('goodbye', 'universe')],
 	['root.js', createEsmContent('hello', 'world')],
 	['vite.config.js', createEsmContent('vite', 'vite2')]
