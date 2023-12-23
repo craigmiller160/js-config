@@ -28,7 +28,7 @@ describe('c-eslint', () => {
 		runCommandSyncMock.mockReturnValue(either.right(''));
 	});
 
-	it('runs with default path and no cypress', () => {
+	it('runs with default path and no additional directories', () => {
 		execute(process);
 		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
@@ -42,6 +42,10 @@ describe('c-eslint', () => {
 			}
 		);
 	});
+
+	it.fails('runs with default path and cypress directory');
+	it.fails('runs with default path and test directory');
+	it.fails('runs with default path and test and cypress directories');
 
 	it('runs with default path and cypress', () => {
 		execute({
@@ -64,7 +68,7 @@ describe('c-eslint', () => {
 		);
 	});
 
-	it('runs with explicit path and not a cypress path', () => {
+	it('runs with explicit path', () => {
 		const thePath = 'foo/bar.js';
 		execute({
 			...process,
@@ -75,23 +79,6 @@ describe('c-eslint', () => {
 			{
 				env: expect.objectContaining({
 					NO_VITEST: 'false'
-				}) as object
-			}
-		);
-	});
-
-	it('runs with explicit path that is a cypress path', () => {
-		const thePath = `${CYPRESS_WORKING_DIR}/cypress/foo/bar.js`;
-		execute({
-			...process,
-			argv: ['', '', thePath],
-			cwd: () => CYPRESS_WORKING_DIR
-		});
-		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${COMMAND} --fix --max-warnings=0 ${thePath}`,
-			{
-				env: expect.objectContaining({
-					NO_VITEST: 'true'
 				}) as object
 			}
 		);
