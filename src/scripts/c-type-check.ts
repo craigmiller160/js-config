@@ -19,8 +19,8 @@ const runTypeCheck = (
 		extends: '../tsconfig.json',
 		include: [
 			'../src/**/*',
-			controlFile.hasTestDirectory ? '../test/**/*' : undefined,
-			controlFile.hasCypressDirectory ? '../cypress/**/*' : undefined
+			controlFile.directories.test ? '../test/**/*' : undefined,
+			controlFile.directories.cypress ? '../cypress/**/*' : undefined
 		].flatMap((item) => (item ? [item] : []))
 	};
 	const checkTsConfigPath = path.join(
