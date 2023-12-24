@@ -113,6 +113,59 @@ type PrettierFilesArgs = Readonly<{
 	projectType: PackageJsonType;
 }>;
 
+const writeExistingPrettierFile = async (
+	type: ExistingPrettierFile,
+	projectType: PackageJsonType
+): Promise<unknown> => {
+	if (type === 'none') {
+		return;
+	}
+
+	const extension = projectType === 'commonjs' ? 'js' : 'cjs';
+
+	if (type === 'invalid') {
+		await fs.writeFile(
+			path.join(WORKING_DIR, `.prettierrc.${extension}`),
+			`const foobar = 'hello'`
+		);
+	} else {
+		await fs.writeFile(
+			path.join(WORKING_DIR, `.prettierrc.${extension}`),
+			`// Hello\nmodule.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
+		);
+	}
+};
+
+const writeExistingEslintFile = async (
+	type: ExistingEslintFile,
+	projectType: PackageJsonType
+): Promise<unknown> => {
+	if (type === 'none') {
+		return;
+	}
+
+	const extension = projectType === 'commonjs' ? 'js' : 'cjs';
+
+	if (type === 'invalid') {
+		await fs.writeFile(
+			path.join(WORKING_DIR, 'eslint.config.js'),
+			`const foobar = 'hello'`
+		);
+	} else if (type === 'legacy') {
+		await fs.writeFile(
+			path.join(WORKING_DIR, `.eslintrc.${extension}`),
+			`const foobar = 'hello'`
+		);
+	} else {
+		await fs.writeFile(
+			path.join(WORKING_DIR, 'eslint.config.js'),
+			`// Hello\nmodule.exports = import('@craigmiller160/js-config/configs/eslint/configs/eslint/eslint.config.mjs').then(
+\t({ default: theDefault }) => theDefault
+);`
+		);
+	}
+};
+
 beforeEach(async () => {
 	await wipeWorkingDir();
 });
