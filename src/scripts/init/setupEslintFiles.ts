@@ -1,15 +1,18 @@
-import { taskEither, either, function as func, readonlyArray } from 'fp-ts';
+import {
+	taskEither,
+	either,
+	function as func,
+	readonlyArray
+} from 'fp-ts';
 import { logger } from '../logger';
 import { PackageJson, PackageJsonType } from '../files/PackageJson';
-import { glob } from 'glob';
 import { match } from 'ts-pattern';
 import fs from 'fs/promises';
 import path from 'path';
 
 type JsExtension = 'js' | 'cjs';
-const BACKUP_FILE = /^.+_backup$/;
-const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)/;
-const BASE_FILE_NAME_PATTERN =
+const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)$/;
+const EXISTING_CONFIG_FILE =
 	/^(?<baseFileName>.+(eslint|prettier).+)\.(js|cjs)$/;
 type BaseFileNameGroups = Readonly<{
 	baseFileName: string;
@@ -25,15 +28,11 @@ const getExistingFiles = (
 	cwd: string
 ): taskEither.TaskEither<Error, ReadonlyArray<string>> =>
 	func.pipe(
-		taskEither.tryCatch(
-			() =>
-				glob('*{eslint,prettier}*.*', {
-					cwd
-				}),
-			either.toError
-		),
+		taskEither.tryCatch(() => fs.readdir(cwd), either.toError),
 		taskEither.map(
-			readonlyArray.filter((fileName) => !BACKUP_FILE.test(fileName))
+			readonlyArray.filter((fileName) =>
+				EXISTING_CONFIG_FILE.test(fileName)
+			)
 		)
 	);
 
@@ -44,7 +43,7 @@ const moveToBackupFile =
 	(cwd: string) =>
 	(fileName: string): taskEither.TaskEither<Error, void> => {
 		const srcFilePath = path.join(cwd, fileName);
-		const baseFileNameGroups = BASE_FILE_NAME_PATTERN.exec(srcFilePath)
+		const baseFileNameGroups = EXISTING_CONFIG_FILE.exec(srcFilePath)
 			?.groups as BaseFileNameGroups | undefined;
 		if (!baseFileNameGroups) {
 			return taskEither.left(
@@ -61,11 +60,66 @@ const moveToBackupFile =
 		);
 	};
 
+type FileNeedsBackup = Readonly<{
+	fileName: string;
+	needsBackup: boolean;
+}>;
+
+const needsToBeBackedUp =
+	(cwd: string) =>
+	(fileName: string): taskEither.TaskEither<Error, FileNeedsBackup> => {
+		if (LEGACY_ESLINT.test(fileName)) {
+			return taskEither.right({
+				fileName,
+				needsBackup: true
+			});
+		}
+
+		const filePath = path.join(cwd, fileName);
+		return func.pipe(
+			taskEither.tryCatch(
+				() => fs.readFile(filePath, 'utf8'),
+				either.toError
+			),
+			taskEither.map((contents) => existingFileIsValid(contents)),
+			taskEither.map(
+				(isValid): FileNeedsBackup => ({
+					fileName,
+					needsBackup: !isValid
+				})
+			)
+		);
+	};
+
+const backupExistingFilesIfNecessary =
+	(cwd: string) =>
+	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, void> =>
+		func.pipe(
+			files,
+			readonlyArray.map(needsToBeBackedUp(cwd)),
+			taskEither.sequenceArray,
+			taskEither.flatMap(
+				func.flow(
+					readonlyArray.filter(({ needsBackup }) => needsBackup),
+					readonlyArray.map(({ fileName }) => fileName),
+					readonlyArray.map(moveToBackupFile(cwd)),
+					taskEither.sequenceArray
+				)
+			),
+			taskEither.map(() => func.constVoid())
+		);
+
+const handleExistingFiles = (cwd: string): taskEither.TaskEither<Error, void> =>
+	func.pipe(
+		getExistingFiles(cwd),
+		taskEither.flatMap(backupExistingFilesIfNecessary(cwd))
+	);
+
 export const setupEslintFiles = (
 	cwd: string,
 	packageJson: PackageJson
 ): taskEither.TaskEither<Error, void> => {
 	logger.info('Setting up eslint files');
 	const extension = getExtension(packageJson);
-	throw new Error();
+	return handleExistingFiles(cwd);
 };
