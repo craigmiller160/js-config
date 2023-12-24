@@ -190,7 +190,15 @@ test.each<EslintFilesArgs>([
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('eslint');
-		expect(outputFiles).toHaveLength(existingEslintFile === 'none' ? 1 : 2);
+		const hasBackupFile = ['invalid', 'legacy'].includes(
+			existingEslintFile
+		);
+		expect(outputFiles).toHaveLength(hasBackupFile ? 2 : 1);
+		if (hasBackupFile && existingEslintFile === 'legacy') {
+			expect(outputFiles[0]).toBe('.eslintrc_backup');
+		} else if (hasBackupFile) {
+			expect(outputFiles[0]).toBe('eslint.config_backup');
+		}
 
 		expect.fail('Finish this');
 	}
@@ -211,15 +219,13 @@ test.each<PrettierFilesArgs>([
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('prettier');
-		expect(outputFiles).toHaveLength(
-			existingPrettierFile === 'invalid' ? 1 : 2
-		);
-		if (existingPrettierFile === 'invalid') {
+		const hasBackupFile = existingPrettierFile === 'invalid';
+		expect(outputFiles).toHaveLength(hasBackupFile ? 2 : 1);
+		if (hasBackupFile) {
 			expect(outputFiles[0]).toBe('.prettierrc_backup');
 		}
 
-		const prettierConfigFile =
-			outputFiles[existingPrettierFile === 'invalid' ? 1 : 0];
+		const prettierConfigFile = outputFiles[hasBackupFile ? 1 : 0];
 		const config = await fs.readFile(
 			path.join(WORKING_DIR, prettierConfigFile),
 			'utf8'
