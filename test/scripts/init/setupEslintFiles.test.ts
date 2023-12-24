@@ -203,7 +203,17 @@ test.each<EslintFilesArgs>([
 			expect(outputFiles[0]).toBe('eslint.config_backup');
 		}
 
-		expect.fail('Finish this');
+		const eslintConfigFile = outputFiles[hasBackupFile ? 1 : 0];
+		const config = await fs.readFile(
+			path.join(WORKING_DIR, eslintConfigFile),
+			'utf8'
+		);
+
+		const validPrefix = existingEslintFile === 'valid' ? '// Hello\n' : '';
+		expect(config)
+			.toBe(`${validPrefix}module.exports = import('@craigmiller160/js-config/configs/eslint/configs/eslint/eslint.config.mjs').then(
+\t({ default: theDefault }) => theDefault
+);`);
 	}
 );
 
