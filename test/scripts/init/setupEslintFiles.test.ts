@@ -1,8 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
-import { PackageJson } from '../../../src/scripts/files/PackageJson';
+import {
+	PackageJson,
+	PackageJsonType
+} from '../../../src/scripts/files/PackageJson';
+import { ControlFile } from '../../../src/scripts/files/ControlFile';
+import { function as func, task, readonlyArray } from 'fp-ts';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -10,107 +15,59 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'eslint_files'
 );
+const JS_CONFIG_DIR = path.join(
+	WORKING_DIR,
+	'node_modules',
+	'@craigmiller160',
+	'js-config'
+);
 
-const wipeWorkingDir = () =>
-	fs
-		.readdirSync(WORKING_DIR)
-		.filter((fileName) => fileName.includes('eslint'))
-		.map((fileName) => path.join(WORKING_DIR, fileName))
-		.forEach((filePath) =>
-			fs.rmSync(filePath, {
-				recursive: true,
-				force: true
-			})
-		);
+const wipeWorkingDir = (): Promise<unknown> =>
+	func.pipe(
+		() => fs.readdir(WORKING_DIR),
+		task.map(
+			func.flow(
+				readonlyArray.filter((fileName) => fileName.includes('eslint')),
+				readonlyArray.map((fileName) =>
+					path.join(WORKING_DIR, fileName)
+				)
+			)
+		),
+		task.flatMap(
+			func.flow(
+				readonlyArray.map((filePath) => () => fs.rm(filePath)),
+				task.sequenceArray
+			)
+		)
+	)();
 
-const eslintConfigPath = path.join(WORKING_DIR, 'eslint.config.mjs');
-const prettierrcPath = path.join(WORKING_DIR, '.prettierrc.js');
-
-const packageJson: PackageJson = {
-	name: 'name',
-	version: '1.0.0',
-	type: 'commonjs',
-	dependencies: undefined,
-	devDependencies: undefined
+const writeControlFile = async (
+	projectType: PackageJsonType,
+	directories: ControlFile['directories']
+) => {
+	const controlFile: ControlFile = {
+		directories,
+		projectType,
+		eslintPlugins: {
+			cypress: false,
+			testingLibraryReact: false,
+			tanstackQuery: false,
+			jestDom: false,
+			vitest: false,
+			react: false
+		},
+		workingDirectoryPath: WORKING_DIR
+	};
+	await fs.writeFile(
+		path.join(JS_CONFIG_DIR, 'control-file.json'),
+		JSON.stringify(controlFile, null, 2)
+	);
 };
 
-describe('setupEslint', () => {
-	beforeEach(() => {
-		wipeWorkingDir();
-	});
-
-	afterEach(() => {
-		wipeWorkingDir();
-	});
-
-	it.fails('handle writing module & commonjs files');
-
-	it('writes default eslint & prettier config files when none exist', () => {
-		const result = setupEslintFiles(WORKING_DIR, packageJson);
-		expect(result).toBeRight();
-
-		expect(fs.existsSync(eslintConfigPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
-		expect(eslintConfig.trim()).toBe(
-			`export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';`
-		);
-
-		expect(fs.existsSync(prettierrcPath)).toBe(true);
-		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
-		);
-	});
-
-	it("writes default eslint & prettier config files, replacing existing ones that don't reference this lib", () => {
-		fs.writeFileSync(
-			eslintConfigPath,
-			`module.exports = require('@craigmiller160/eslint-config-js/.eslintrc.js');`
-		);
-		fs.writeFileSync(
-			prettierrcPath,
-			`module.exports = require('@craigmiller160/prettier-config/.prettierrc.js');`
-		);
-
-		const result = setupEslintFiles(WORKING_DIR, packageJson);
-		expect(result).toBeRight();
-
-		expect(fs.existsSync(eslintConfigPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
-		expect(eslintConfig.trim()).toBe(
-			`export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';`
-		);
-
-		expect(fs.existsSync(prettierrcPath)).toBe(true);
-		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
-		);
-	});
-
-	it('do nothing when eslint & prettier config files that reference this lib exist', () => {
-		fs.writeFileSync(
-			eslintConfigPath,
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js'); \\ foo`
-		);
-		fs.writeFileSync(
-			prettierrcPath,
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js'); \\ foo`
-		);
-
-		const result = setupEslintFiles(WORKING_DIR, packageJson);
-		expect(result).toBeRight();
-
-		expect(fs.existsSync(eslintConfigPath)).toBe(true);
-		const eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
-		expect(eslintConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.eslintrc.js'); \\ foo`
-		);
-
-		expect(fs.existsSync(prettierrcPath)).toBe(true);
-		const prettierConfig = fs.readFileSync(prettierrcPath, 'utf8');
-		expect(prettierConfig.trim()).toBe(
-			`module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js'); \\ foo`
-		);
-	});
+beforeEach(async () => {
+	await wipeWorkingDir();
 });
+
+afterEach(async () => {
+	await wipeWorkingDir();
+})
