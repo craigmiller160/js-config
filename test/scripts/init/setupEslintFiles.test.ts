@@ -6,7 +6,13 @@ import {
 	PackageJsonType
 } from '../../../src/scripts/files/PackageJson';
 import { ControlFile } from '../../../src/scripts/files/ControlFile';
-import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
+import {
+	function as func,
+	readonlyArray,
+	taskEither,
+	either,
+	string
+} from 'fp-ts';
 import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
 import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
 
@@ -54,7 +60,10 @@ const getOutputFiles = (type: OutputFileType): Promise<ReadonlyArray<string>> =>
 	func.pipe(
 		taskEither.tryCatch(() => fs.readdir(WORKING_DIR), either.toError),
 		taskEither.map(
-			readonlyArray.filter((fileName) => fileName.includes(type))
+			func.flow(
+				readonlyArray.filter((fileName) => fileName.includes(type)),
+				readonlyArray.sort(string.Ord)
+			)
 		),
 		taskEitherToPromiseCompatTask
 	)();
@@ -150,9 +159,22 @@ test.each<PrettierFilesArgs>([
 
 		const outputFiles = await getOutputFiles('prettier');
 		expect(outputFiles).toHaveLength(
-			existingPrettierFile === 'none' ? 1 : 2
+			existingPrettierFile === 'invalid' ? 1 : 2
 		);
+		if (existingPrettierFile === 'invalid') {
+			expect(outputFiles[0]).toBe('.prettierrc_backup');
+		}
 
-		expect.fail('Finish this');
+		const prettierConfigFile =
+			outputFiles[existingPrettierFile === 'invalid' ? 1 : 0];
+		const config = await fs.readFile(
+			path.join(WORKING_DIR, prettierConfigFile),
+			'utf8'
+		);
+		const validPrefix =
+			existingPrettierFile === 'valid' ? '// Hello\n' : '';
+		expect(config).toBe(
+			`${validPrefix}module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`
+		);
 	}
 );
