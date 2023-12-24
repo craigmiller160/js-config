@@ -1,4 +1,4 @@
-import { either } from 'fp-ts';
+import { either, taskEither } from 'fp-ts';
 import path from 'path';
 import fs from 'fs';
 import { logger } from '../logger';
@@ -47,10 +47,17 @@ const writeEslintFiles = (
 		}
 	}, either.toError);
 
-export const setupEslintFiles = (
+export const setupEslintFilesOld = (
 	cwd: string,
 	packageJson: PackageJson
 ): either.Either<Error, void> => {
 	logger.info('Setting up eslint files');
 	return writeEslintFiles(cwd, packageJson);
+};
+
+export const setupEslintFiles = (
+	cwd: string,
+	packageJson: PackageJson
+): taskEither.TaskEither<Error, void> => {
+	throw new Error();
 };
