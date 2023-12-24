@@ -120,7 +120,7 @@ test.each<EslintFilesArgs>([
 	{ existingEslintFile: 'valid', projectType: 'commonjs' }
 ])(
 	'writes eslint file for project type $projectType with existing eslint file $existingEslintFile',
-	async ({ projectType }) => {
+	async ({ projectType, existingEslintFile }) => {
 		const packageJson = createPackageJson(projectType);
 		await writeControlFile(projectType);
 
@@ -128,6 +128,7 @@ test.each<EslintFilesArgs>([
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('eslint');
+		expect(outputFiles).toHaveLength(existingEslintFile === 'none' ? 1 : 2);
 
 		expect.fail('Finish this');
 	}
@@ -140,7 +141,7 @@ test.each<PrettierFilesArgs>([
 	{ existingPrettierFile: 'valid', projectType: 'commonjs' }
 ])(
 	'writes prettier file for project type $projectType with existing prettier file $existingPrettierFile',
-	async ({ projectType }) => {
+	async ({ projectType, existingPrettierFile }) => {
 		const packageJson = createPackageJson(projectType);
 		await writeControlFile(projectType);
 
@@ -148,6 +149,9 @@ test.each<PrettierFilesArgs>([
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('prettier');
+		expect(outputFiles).toHaveLength(
+			existingPrettierFile === 'none' ? 1 : 2
+		);
 
 		expect.fail('Finish this');
 	}
