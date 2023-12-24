@@ -7,7 +7,14 @@ import {
 	PackageJsonType
 } from '../../../src/scripts/files/PackageJson';
 import { ControlFile } from '../../../src/scripts/files/ControlFile';
-import { function as func, task, readonlyArray } from 'fp-ts';
+import {
+	function as func,
+	task,
+	readonlyArray,
+	taskEither,
+	either
+} from 'fp-ts';
+import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -24,8 +31,8 @@ const JS_CONFIG_DIR = path.join(
 
 const wipeWorkingDir = (): Promise<unknown> =>
 	func.pipe(
-		() => fs.readdir(WORKING_DIR),
-		task.map(
+		taskEither.tryCatch(() => fs.readdir(WORKING_DIR), either.toError),
+		taskEither.map(
 			func.flow(
 				readonlyArray.filter((fileName) => fileName.includes('eslint')),
 				readonlyArray.map((fileName) =>
@@ -33,12 +40,15 @@ const wipeWorkingDir = (): Promise<unknown> =>
 				)
 			)
 		),
-		task.flatMap(
+		taskEither.flatMap(
 			func.flow(
-				readonlyArray.map((filePath) => () => fs.rm(filePath)),
-				task.sequenceArray
+				readonlyArray.map((filePath) =>
+					taskEither.tryCatch(() => fs.rm(filePath), either.toError)
+				),
+				taskEither.sequenceArray
 			)
-		)
+		),
+		taskEitherToPromiseCompatTask
 	)();
 
 const writeControlFile = async (
@@ -70,4 +80,4 @@ beforeEach(async () => {
 
 afterEach(async () => {
 	await wipeWorkingDir();
-})
+});
