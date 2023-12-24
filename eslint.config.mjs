@@ -1,1 +1,0 @@
-export { default } from './configs/eslint/eslint.config.mjs';
