@@ -135,10 +135,7 @@ test.each<EslintPathArgs>([
 				() => `{${rootDirs}}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`
 			)
 			.otherwise(func.identity);
-		const configFile = match(projectType)
-			.with('module', () => 'eslint.config.js')
-			.otherwise(() => 'eslint.config.mjs');
-		const configPath = path.join(WORKING_DIR, configFile);
+		const configPath = path.join(WORKING_DIR, 'eslint.config.js');
 
 		execute({
 			...process,
