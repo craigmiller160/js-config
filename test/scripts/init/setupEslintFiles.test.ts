@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, test } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
@@ -52,11 +52,13 @@ const wipeWorkingDir = (): Promise<unknown> =>
 	)();
 
 const writeControlFile = async (
-	projectType: PackageJsonType,
-	directories: ControlFile['directories']
-) => {
+	projectType: PackageJsonType
+): Promise<void> => {
 	const controlFile: ControlFile = {
-		directories,
+		directories: {
+			test: false,
+			cypress: false
+		},
 		projectType,
 		eslintPlugins: {
 			cypress: false,
@@ -80,4 +82,26 @@ beforeEach(async () => {
 
 afterEach(async () => {
 	await wipeWorkingDir();
+});
+
+type ExistingEslintFile = 'none' | 'legacy' | 'invalid' | 'valid';
+type ExistingPrettierFile = 'none' | 'invalid' | 'valid';
+type EslintFilesArgs = Readonly<{
+	existingEslintFile: ExistingEslintFile;
+	projectType: PackageJsonType;
+}>;
+
+type PrettierFilesArgs = Readonly<{
+	existingPrettierFile: ExistingPrettierFile;
+	projectType: PackageJsonType;
+}>;
+
+test.each<EslintFilesArgs>([
+	{ existingEslintFile: 'none', projectType: 'commonjs' },
+	{ existingEslintFile: 'none', projectType: 'module' },
+	{ existingEslintFile: 'legacy', projectType: 'commonjs' },
+	{ existingEslintFile: 'invalid', projectType: 'commonjs' },
+	{ existingEslintFile: 'valid', projectType: 'commonjs' }
+])('', () => {
+	throw new Error();
 });
