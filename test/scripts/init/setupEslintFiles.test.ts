@@ -14,7 +14,7 @@ const WORKING_DIR = path.join(
 const wipeWorkingDir = () =>
 	fs
 		.readdirSync(WORKING_DIR)
-		.filter((fileName) => '.gitkeep' !== fileName)
+		.filter((fileName) => fileName.includes('eslint'))
 		.map((fileName) => path.join(WORKING_DIR, fileName))
 		.forEach((filePath) =>
 			fs.rmSync(filePath, {
