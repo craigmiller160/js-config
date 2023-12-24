@@ -184,7 +184,10 @@ test.each<EslintFilesArgs>([
 	'writes eslint file for project type $projectType with existing eslint file $existingEslintFile',
 	async ({ projectType, existingEslintFile }) => {
 		const packageJson = createPackageJson(projectType);
-		await writeControlFile(projectType);
+		await Promise.all([
+			writeControlFile(projectType),
+			writeExistingEslintFile(existingEslintFile, projectType)
+		]);
 
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
@@ -213,7 +216,10 @@ test.each<PrettierFilesArgs>([
 	'writes prettier file for project type $projectType with existing prettier file $existingPrettierFile',
 	async ({ projectType, existingPrettierFile }) => {
 		const packageJson = createPackageJson(projectType);
-		await writeControlFile(projectType);
+		await Promise.all([
+			writeControlFile(projectType),
+			writeExistingPrettierFile(existingPrettierFile, projectType)
+		]);
 
 		const result = setupEslintFiles(WORKING_DIR, packageJson);
 		expect(result).toBeRight();
