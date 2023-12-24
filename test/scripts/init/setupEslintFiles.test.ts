@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, test } from 'vitest';
+import { afterEach, beforeEach, test, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
 import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
@@ -102,6 +102,9 @@ test.each<EslintFilesArgs>([
 	{ existingEslintFile: 'legacy', projectType: 'commonjs' },
 	{ existingEslintFile: 'invalid', projectType: 'commonjs' },
 	{ existingEslintFile: 'valid', projectType: 'commonjs' }
-])('', () => {
-	throw new Error();
-});
+])(
+	'writes eslint files for project type $projectType with existing eslint file $existingEslintFile',
+	() => {
+		expect.fail('Finish this');
+	}
+);
