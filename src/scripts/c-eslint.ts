@@ -6,17 +6,7 @@ import { findCommand } from './utils/command';
 import { ESLINT } from './commandPaths';
 import { logger } from './logger';
 import { ControlFile, parseControlFile } from './files/ControlFile';
-import { match } from 'ts-pattern';
 import path from 'path';
-
-const getConfigFilePath =
-	(process: NodeJS.Process) =>
-	(controlFile: ControlFile): string => {
-		const configFileName = match(controlFile.projectType)
-			.with('module', () => 'eslint.config.js')
-			.otherwise(() => 'eslint.config.mjs');
-		return path.join(process.cwd(), configFileName);
-	};
 
 const getTargetPaths =
 	(args: ReadonlyArray<string>) =>
@@ -38,20 +28,17 @@ const getTargetPaths =
 export const execute = (process: NodeJS.Process) => {
 	logger.info('Running eslint');
 	const args = getRealArgs(process);
-	const getConfigFileWithProcess = getConfigFilePath(process);
 	const getTargetPathsWithArgs = getTargetPaths(args);
+	const configFile = path.join(process.cwd(), 'eslint.config.js');
 
 	func.pipe(
 		parseControlFile(process),
 		either.bindTo('controlFile'),
-		either.bind('configFile', ({ controlFile }) =>
-			either.right(getConfigFileWithProcess(controlFile))
-		),
 		either.bind('targetPaths', ({ controlFile }) =>
 			either.right(getTargetPathsWithArgs(controlFile))
 		),
 		either.bind('command', () => findCommand(process, ESLINT)),
-		either.chain(({ configFile, targetPaths, command }) =>
+		either.chain(({ targetPaths, command }) =>
 			runCommandSync(
 				`${command} --config ${configFile} --fix --max-warnings=0 ${targetPaths}`,
 				{
