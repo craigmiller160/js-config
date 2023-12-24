@@ -189,7 +189,7 @@ test.each<EslintFilesArgs>([
 			writeExistingEslintFile(existingEslintFile, projectType)
 		]);
 
-		const result = setupEslintFiles(WORKING_DIR, packageJson);
+		const result = await setupEslintFiles(WORKING_DIR, packageJson)();
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('eslint');
@@ -231,7 +231,7 @@ test.each<PrettierFilesArgs>([
 			writeExistingPrettierFile(existingPrettierFile, projectType)
 		]);
 
-		const result = setupEslintFiles(WORKING_DIR, packageJson);
+		const result = await setupEslintFiles(WORKING_DIR, packageJson)();
 		expect(result).toBeRight();
 
 		const outputFiles = await getOutputFiles('prettier');
