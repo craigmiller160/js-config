@@ -1,10 +1,14 @@
 import { afterEach, beforeEach, test, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
-import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
+import {
+	PackageJson,
+	PackageJsonType
+} from '../../../src/scripts/files/PackageJson';
 import { ControlFile } from '../../../src/scripts/files/ControlFile';
 import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
+import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -45,6 +49,16 @@ const wipeWorkingDir = (): Promise<unknown> =>
 		taskEitherToPromiseCompatTask
 	)();
 
+type OutputFileType = 'eslint' | 'prettier';
+const getOutputFiles = (type: OutputFileType): Promise<ReadonlyArray<string>> =>
+	func.pipe(
+		taskEither.tryCatch(() => fs.readdir(WORKING_DIR), either.toError),
+		taskEither.map(
+			readonlyArray.filter((fileName) => fileName.includes(type))
+		),
+		taskEitherToPromiseCompatTask
+	)();
+
 const writeControlFile = async (
 	projectType: PackageJsonType
 ): Promise<void> => {
@@ -70,12 +84,12 @@ const writeControlFile = async (
 	);
 };
 
-beforeEach(async () => {
-	await wipeWorkingDir();
-});
-
-afterEach(async () => {
-	await wipeWorkingDir();
+const createPackageJson = (projectType: PackageJsonType): PackageJson => ({
+	type: projectType,
+	name: '',
+	version: '',
+	dependencies: {},
+	devDependencies: {}
 });
 
 type ExistingEslintFile = 'none' | 'legacy' | 'invalid' | 'valid';
@@ -90,6 +104,14 @@ type PrettierFilesArgs = Readonly<{
 	projectType: PackageJsonType;
 }>;
 
+beforeEach(async () => {
+	await wipeWorkingDir();
+});
+
+afterEach(async () => {
+	await wipeWorkingDir();
+});
+
 test.each<EslintFilesArgs>([
 	{ existingEslintFile: 'none', projectType: 'commonjs' },
 	{ existingEslintFile: 'none', projectType: 'module' },
@@ -99,7 +121,14 @@ test.each<EslintFilesArgs>([
 ])(
 	'writes eslint file for project type $projectType with existing eslint file $existingEslintFile',
 	async ({ projectType }) => {
+		const packageJson = createPackageJson(projectType);
 		await writeControlFile(projectType);
+
+		const result = setupEslintFiles(WORKING_DIR, packageJson);
+		expect(result).toBeRight();
+
+		const outputFiles = await getOutputFiles('eslint');
+
 		expect.fail('Finish this');
 	}
 );
@@ -112,7 +141,14 @@ test.each<PrettierFilesArgs>([
 ])(
 	'writes prettier file for project type $projectType with existing prettier file $existingPrettierFile',
 	async ({ projectType }) => {
+		const packageJson = createPackageJson(projectType);
 		await writeControlFile(projectType);
+
+		const result = setupEslintFiles(WORKING_DIR, packageJson);
+		expect(result).toBeRight();
+
+		const outputFiles = await getOutputFiles('prettier');
+
 		expect.fail('Finish this');
 	}
 );
