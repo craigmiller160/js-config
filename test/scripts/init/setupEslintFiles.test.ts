@@ -1,19 +1,9 @@
 import { afterEach, beforeEach, test, expect } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
-import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
-import {
-	PackageJson,
-	PackageJsonType
-} from '../../../src/scripts/files/PackageJson';
+import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
 import { ControlFile } from '../../../src/scripts/files/ControlFile';
-import {
-	function as func,
-	task,
-	readonlyArray,
-	taskEither,
-	either
-} from 'fp-ts';
+import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
 import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
 
 const WORKING_DIR = path.join(
@@ -103,8 +93,22 @@ test.each<EslintFilesArgs>([
 	{ existingEslintFile: 'invalid', projectType: 'commonjs' },
 	{ existingEslintFile: 'valid', projectType: 'commonjs' }
 ])(
-	'writes eslint files for project type $projectType with existing eslint file $existingEslintFile',
-	() => {
+	'writes eslint file for project type $projectType with existing eslint file $existingEslintFile',
+	async ({ projectType }) => {
+		await writeControlFile(projectType);
+		expect.fail('Finish this');
+	}
+);
+
+test.each<PrettierFilesArgs>([
+	{ existingPrettierFile: 'none', projectType: 'commonjs' },
+	{ existingPrettierFile: 'none', projectType: 'module' },
+	{ existingPrettierFile: 'invalid', projectType: 'commonjs' },
+	{ existingPrettierFile: 'valid', projectType: 'commonjs' }
+])(
+	'writes prettier file for project type $projectType with existing prettier file $existingPrettierFile',
+	async ({ projectType }) => {
+		await writeControlFile(projectType);
 		expect.fail('Finish this');
 	}
 );
