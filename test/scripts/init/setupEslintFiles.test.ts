@@ -24,7 +24,11 @@ const wipeWorkingDir = (): Promise<unknown> =>
 		taskEither.tryCatch(() => fs.readdir(WORKING_DIR), either.toError),
 		taskEither.map(
 			func.flow(
-				readonlyArray.filter((fileName) => fileName.includes('eslint')),
+				readonlyArray.filter(
+					(fileName) =>
+						fileName.includes('eslint') ||
+						fileName.includes('prettier')
+				),
 				readonlyArray.map((fileName) =>
 					path.join(WORKING_DIR, fileName)
 				)
