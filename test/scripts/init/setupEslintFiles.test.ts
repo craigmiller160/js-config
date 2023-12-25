@@ -255,10 +255,10 @@ test.each<PrettierFilesArgs>([
 		const hasBackupFile = existingPrettierFile === 'invalid';
 		expect(outputFiles).toHaveLength(hasBackupFile ? 2 : 1);
 		if (hasBackupFile) {
-			expect(outputFiles[0]).toBe('.prettierrc_backup');
+			expect(outputFiles[1]).toBe('.prettierrc_backup');
 		}
 
-		const prettierConfigFile = outputFiles[hasBackupFile ? 1 : 0];
+		const prettierConfigFile = outputFiles[0];
 		const config = await fs.readFile(
 			path.join(WORKING_DIR, prettierConfigFile),
 			'utf8'
