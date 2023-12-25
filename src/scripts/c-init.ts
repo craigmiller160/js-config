@@ -1,5 +1,5 @@
 import { findCwd } from './utils/cwd';
-import { function as func, either } from 'fp-ts';
+import { function as func, either, taskEither } from 'fp-ts';
 import { logger } from './logger';
 import { terminate } from './utils/terminate';
 import { setupTypescript } from './init/setupTypescript';
@@ -15,10 +15,10 @@ import fs from 'fs';
 
 const performInitialization =
 	(process: NodeJS.Process) =>
-	(cwd: string): either.Either<Error, unknown> => {
+	(cwd: string): taskEither.TaskEither<Error, unknown> => {
 		if (cwd === '') {
 			logger.debug('Blank CWD found, aborting initialization');
-			return either.right(func.constVoid());
+			return taskEither.right(func.constVoid());
 		}
 
 		const hasTestDirectory = fs.existsSync(path.join(cwd, 'test'));
@@ -31,15 +31,16 @@ const performInitialization =
 			either.chainFirst(({ packageJson }) =>
 				setupTypescript(cwd, packageJson.type)
 			),
-			either.chainFirst(({ packageJson }) =>
-				setupEslintFiles(cwd, packageJson)
-			),
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
 			),
 			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() => setupGitHooks(cwd, process)),
-			either.chainFirst(({ packageJson, eslintPlugins }) =>
+			taskEither.fromEither,
+			taskEither.chainFirst(({ packageJson }) =>
+				setupEslintFiles(cwd, packageJson)
+			),
+			taskEither.chainEitherK(({ packageJson, eslintPlugins }) =>
 				generateControlFile(
 					cwd,
 					packageJson,
@@ -52,11 +53,21 @@ const performInitialization =
 		);
 	};
 
-export const execute = (process: NodeJS.Process) => {
+export const execute = (process: NodeJS.Process): Promise<void> => {
 	logger.info('Initializing project');
-	func.pipe(
+	return func.pipe(
 		findCwd(process),
-		either.chain(performInitialization(process)),
-		either.fold(terminate, terminate)
-	);
+		taskEither.fromEither,
+		taskEither.chain(performInitialization(process)),
+		taskEither.fold(
+			(ex) => () => {
+				terminate(ex);
+				return Promise.resolve();
+			},
+			() => () => {
+				terminate('');
+				return Promise.resolve();
+			}
+		)
+	)();
 };

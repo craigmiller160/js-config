@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import { logger } from './logger';
 import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
-import { unknownToError } from './utils/unknownToError';
 import { match, P } from 'ts-pattern';
 import { walk } from './utils/files';
 import { terminate } from './utils/terminate';
@@ -175,7 +174,7 @@ const removeDestDir = (
 				recursive: true,
 				force: true
 			}),
-		unknownToError
+		either.toError
 	);
 
 export const execute = (process: NodeJS.Process): Promise<unknown> => {
@@ -200,7 +199,7 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 			taskEither.tryCatch(() => {
 				logger.debug('Identifying all files in source directory');
 				return walk(srcDir);
-			}, unknownToError)
+			}, either.toError)
 		),
 		taskEither.map((files) => {
 			logger.debug('Compiling esm files, if necessary');
@@ -226,7 +225,7 @@ export const execute = (process: NodeJS.Process): Promise<unknown> => {
 						destCjsDir,
 						destTypesDir
 					),
-				unknownToError
+				either.toError
 			)
 		),
 		taskEither.chain(() => fixTypeFileExtensions(destTypesDir)),

@@ -1,22 +1,39 @@
 import * as t from 'io-ts';
 import { either, function as func, json } from 'fp-ts';
 import fs from 'fs';
-import { unknownToError } from '../utils/unknownToError';
 import { decode } from '../utils/decode';
 import path from 'path';
 import { packageJsonTypeCodec } from './PackageJson';
 import { match } from 'ts-pattern';
 
+const directoryCodec = t.readonly(
+	t.type({
+		test: t.boolean,
+		cypress: t.boolean
+	})
+);
+
+const eslintPluginsCodec = t.readonly(
+	t.type({
+		react: t.boolean,
+		jestDom: t.boolean,
+		testingLibraryReact: t.boolean,
+		vitest: t.boolean,
+		cypress: t.boolean,
+		tanstackQuery: t.boolean
+	})
+);
+
 export const controlFileCodec = t.readonly(
 	t.type({
 		workingDirectoryPath: t.string,
 		projectType: packageJsonTypeCodec,
-		eslintPlugins: t.readonlyArray(t.string),
-		hasTestDirectory: t.boolean,
-		hasCypressDirectory: t.boolean
+		directories: directoryCodec,
+		eslintPlugins: eslintPluginsCodec
 	})
 );
 
+export type EslintPlugins = t.TypeOf<typeof eslintPluginsCodec>;
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
 export const getLocalControlFile = (cwd: string): string =>
@@ -58,10 +75,10 @@ export const parseControlFile = (
 		either.chain((controlFile) =>
 			either.tryCatch(
 				() => fs.readFileSync(controlFile, 'utf8'),
-				unknownToError
+				either.toError
 			)
 		),
 		either.chain(json.parse),
-		either.mapLeft(unknownToError),
+		either.mapLeft(either.toError),
 		either.chain(decode(controlFileCodec))
 	);

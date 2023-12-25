@@ -43,7 +43,14 @@ describe('generateControlFile', () => {
 		const result = generateControlFile(
 			cwd,
 			packageJson,
-			['plugin1', 'plugin2'],
+			{
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
 			false,
 			false,
 			{
@@ -57,12 +64,21 @@ describe('generateControlFile', () => {
 		const controlFile = JSON.parse(
 			fs.readFileSync(CONTROL_FILE, 'utf8')
 		) as ControlFile;
-		expect(controlFile).toEqual({
+		expect(controlFile).toEqual<ControlFile>({
 			workingDirectoryPath: cwd,
 			projectType: 'module',
-			eslintPlugins: ['plugin1', 'plugin2'],
-			hasTestDirectory: false,
-			hasCypressDirectory: false
+			eslintPlugins: {
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
+			directories: {
+				test: false,
+				cypress: false
+			}
 		});
 	});
 });

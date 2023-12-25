@@ -1,7 +1,6 @@
-import { function as func, taskEither } from 'fp-ts';
+import { function as func, taskEither, either } from 'fp-ts';
 import path from 'path';
 import { transformFile } from '@swc/core';
-import { unknownToError } from '../utils/unknownToError';
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
 import { getProjectRoot } from '../../root';
@@ -66,7 +65,7 @@ export const createCompile =
 							type: moduleType
 						}
 					}),
-				unknownToError
+				either.toError
 			),
 			taskEither.chainFirst(() =>
 				taskEither.tryCatch(
@@ -74,13 +73,13 @@ export const createCompile =
 						fs.mkdir(parentDir, {
 							recursive: true
 						}),
-					unknownToError
+					either.toError
 				)
 			),
 			taskEither.chain((output) =>
 				taskEither.tryCatch(
 					() => fs.writeFile(outputPath, output.code),
-					unknownToError
+					either.toError
 				)
 			),
 			taskEither.map(() => outputPath)

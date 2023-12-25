@@ -2,4 +2,4 @@
 
 import { execute } from '../scripts/c-init';
 
-execute(process);
+void execute(process);

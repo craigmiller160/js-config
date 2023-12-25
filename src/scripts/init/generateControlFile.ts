@@ -1,14 +1,17 @@
-import { ControlFile, getLocalControlFile } from '../files/ControlFile';
+import {
+	ControlFile,
+	EslintPlugins,
+	getLocalControlFile
+} from '../files/ControlFile';
 import fs from 'fs';
 import { either } from 'fp-ts';
-import { unknownToError } from '../utils/unknownToError';
 import { PackageJson } from '../files/PackageJson';
 import { logger } from '../logger';
 
 export const generateControlFile = (
 	cwd: string,
 	packageJson: PackageJson,
-	eslintPlugins: ReadonlyArray<string>,
+	eslintPlugins: EslintPlugins,
 	hasTestDirectory: boolean,
 	hasCypressDirectory: boolean,
 	process: NodeJS.Process
@@ -18,8 +21,10 @@ export const generateControlFile = (
 		workingDirectoryPath: cwd,
 		projectType: packageJson.type,
 		eslintPlugins,
-		hasTestDirectory,
-		hasCypressDirectory
+		directories: {
+			test: hasTestDirectory,
+			cypress: hasCypressDirectory
+		}
 	};
 	return either.tryCatch(
 		() =>
@@ -28,6 +33,6 @@ export const generateControlFile = (
 				getLocalControlFile(process.cwd()),
 				JSON.stringify(controlFile, null, 2)
 			),
-		unknownToError
+		either.toError
 	);
 };
