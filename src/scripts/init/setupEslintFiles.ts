@@ -1,4 +1,9 @@
-import { taskEither, either, function as func, readonlyArray } from 'fp-ts';
+import {
+	taskEither,
+	either,
+	function as func,
+	readonlyArray
+} from 'fp-ts';
 import { logger } from '../logger';
 import { PackageJson, PackageJsonType } from '../files/PackageJson';
 import { match } from 'ts-pattern';
@@ -88,15 +93,19 @@ const needsToBeBackedUp =
 
 const backupExistingFilesIfNecessary =
 	(cwd: string) =>
-	(
-		files: ReadonlyArray<FileNeedsBackup>
-	): taskEither.TaskEither<Error, void> =>
+	(files: ReadonlyArray<string>): taskEither.TaskEither<Error, void> =>
 		func.pipe(
 			files,
-			readonlyArray.filter(({ needsBackup }) => needsBackup),
-			readonlyArray.map(({ fileName }) => fileName),
-			readonlyArray.map(moveToBackupFile(cwd)),
+			readonlyArray.map(needsToBeBackedUp(cwd)),
 			taskEither.sequenceArray,
+			taskEither.flatMap(
+				func.flow(
+					readonlyArray.filter(({ needsBackup }) => needsBackup),
+					readonlyArray.map(({ fileName }) => fileName),
+					readonlyArray.map(moveToBackupFile(cwd)),
+					taskEither.sequenceArray
+				)
+			),
 			taskEither.map(() => func.constVoid())
 		);
 
@@ -112,14 +121,5 @@ export const setupEslintFiles = (
 ): taskEither.TaskEither<Error, void> => {
 	logger.info('Setting up eslint files');
 	const extension = getExtension(packageJson);
-	func.pipe(
-		getExistingFiles(cwd),
-		taskEither.flatMap(
-			func.flow(
-				readonlyArray.map(needsToBeBackedUp(cwd)),
-				taskEither.sequenceArray
-			)
-		),
-		taskEither.chainFirst(backupExistingFilesIfNecessary(cwd))
-	);
+	return handleExistingFiles(cwd);
 };
