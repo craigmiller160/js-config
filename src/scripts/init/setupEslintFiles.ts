@@ -100,6 +100,12 @@ const backupExistingFilesIfNecessary =
 			taskEither.map(() => func.constVoid())
 		);
 
+const handleExistingFiles = (cwd: string): taskEither.TaskEither<Error, void> =>
+	func.pipe(
+		getExistingFiles(cwd),
+		taskEither.flatMap(backupExistingFilesIfNecessary(cwd))
+	);
+
 export const setupEslintFiles = (
 	cwd: string,
 	packageJson: PackageJson
