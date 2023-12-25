@@ -47,7 +47,7 @@ const moveToBackupFile =
 	(fileName: string): taskEither.TaskEither<Error, void> => {
 		const srcFilePath = path.join(cwd, fileName);
 		logger.debug(`Backing up ${srcFilePath}`);
-		const baseFileNameGroups = EXISTING_CONFIG_FILE.exec(srcFilePath)
+		const baseFileNameGroups = EXISTING_CONFIG_FILE.exec(fileName)
 			?.groups as BaseFileNameGroups | undefined;
 		if (!baseFileNameGroups) {
 			return taskEither.left(
