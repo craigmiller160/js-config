@@ -197,13 +197,30 @@ test.each<EslintFilesArgs>([
 			existingEslintFile
 		);
 		expect(outputFiles).toHaveLength(hasBackupFile ? 2 : 1);
-		if (hasBackupFile && existingEslintFile === 'legacy') {
-			expect(outputFiles[0]).toBe('.eslintrc_backup');
-		} else if (hasBackupFile) {
-			expect(outputFiles[0]).toBe('eslint.config_backup');
+		const backupFile = outputFiles.find((file) => /_backup$/.test(file));
+		if (hasBackupFile) {
+			expect(backupFile).toBeDefined();
+			if (!backupFile) throw new Error();
+			if (existingEslintFile === 'legacy') {
+				expect(backupFile).toBe('.eslintrc_backup');
+			} else {
+				expect(backupFile).toBe('eslint.config_backup');
+			}
+		} else {
+			expect(backupFile).toBeUndefined();
 		}
 
-		const eslintConfigFile = outputFiles[hasBackupFile ? 1 : 0];
+		const eslintConfigFile = outputFiles.find((file) =>
+			/^eslint\.config\.(js|cjs)$/.test(file)
+		);
+		expect(eslintConfigFile).toBeDefined();
+		if (!eslintConfigFile) throw new Error();
+		if (projectType === 'commonjs') {
+			expect(eslintConfigFile).toBe('eslint.config.js');
+		} else {
+			expect(eslintConfigFile).toBe('eslint.config.cjs');
+		}
+
 		const config = await fs.readFile(
 			path.join(WORKING_DIR, eslintConfigFile),
 			'utf8'
