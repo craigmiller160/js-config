@@ -37,7 +37,9 @@ const performInitialization =
 			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() => setupGitHooks(cwd, process)),
 			taskEither.fromEither,
-			taskEither.chainFirst(({ packageJson }) => setupEslintFiles(cwd, packageJson)),
+			taskEither.chainFirst(({ packageJson }) =>
+				setupEslintFiles(cwd, packageJson)
+			),
 			taskEither.chainEitherK(({ packageJson, eslintPlugins }) =>
 				generateControlFile(
 					cwd,
