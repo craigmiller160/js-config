@@ -211,9 +211,9 @@ test.each<EslintFilesArgs>([
 
 		const validPrefix = existingEslintFile === 'valid' ? '// Hello\n' : '';
 		expect(config)
-			.toBe(`${validPrefix}module.exports = import('@craigmiller160/js-config/configs/eslint/configs/eslint/eslint.config.mjs').then(
+			.toBe(`${validPrefix}module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
 \t({ default: theDefault }) => theDefault
-);`);
+);\n`);
 	}
 );
 
