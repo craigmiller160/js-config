@@ -46,6 +46,7 @@ const moveToBackupFile =
 	(cwd: string) =>
 	(fileName: string): taskEither.TaskEither<Error, void> => {
 		const srcFilePath = path.join(cwd, fileName);
+		logger.debug(`Backing up ${srcFilePath}`);
 		const baseFileNameGroups = EXISTING_CONFIG_FILE.exec(srcFilePath)
 			?.groups as BaseFileNameGroups | undefined;
 		if (!baseFileNameGroups) {
@@ -127,8 +128,10 @@ const writeEslintConfigFile = (
 	hasValidEslint: boolean
 ): taskEither.TaskEither<Error, void> => {
 	if (hasValidEslint) {
+		logger.debug('Already has valid eslint config file');
 		return taskEither.right(func.constVoid());
 	}
+	logger.debug('Writing eslint config file');
 	const filePath = path.join(cwd, `eslint.config.${extension}`);
 	return taskEither.tryCatch(
 		() => fs.writeFile(filePath, ESLINT_CONTENT),
@@ -142,8 +145,10 @@ const writePrettierConfigFile = (
 	hasValidPrettier: boolean
 ): taskEither.TaskEither<Error, void> => {
 	if (hasValidPrettier) {
+		logger.debug('Already has valid prettier config file');
 		return taskEither.right(func.constVoid());
 	}
+	logger.debug('Writing prettier config file');
 	const filePath = path.join(cwd, `.prettierrc.${extension}`);
 	return taskEither.tryCatch(
 		() => fs.writeFile(filePath, PRETTIER_CONTENT),
