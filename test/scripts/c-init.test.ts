@@ -87,7 +87,7 @@ describe('c-init', () => {
 		findCwdMock.mockReturnValue(either.right(''));
 		await execute(process);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
-		expect(terminate).toHaveBeenCalledWith(undefined);
+		expect(terminate).toHaveBeenCalledWith('');
 	});
 
 	it('performs full initialization successfully', async () => {
