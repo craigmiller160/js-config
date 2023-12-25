@@ -10,7 +10,6 @@ const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)$/;
 const EXISTING_CONFIG_FILE =
 	/^(?<baseFileName>.+(eslint|prettier).+)\.(js|cjs)$/;
 const ESLINT_FILE = /^.+eslint.+$/;
-const PRETTIER_FILE = /^.+prettier.+$/;
 type BaseFileNameGroups = Readonly<{
 	baseFileName: string;
 }>;
@@ -57,11 +56,6 @@ const moveToBackupFile =
 		);
 	};
 
-type FileNeedsBackup = Readonly<{
-	fileName: string;
-	needsBackup: boolean;
-}>;
-
 type ExistingFileType = 'invalid' | 'valid_eslint' | 'valid_prettier';
 type ExistingFileAndType = Readonly<{
 	fileName: string;
@@ -102,32 +96,6 @@ const identifyFileType =
 		);
 	};
 
-const needsToBeBackedUp =
-	(cwd: string) =>
-	(fileName: string): taskEither.TaskEither<Error, FileNeedsBackup> => {
-		if (LEGACY_ESLINT.test(fileName)) {
-			return taskEither.right({
-				fileName,
-				needsBackup: true
-			});
-		}
-
-		const filePath = path.join(cwd, fileName);
-		return func.pipe(
-			taskEither.tryCatch(
-				() => fs.readFile(filePath, 'utf8'),
-				either.toError
-			),
-			taskEither.map((contents) => existingFileIsValid(contents)),
-			taskEither.map(
-				(isValid): FileNeedsBackup => ({
-					fileName,
-					needsBackup: !isValid
-				})
-			)
-		);
-	};
-
 type ExistingFiles = Readonly<{
 	needBackup: ReadonlyArray<string>;
 	hasValidEslint: boolean;
@@ -146,6 +114,50 @@ const groupExistingFiles = (
 	)
 });
 
+const writeEslintConfigFile = (
+	cwd: string,
+	extension: string,
+	hasValidEslint: boolean
+): taskEither.TaskEither<Error, void> => {
+	if (hasValidEslint) {
+		return taskEither.right(func.constVoid());
+	}
+	throw new Error();
+};
+
+const writePrettierConfigFile = (
+	cwd: string,
+	extension: string,
+	hasValidPrettier: boolean
+): taskEither.TaskEither<Error, void> => {
+	if (hasValidPrettier) {
+		return taskEither.right(func.constVoid());
+	}
+	throw new Error();
+};
+
+const createFileOperationArray =
+	(cwd: string, extension: string) =>
+	(
+		existingFiles: ExistingFiles
+	): ReadonlyArray<taskEither.TaskEither<Error, void>> => {
+		const backupFiles = func.pipe(
+			existingFiles.needBackup,
+			readonlyArray.map(moveToBackupFile(cwd)),
+			taskEither.sequenceArray,
+			taskEither.map(() => func.constVoid())
+		);
+		return [
+			backupFiles,
+			writeEslintConfigFile(cwd, extension, existingFiles.hasValidEslint),
+			writePrettierConfigFile(
+				cwd,
+				extension,
+				existingFiles.hasValidPrettier
+			)
+		];
+	};
+
 export const setupEslintFiles = (
 	cwd: string,
 	packageJson: PackageJson
@@ -160,6 +172,13 @@ export const setupEslintFiles = (
 				taskEither.sequenceArray
 			)
 		),
-		taskEither.map(groupExistingFiles)
+		taskEither.map(groupExistingFiles),
+		taskEither.flatMap(
+			func.flow(
+				createFileOperationArray(cwd, extension),
+				taskEither.sequenceArray
+			)
+		),
+		taskEither.map(() => func.constVoid())
 	);
 };
