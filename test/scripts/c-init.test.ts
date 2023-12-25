@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { setupTypescript } from '../../src/scripts/init/setupTypescript';
 import { findCwd } from '../../src/scripts/utils/cwd';
 import { terminate } from '../../src/scripts/utils/terminate';
-import { either, function as func } from 'fp-ts';
+import { either, function as func, taskEither } from 'fp-ts';
 import { execute } from '../../src/scripts/c-init';
 import {
 	PackageJson,
@@ -83,14 +83,14 @@ describe('c-init', () => {
 		vi.resetAllMocks();
 	});
 
-	it('skips initialization if blank CWD found', () => {
+	it('skips initialization if blank CWD found', async () => {
 		findCwdMock.mockReturnValue(either.right(''));
-		execute(process);
+		await execute(process);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
 		expect(terminate).toHaveBeenCalledWith(undefined);
 	});
 
-	it('performs full initialization successfully', () => {
+	it('performs full initialization successfully', async () => {
 		const packageJson: PackageJson = {
 			name: '',
 			version: '',
@@ -111,12 +111,14 @@ describe('c-init', () => {
 		setupTypescriptMock.mockReturnValue(either.right(func.constVoid()));
 		generateControlFileMock.mockReturnValue(either.right(func.constVoid()));
 		parsePackageJsonMock.mockReturnValue(either.right(packageJson));
-		setupEslintFilesMock.mockReturnValue(either.right(func.constVoid()));
+		setupEslintFilesMock.mockReturnValue(
+			taskEither.right(func.constVoid())
+		);
 		setupEslintPluginsMock.mockReturnValue(plugins);
 		setupViteMock.mockReturnValue(either.right(func.constVoid()));
 		setupGitHooksMock.mockReturnValue(either.right(func.constVoid()));
 		setupStylelintMock.mockReturnValue(either.right(func.constVoid()));
-		execute(process);
+		await execute(process);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
 		);
@@ -136,9 +138,9 @@ describe('c-init', () => {
 		expect(terminate).toHaveBeenCalled();
 	});
 
-	it('handles initialization error', () => {
+	it('handles initialization error', async () => {
 		findCwdMock.mockReturnValue(either.left(new Error('Dying')));
-		execute(process);
+		await execute(process);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
 		expect(terminate).toHaveBeenCalledWith(new Error('Dying'));
 	});
