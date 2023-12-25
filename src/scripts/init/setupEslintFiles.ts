@@ -10,6 +10,13 @@ const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)$/;
 const EXISTING_CONFIG_FILE =
 	/^(?<baseFileName>.+(eslint|prettier).+)\.(js|cjs)$/;
 const ESLINT_FILE = /^.+eslint.+$/;
+
+const PRETTIER_CONTENT = `module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`;
+const ESLINT_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
+\t({ default: theDefault }) => theDefault
+);
+`;
+
 type BaseFileNameGroups = Readonly<{
 	baseFileName: string;
 }>;
@@ -122,7 +129,11 @@ const writeEslintConfigFile = (
 	if (hasValidEslint) {
 		return taskEither.right(func.constVoid());
 	}
-	throw new Error();
+	const filePath = path.join(cwd, `eslint.config.${extension}`);
+	return taskEither.tryCatch(
+		() => fs.writeFile(filePath, ESLINT_CONTENT),
+		either.toError
+	);
 };
 
 const writePrettierConfigFile = (
@@ -133,30 +144,31 @@ const writePrettierConfigFile = (
 	if (hasValidPrettier) {
 		return taskEither.right(func.constVoid());
 	}
-	throw new Error();
+	const filePath = path.join(cwd, `.prettierrc.${extension}`);
+	return taskEither.tryCatch(
+		() => fs.writeFile(filePath, PRETTIER_CONTENT),
+		either.toError
+	);
 };
 
-const createFileOperationArray =
-	(cwd: string, extension: string) =>
-	(
-		existingFiles: ExistingFiles
-	): ReadonlyArray<taskEither.TaskEither<Error, void>> => {
-		const backupFiles = func.pipe(
+const backupFiles =
+	(cwd: string) =>
+	(existingFiles: ExistingFiles): taskEither.TaskEither<Error, void> =>
+		func.pipe(
 			existingFiles.needBackup,
 			readonlyArray.map(moveToBackupFile(cwd)),
 			taskEither.sequenceArray,
 			taskEither.map(() => func.constVoid())
 		);
-		return [
-			backupFiles,
-			writeEslintConfigFile(cwd, extension, existingFiles.hasValidEslint),
-			writePrettierConfigFile(
-				cwd,
-				extension,
-				existingFiles.hasValidPrettier
-			)
-		];
-	};
+
+const createWriteFileArray =
+	(cwd: string, extension: string) =>
+	(
+		existingFiles: ExistingFiles
+	): ReadonlyArray<taskEither.TaskEither<Error, void>> => [
+		writeEslintConfigFile(cwd, extension, existingFiles.hasValidEslint),
+		writePrettierConfigFile(cwd, extension, existingFiles.hasValidPrettier)
+	];
 
 export const setupEslintFiles = (
 	cwd: string,
@@ -173,9 +185,10 @@ export const setupEslintFiles = (
 			)
 		),
 		taskEither.map(groupExistingFiles),
+		taskEither.chainFirst(backupFiles(cwd)),
 		taskEither.flatMap(
 			func.flow(
-				createFileOperationArray(cwd, extension),
+				createWriteFileArray(cwd, extension),
 				taskEither.sequenceArray
 			)
 		),
