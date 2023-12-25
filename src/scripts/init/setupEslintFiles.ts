@@ -128,6 +128,24 @@ const needsToBeBackedUp =
 		);
 	};
 
+type ExistingFiles = Readonly<{
+	needBackup: ReadonlyArray<string>;
+	hasValidEslint: boolean;
+	hasValidPrettier: boolean;
+}>;
+
+const groupExistingFiles = (
+	files: ReadonlyArray<ExistingFileAndType>
+): ExistingFiles => ({
+	needBackup: files
+		.filter(({ fileType }) => fileType === 'invalid')
+		.map(({ fileName }) => fileName),
+	hasValidEslint: !!files.find(({ fileType }) => fileType === 'valid_eslint'),
+	hasValidPrettier: !!files.find(
+		({ fileType }) => fileType === 'valid_prettier'
+	)
+});
+
 export const setupEslintFiles = (
 	cwd: string,
 	packageJson: PackageJson
@@ -141,6 +159,7 @@ export const setupEslintFiles = (
 				readonlyArray.map(identifyFileType(cwd)),
 				taskEither.sequenceArray
 			)
-		)
+		),
+		taskEither.map(groupExistingFiles)
 	);
 };
