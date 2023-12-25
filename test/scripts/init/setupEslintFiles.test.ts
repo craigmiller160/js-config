@@ -161,7 +161,7 @@ const writeExistingEslintFile = async (
 			path.join(WORKING_DIR, 'eslint.config.js'),
 			`// Hello\nmodule.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
 \t({ default: theDefault }) => theDefault
-);`
+);\n`
 		);
 	}
 };

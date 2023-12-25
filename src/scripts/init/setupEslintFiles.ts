@@ -9,7 +9,7 @@ type JsExtension = 'js' | 'cjs';
 const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)$/;
 const EXISTING_CONFIG_FILE =
 	/^(?<baseFileName>.*(eslint|prettier).*)\.(js|cjs)$/;
-const ESLINT_FILE = /^.+eslint.+$/;
+const ESLINT_FILE = /^.*eslint.+$/;
 
 const PRETTIER_CONTENT = `module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`;
 const ESLINT_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
