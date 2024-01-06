@@ -24,8 +24,6 @@ const controlFilePath = path.join(
 );
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
 
-// TODO explore import plugin again
-
 const eslintConfigs = [
 	{
 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
