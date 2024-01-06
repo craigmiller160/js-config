@@ -6,26 +6,31 @@ import fs from 'fs/promises';
 import path from 'path';
 
 type JsExtension = 'js' | 'cjs';
+const getExtension = (type: PackageJsonType): JsExtension =>
+	match<PackageJsonType, JsExtension>(type)
+		.with('commonjs', () => 'js')
+		.with('module', () => 'cjs')
+		.exhaustive();
 const LEGACY_ESLINT = /^\.eslintrc\.(js|cjs)$/;
 const EXISTING_CONFIG_FILE =
 	/^(?<baseFileName>.*(eslint|prettier).*)\.(js|cjs)$/;
 const ESLINT_FILE = /^.*eslint.+$/;
 
 const PRETTIER_CONTENT = `module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`;
-const ESLINT_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
+const ESLINT_CJS_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
 \t({ default: theDefault }) => theDefault
 );
 `;
+const ESLINT_MJS_CONTENT = `export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';\n`;
+const getEslintContent = (type: PackageJsonType): string =>
+	match<PackageJsonType, string>(type)
+		.with('commonjs', () => ESLINT_CJS_CONTENT)
+		.with('module', () => ESLINT_MJS_CONTENT)
+		.exhaustive();
 
 type BaseFileNameGroups = Readonly<{
 	baseFileName: string;
 }>;
-
-const getExtension = (packageJson: PackageJson): JsExtension =>
-	match<PackageJsonType, JsExtension>(packageJson.type)
-		.with('commonjs', () => 'js')
-		.with('module', () => 'cjs')
-		.exhaustive();
 
 const getExistingFiles = (
 	cwd: string
@@ -124,7 +129,7 @@ const groupExistingFiles = (
 
 const writeEslintConfigFile = (
 	cwd: string,
-	extension: string,
+	type: PackageJsonType,
 	hasValidEslint: boolean
 ): taskEither.TaskEither<Error, void> => {
 	if (hasValidEslint) {
@@ -132,16 +137,17 @@ const writeEslintConfigFile = (
 		return taskEither.right(func.constVoid());
 	}
 	logger.debug('Writing eslint config file');
-	const filePath = path.join(cwd, `eslint.config.${extension}`);
+	const filePath = path.join(cwd, `eslint.config.js`);
+	const content = getEslintContent(type);
 	return taskEither.tryCatch(
-		() => fs.writeFile(filePath, ESLINT_CONTENT),
+		() => fs.writeFile(filePath, content),
 		either.toError
 	);
 };
 
 const writePrettierConfigFile = (
 	cwd: string,
-	extension: string,
+	type: PackageJsonType,
 	hasValidPrettier: boolean
 ): taskEither.TaskEither<Error, void> => {
 	if (hasValidPrettier) {
@@ -149,6 +155,7 @@ const writePrettierConfigFile = (
 		return taskEither.right(func.constVoid());
 	}
 	logger.debug('Writing prettier config file');
+	const extension = getExtension(type);
 	const filePath = path.join(cwd, `.prettierrc.${extension}`);
 	return taskEither.tryCatch(
 		() => fs.writeFile(filePath, PRETTIER_CONTENT),
@@ -167,12 +174,12 @@ const backupFiles =
 		);
 
 const createWriteFileArray =
-	(cwd: string, extension: string) =>
+	(cwd: string, type: PackageJsonType) =>
 	(
 		existingFiles: ExistingFiles
 	): ReadonlyArray<taskEither.TaskEither<Error, void>> => [
-		writeEslintConfigFile(cwd, extension, existingFiles.hasValidEslint),
-		writePrettierConfigFile(cwd, extension, existingFiles.hasValidPrettier)
+		writeEslintConfigFile(cwd, type, existingFiles.hasValidEslint),
+		writePrettierConfigFile(cwd, type, existingFiles.hasValidPrettier)
 	];
 
 export const setupEslintFiles = (
@@ -180,7 +187,6 @@ export const setupEslintFiles = (
 	packageJson: PackageJson
 ): taskEither.TaskEither<Error, void> => {
 	logger.info('Setting up eslint files');
-	const extension = getExtension(packageJson);
 	return func.pipe(
 		getExistingFiles(cwd),
 		taskEither.flatMap(
@@ -193,7 +199,7 @@ export const setupEslintFiles = (
 		taskEither.chainFirst(backupFiles(cwd)),
 		taskEither.flatMap(
 			func.flow(
-				createWriteFileArray(cwd, extension),
+				createWriteFileArray(cwd, packageJson.type),
 				taskEither.sequenceArray
 			)
 		),
