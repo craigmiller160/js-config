@@ -65,6 +65,7 @@ const eslintConfigs = [
 				}
 			],
 			'sonarjs/no-duplicate-string': 0,
+			'no-mixed-spaces-and-tabs': 0,
 			'prettier/prettier': ['error', {}, { usePrettierrc: true }]
 		},
 		settings: {
