@@ -167,7 +167,7 @@ if (controlFile.eslintPlugins.testingLibraryReact) {
 	eslintConfigs.push({
 		files: ['test/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
 		plugins: {
-			'tesing-library': eslintTestingLibrary
+			'testing-library': eslintTestingLibrary
 		},
 		rules: {
 			...eslintTestingLibrary.configs.react.rules
