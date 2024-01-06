@@ -16,6 +16,8 @@ import eslintTestingLibrary from 'eslint-plugin-testing-library';
 import * as eslintTanstackQuery from '@tanstack/eslint-plugin-query';
 import eslintImport from 'eslint-plugin-import';
 
+const fastEslint = process.env.ESLINT_FAST === 'true';
+
 const controlFilePath = path.join(
 	import.meta.dirname,
 	'..',
@@ -23,6 +25,15 @@ const controlFilePath = path.join(
 	'control-file.json'
 );
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
+
+const disableImportPluginRulesForFastLint = fastEslint
+	? {
+			'import/no-named-as-default': 0,
+			'import/no-cycle': 0,
+			'import/no-unused-modules': 0,
+			'import/no-deprecated': 0
+	  }
+	: {};
 
 const eslintConfigs = [
 	{
@@ -46,14 +57,15 @@ const eslintConfigs = [
 			...eslintJs.configs.recommended.rules,
 			...eslintSonar.configs.recommended.rules,
 			...eslintImport.configs.recommended.rules,
-			'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+			...disableImportPluginRulesForFastLint,
 			'no-console': [
 				'error',
 				{
 					allow: ['error']
 				}
 			],
-			'sonarjs/no-duplicate-string': 0
+			'sonarjs/no-duplicate-string': 0,
+			'prettier/prettier': ['error', {}, { usePrettierrc: true }]
 		},
 		settings: {
 			'import/resolver': {
@@ -75,7 +87,7 @@ const eslintConfigs = [
 		},
 		rules: {
 			...eslintTs.configs['eslint-recommended'].overrides[0].rules,
-			...(process.env.ESLINT_FAST === 'true'
+			...(fastEslint
 				? eslintTs.configs.recommended.rules
 				: eslintTs.configs['recommended-type-checked'].rules),
 			'@typescript-eslint/no-misused-promises': [
