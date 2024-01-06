@@ -17,11 +17,11 @@ const EXISTING_CONFIG_FILE =
 const ESLINT_FILE = /^.*eslint.+$/;
 
 const PRETTIER_CONTENT = `module.exports = require('@craigmiller160/js-config/configs/eslint/.prettierrc.js');`;
-const ESLINT_CJS_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
+export const ESLINT_CJS_CONTENT = `module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
 \t({ default: theDefault }) => theDefault
 );
 `;
-const ESLINT_MJS_CONTENT = `export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';\n`;
+export const ESLINT_MJS_CONTENT = `export { default } from '@craigmiller160/js-config/configs/eslint/eslint.config.mjs';\n`;
 const getEslintContent = (type: PackageJsonType): string =>
 	match<PackageJsonType, string>(type)
 		.with('commonjs', () => ESLINT_CJS_CONTENT)

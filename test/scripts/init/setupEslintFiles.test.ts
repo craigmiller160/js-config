@@ -14,7 +14,11 @@ import {
 	string
 } from 'fp-ts';
 import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
-import { setupEslintFiles } from '../../../src/scripts/init/setupEslintFiles';
+import {
+	ESLINT_CJS_CONTENT,
+	ESLINT_MJS_CONTENT,
+	setupEslintFiles
+} from '../../../src/scripts/init/setupEslintFiles';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -145,6 +149,8 @@ const writeExistingEslintFile = async (
 	}
 
 	const extension = projectType === 'commonjs' ? 'js' : 'cjs';
+	const content =
+		projectType === 'commonjs' ? ESLINT_CJS_CONTENT : ESLINT_MJS_CONTENT;
 
 	if (type === 'invalid') {
 		await fs.writeFile(
@@ -159,9 +165,7 @@ const writeExistingEslintFile = async (
 	} else {
 		await fs.writeFile(
 			path.join(WORKING_DIR, 'eslint.config.js'),
-			`// Hello\nmodule.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
-\t({ default: theDefault }) => theDefault
-);\n`
+			`// Hello\n${content}`
 		);
 	}
 };
@@ -215,11 +219,7 @@ test.each<EslintFilesArgs>([
 		);
 		expect(eslintConfigFile).toBeDefined();
 		if (!eslintConfigFile) throw new Error();
-		if (projectType === 'commonjs') {
-			expect(eslintConfigFile).toBe('eslint.config.js');
-		} else {
-			expect(eslintConfigFile).toBe('eslint.config.cjs');
-		}
+		expect(eslintConfigFile).toBe('eslint.config.js');
 
 		const config = await fs.readFile(
 			path.join(WORKING_DIR, eslintConfigFile),
@@ -227,10 +227,11 @@ test.each<EslintFilesArgs>([
 		);
 
 		const validPrefix = existingEslintFile === 'valid' ? '// Hello\n' : '';
-		expect(config)
-			.toBe(`${validPrefix}module.exports = import('@craigmiller160/js-config/configs/eslint/eslint.config.mjs').then(
-\t({ default: theDefault }) => theDefault
-);\n`);
+		if (projectType === 'commonjs') {
+			expect(config).toBe(`${validPrefix}${ESLINT_CJS_CONTENT}`);
+		} else {
+			expect(config).toBe(`${validPrefix}${ESLINT_MJS_CONTENT}`);
+		}
 	}
 );
 
