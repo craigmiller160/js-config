@@ -6,6 +6,7 @@ import { either, function as func } from 'fp-ts';
 import { terminate } from './utils/terminate';
 import { getRealArgs } from './utils/process';
 import { PackageJsonType } from './files/PackageJson';
+import path from 'path';
 import { match } from 'ts-pattern';
 import { parseControlFile } from './files/ControlFile';
 
@@ -19,7 +20,7 @@ const getConfigFile = (process: NodeJS.Process): either.Either<Error, string> =>
 	func.pipe(
 		parseControlFile(process),
 		either.map((controlFile) => getExtension(controlFile.projectType)),
-		either.map((ext) => `vite.config.${ext}`)
+		either.map((ext) => path.join(process.cwd(), `vite.config.${ext}`))
 	);
 
 export const execute = (process: NodeJS.Process) => {

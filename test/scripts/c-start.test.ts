@@ -11,18 +11,23 @@ const runCommandAsyncMock = runCommandAsync as MockedFunction<
 
 const VITE_CMD = path.join(process.cwd(), 'node_modules', VITE);
 const TSC_CMD = path.join(process.cwd(), 'node_modules', TSC);
-const CONFIG = path.join(process.cwd(), 'vite.config.mts');
+const CONFIG_CJS = path.join(process.cwd(), 'vite.config.mts');
+const CONFIG_MJS = path.join(process.cwd(), 'vite.config.ts');
 
 describe('c-start', () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 	});
 
+	it('starts vite dev server with esmodule type', () => {
+		throw new Error();
+	});
+
 	it('starts vite dev server', () => {
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
 		execute(process);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
-			`${VITE_CMD}  -c ${CONFIG}`
+			`${VITE_CMD}  -c ${CONFIG_CJS}`
 		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
@@ -36,7 +41,7 @@ describe('c-start', () => {
 			argv: ['', '', '--force']
 		});
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
-			`${VITE_CMD} --force -c ${CONFIG}`
+			`${VITE_CMD} --force -c ${CONFIG_CJS}`
 		);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${TSC_CMD} --noEmit --watch`
