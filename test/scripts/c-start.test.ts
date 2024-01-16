@@ -49,7 +49,7 @@ describe('c-start', () => {
 			})
 		);
 		runCommandAsyncMock.mockReturnValue(taskEither.right(''));
-		execute(process);
+		execute(process, parseControlFileMock);
 		expect(runCommandAsyncMock).toHaveBeenCalledWith(
 			`${VITE_CMD}  -c ${CONFIG_MJS}`
 		);
