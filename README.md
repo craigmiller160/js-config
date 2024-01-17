@@ -2,6 +2,11 @@
 
 A library that automatically sets up preferred configuration for any JavaScript project.
 
+## Usage
+
+1. Add this project with `pnpm add -D @craigmiller160/js-config`.
+2. Add `c-init` as the `postinstall` script in the `package.json` of the consuming project.
+
 ## What This Provides
 
 - TypeScript
