@@ -25,6 +25,14 @@ const JS_CONFIG_CONTROL_FILE = getLocalControlFile(JS_CONFIG_WORKING_DIR);
 const ROOT_PACKAGE_JSON = path.join(WORKING_DIR, 'package.json');
 const JS_CONFIG_PACKAGE_JSON = path.join(JS_CONFIG_WORKING_DIR, 'package.json');
 
+const packageJson: PackageJson = {
+	name: '@craigmiller160/js-config',
+	version: '',
+	type: 'module',
+	devDependencies: {},
+	dependencies: {}
+};
+
 const cleanup = () => {
 	[
 		JS_CONFIG_CONTROL_FILE,
@@ -37,6 +45,10 @@ const cleanup = () => {
 		}
 	});
 };
+
+
+const writePackageJson = (filePath: string) =>
+	fs.writeFileSync(filePath, JSON.stringify(packageJson));
 
 describe('generateControlFile', () => {
 	beforeEach(() => {
@@ -51,9 +63,10 @@ describe('generateControlFile', () => {
 		throw new Error();
 	});
 
-	it('generates control file with data', () => {
+	it('generates control file with data for root path', () => {
+		writePackageJson(ROOT_PACKAGE_JSON);
 		const cwd = '/hello/world';
-		const packageJson: PackageJson = {
+		const appPackageJson: PackageJson = {
 			name: '',
 			version: '',
 			type: 'module',
@@ -62,7 +75,7 @@ describe('generateControlFile', () => {
 		};
 		const result = generateControlFile(
 			cwd,
-			packageJson,
+			appPackageJson,
 			{
 				react: true,
 				cypress: false,
