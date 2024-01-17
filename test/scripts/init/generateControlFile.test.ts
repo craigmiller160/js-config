@@ -14,21 +14,37 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'generateControlFile'
 );
-const CONTROL_FILE = getLocalControlFile(WORKING_DIR);
+const JS_CONFIG_WORKING_DIR = path.join(
+	WORKING_DIR,
+	'node_modules',
+	'@craigmiller160',
+	'js-config'
+);
+const ROOT_CONTROL_FILE = getLocalControlFile(WORKING_DIR);
+const JS_CONFIG_CONTROL_FILE = getLocalControlFile(JS_CONFIG_WORKING_DIR);
+const ROOT_PACKAGE_JSON = path.join(WORKING_DIR, 'package.json');
+const JS_CONFIG_PACKAGE_JSON = path.join(JS_CONFIG_WORKING_DIR, 'package.json');
 
-const deleteControlFileIfExists = () => {
-	if (fs.existsSync(CONTROL_FILE)) {
-		fs.rmSync(CONTROL_FILE);
-	}
+const cleanup = () => {
+	[
+		JS_CONFIG_CONTROL_FILE,
+		ROOT_CONTROL_FILE,
+		ROOT_PACKAGE_JSON,
+		JS_CONFIG_PACKAGE_JSON
+	].forEach((file) => {
+		if (fs.existsSync(file)) {
+			fs.rmSync(file);
+		}
+	});
 };
 
 describe('generateControlFile', () => {
 	beforeEach(() => {
-		deleteControlFileIfExists();
+		cleanup();
 	});
 
 	afterEach(() => {
-		deleteControlFileIfExists();
+		cleanup();
 	});
 
 	it('generates control file with data for node_modules path', () => {
@@ -64,9 +80,9 @@ describe('generateControlFile', () => {
 		);
 		expect(result).toBeRight();
 
-		expect(fs.existsSync(CONTROL_FILE)).toBe(true);
+		expect(fs.existsSync(ROOT_CONTROL_FILE)).toBe(true);
 		const controlFile = JSON.parse(
-			fs.readFileSync(CONTROL_FILE, 'utf8')
+			fs.readFileSync(ROOT_CONTROL_FILE, 'utf8')
 		) as ControlFile;
 		expect(controlFile).toEqual<ControlFile>({
 			workingDirectoryPath: cwd,
