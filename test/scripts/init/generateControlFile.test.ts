@@ -31,6 +31,10 @@ describe('generateControlFile', () => {
 		deleteControlFileIfExists();
 	});
 
+	it('generates control file with data for node_modules path', () => {
+		throw new Error();
+	});
+
 	it('generates control file with data', () => {
 		const cwd = '/hello/world';
 		const packageJson: PackageJson = {
