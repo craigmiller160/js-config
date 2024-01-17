@@ -19,7 +19,8 @@
     "c-build-app": "./lib/cjs/bin/c-build-app.js",
     "c-cypress": "./lib/cjs/bin/c-cypress.js",
     "c-cypress-dev": "./lib/cjs/bin/c-cypress-dev.js",
-    "c-validate": "./lib/cjs/bin/c-validate.js"
+    "c-validate": "./lib/cjs/bin/c-validate.js",
+    "c-control-file": "./lib/cjs/bin/c-control-file.js"
   },
   "exports": {
     "./*": {
