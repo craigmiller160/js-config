@@ -46,7 +46,6 @@ const cleanup = () => {
 	});
 };
 
-
 const writePackageJson = (filePath: string) =>
 	fs.writeFileSync(filePath, JSON.stringify(packageJson));
 
@@ -60,7 +59,55 @@ describe('generateControlFile', () => {
 	});
 
 	it('generates control file with data for node_modules path', () => {
-		throw new Error();
+		writePackageJson(JS_CONFIG_PACKAGE_JSON);
+		const cwd = '/hello/world';
+		const appPackageJson: PackageJson = {
+			name: '',
+			version: '',
+			type: 'module',
+			dependencies: {},
+			devDependencies: {}
+		};
+		const result = generateControlFile(
+			cwd,
+			appPackageJson,
+			{
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
+			false,
+			false,
+			{
+				...process,
+				cwd: () => WORKING_DIR
+			}
+		);
+		expect(result).toBeRight();
+
+		expect(fs.existsSync(JS_CONFIG_CONTROL_FILE)).toBe(true);
+		const controlFile = JSON.parse(
+			fs.readFileSync(JS_CONFIG_CONTROL_FILE, 'utf8')
+		) as ControlFile;
+		expect(controlFile).toEqual<ControlFile>({
+			workingDirectoryPath: cwd,
+			projectType: 'module',
+			eslintPlugins: {
+				react: true,
+				cypress: false,
+				vitest: true,
+				jestDom: false,
+				tanstackQuery: true,
+				testingLibraryReact: false
+			},
+			directories: {
+				test: false,
+				cypress: false
+			}
+		});
 	});
 
 	it('generates control file with data for root path', () => {
