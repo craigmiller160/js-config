@@ -8,12 +8,22 @@ import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
 import { ControlFile, parseControlFile } from './files/ControlFile';
 import { TsConfig, TsConfigCompilerOptions } from './files/TsConfig';
+import { isLibraryPresent } from './utils/library';
+
+const TESTING_LIBRARY_CYPRESS = '@testing-library/cypress';
 
 const buildCheckTsConfig = (controlFile: ControlFile): TsConfig => {
+	const hasTestingLibraryCypress = isLibraryPresent(TESTING_LIBRARY_CYPRESS);
 	const compilerOptions: TsConfigCompilerOptions = controlFile.directories
 		.cypress
 		? {
-				types: ['node', 'cypress']
+				types: [
+					'node',
+					'cypress',
+					hasTestingLibraryCypress
+						? TESTING_LIBRARY_CYPRESS
+						: undefined
+				].flatMap((item) => (item ? [item] : []))
 		  }
 		: {};
 	const checkTsConfig: TsConfig = {
