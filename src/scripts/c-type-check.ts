@@ -7,7 +7,26 @@ import { either, function as func } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
 import { ControlFile, parseControlFile } from './files/ControlFile';
-import { TsConfig } from './files/TsConfig';
+import { TsConfig, TsConfigCompilerOptions } from './files/TsConfig';
+
+const buildCheckTsConfig = (controlFile: ControlFile): TsConfig => {
+	const compilerOptions: TsConfigCompilerOptions = controlFile.directories
+		.cypress
+		? {
+				types: ['node', 'cypress']
+		  }
+		: {};
+	const checkTsConfig: TsConfig = {
+		extends: '../tsconfig.json',
+		compilerOptions: compilerOptions,
+		include: [
+			'../src/**/*',
+			controlFile.directories.test ? '../test/**/*' : undefined,
+			controlFile.directories.cypress ? '../cypress/**/*' : undefined
+		].flatMap((item) => (item ? [item] : []))
+	};
+	return checkTsConfig;
+};
 
 const runTypeCheck = (
 	process: NodeJS.Process,
@@ -15,14 +34,7 @@ const runTypeCheck = (
 	command: string,
 	controlFile: ControlFile
 ): either.Either<Error, string> => {
-	const checkTsConfig: TsConfig = {
-		extends: '../tsconfig.json',
-		include: [
-			'../src/**/*',
-			controlFile.directories.test ? '../test/**/*' : undefined,
-			controlFile.directories.cypress ? '../cypress/**/*' : undefined
-		].flatMap((item) => (item ? [item] : []))
-	};
+	const checkTsConfig = buildCheckTsConfig(controlFile);
 	const checkTsConfigPath = path.join(
 		process.cwd(),
 		'node_modules',
