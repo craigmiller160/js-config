@@ -97,7 +97,7 @@ describe('c-init', () => {
 			...process,
 			env: {
 				...process.env,
-				INIT_CWD: cwd
+				INIT_CWD: 'abc'
 			}
 		};
 		await execute(testProcess);
