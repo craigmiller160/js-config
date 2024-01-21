@@ -91,7 +91,18 @@ describe('c-init', () => {
 	});
 
 	it('skips initialization if INIT_CWD equals cwd', async () => {
-		throw new Error();
+		const cwd = 'cwd';
+		findCwdMock.mockReturnValue(either.right(cwd));
+		const testProcess: NodeJS.Process = {
+			...process,
+			env: {
+				...process.env,
+				INIT_CWD: cwd
+			}
+		};
+		await execute(testProcess);
+		expect(setupTypescriptMock).not.toHaveBeenCalled();
+		expect(terminate).toHaveBeenCalledWith('');
 	});
 
 	it('performs full initialization successfully', async () => {
@@ -128,7 +139,7 @@ describe('c-init', () => {
 				...process.env,
 				INIT_CWD: cwd
 			}
-		}
+		};
 		await execute(testProcess);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
