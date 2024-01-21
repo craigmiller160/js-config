@@ -21,9 +21,10 @@ const performInitialization =
 			return taskEither.right(func.constVoid());
 		}
 
-		if (process.env.INIT_CWD !== cwd) {
+		logger.debug(`INIT_CWD: ${process.env.INIT_CWD}`);
+		if (!!process.env.INIT_CWD && process.env.INIT_CWD !== cwd) {
 			logger.debug(
-				'INIT_CWD does not match process cwd. Aborting initialization because this script has been called from a dependency'
+				'INIT_CWD exists and does not match process cwd. Aborting initialization because this script has been called from a dependency'
 			);
 			return taskEither.right(func.constVoid());
 		}
