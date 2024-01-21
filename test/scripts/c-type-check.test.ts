@@ -7,8 +7,7 @@ import {
 	ControlFile,
 	parseControlFile
 } from '../../src/scripts/files/ControlFile';
-import fs from 'fs';
-import { parseTsConfig, TsConfig } from '../../src/scripts/files/TsConfig';
+import fs from 'fs/promises';
 
 const WORKING_DIR = path.join(
 	process.cwd(),
@@ -33,14 +32,21 @@ type TypeCheckTestParams = Readonly<{
 	additionalDirectories: ReadonlyArray<TypeCheckAdditionalDirectory>;
 }>;
 
-const deleteControlFile = () => {
-	if (fs.existsSync(CONTROL_FILE)) {
-		fs.rmSync(CONTROL_FILE);
+const exists = (filePath: string): Promise<boolean> =>
+	fs
+		.access(filePath)
+		.then(() => true)
+		.catch(() => false);
+
+const deleteControlFile = async () => {
+	const controlFileExists = await exists(CONTROL_FILE);
+	if (controlFileExists) {
+		await fs.rm(CONTROL_FILE);
 	}
 };
 
-beforeEach(() => {
-	deleteControlFile();
+beforeEach(async () => {
+	await deleteControlFile();
 	vi.resetAllMocks();
 	runCommandSyncMock.mockReturnValue(either.right(''));
 });
@@ -52,7 +58,7 @@ test.each<TypeCheckTestParams>([
 	{ additionalDirectories: ['test', 'cypress'] }
 ])(
 	'c-type-check with additional directories $additionalDirectories',
-	({ additionalDirectories }) => {
+	async ({ additionalDirectories }) => {
 		const controlFile: ControlFile = {
 			workingDirectoryPath: '',
 			projectType: 'module',
@@ -69,7 +75,7 @@ test.each<TypeCheckTestParams>([
 				cypress: additionalDirectories.includes('cypress')
 			}
 		};
-		fs.writeFileSync(CONTROL_FILE, JSON.stringify(controlFile));
+		await fs.writeFile(CONTROL_FILE, JSON.stringify(controlFile));
 		parseControlFileMock.mockReturnValue(either.right(controlFile));
 		execute({
 			process: {
@@ -79,32 +85,27 @@ test.each<TypeCheckTestParams>([
 			runCommandSync: runCommandSyncMock
 		});
 
-		const tsConfigPath = path.join(
-			WORKING_DIR,
-			'node_modules',
-			'tsconfig.check.json'
-		);
+		const numberOfCalls = additionalDirectories.includes('cypress') ? 2 : 1;
+		expect(runCommandSyncMock).toHaveBeenCalledTimes(numberOfCalls);
 
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(1);
+		const firstTsConfigPath = additionalDirectories.includes('test')
+			? path.join(WORKING_DIR, 'test', 'tsconfig.json')
+			: path.join(WORKING_DIR, 'tsconfig.json');
 		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
 			1,
-			`${TSC} --noEmit --project ${tsConfigPath}`
+			`${TSC} --noEmit --project ${firstTsConfigPath}`
 		);
-		const tsConfigEither = parseTsConfig(
-			path.join(WORKING_DIR, 'node_modules', 'tsconfig.check.json')
-		);
-		const expectedTsConfig: TsConfig = {
-			extends: '../tsconfig.json',
-			include: [
-				'../src/**/*',
-				additionalDirectories.includes('test')
-					? '../test/**/*'
-					: undefined,
-				additionalDirectories.includes('cypress')
-					? '../cypress/**/*'
-					: undefined
-			].flatMap((item) => (item ? [item] : []))
-		};
-		expect(tsConfigEither).toEqualRight(expectedTsConfig);
+
+		if (additionalDirectories.includes('cypress')) {
+			const cypressTsConfigPath = path.join(
+				WORKING_DIR,
+				'cypress',
+				'tsconfig.json'
+			);
+			expect(runCommandSyncMock).toHaveBeenNthCalledWith(
+				2,
+				`${TSC} --noEmit --project ${cypressTsConfigPath}`
+			);
+		}
 	}
 );

@@ -1,52 +1,22 @@
 import { runCommandSync as defaultRunCommandSync } from './utils/runCommand';
 import path from 'path';
-import fs from 'fs';
 import { logger } from './logger';
 import { terminate } from './utils/terminate';
 import { either, function as func } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TSC } from './commandPaths';
-import { ControlFile, parseControlFile } from './files/ControlFile';
-import { TsConfig } from './files/TsConfig';
+import { parseControlFile } from './files/ControlFile';
 
-const runTypeCheck = (
-	process: NodeJS.Process,
-	runCommandSync: typeof defaultRunCommandSync,
-	command: string,
-	controlFile: ControlFile
-): either.Either<Error, string> => {
-	const checkTsConfig: TsConfig = {
-		extends: '../tsconfig.json',
-		include: [
-			'../src/**/*',
-			controlFile.directories.test ? '../test/**/*' : undefined,
-			controlFile.directories.cypress ? '../cypress/**/*' : undefined
-		].flatMap((item) => (item ? [item] : []))
-	};
-	const checkTsConfigPath = path.join(
-		process.cwd(),
-		'node_modules',
-		'tsconfig.check.json'
-	);
-	return func.pipe(
-		either.tryCatch(
-			() =>
-				fs.writeFileSync(
-					checkTsConfigPath,
-					JSON.stringify(checkTsConfig, null, 2)
-				),
-			either.toError
-		),
-		either.chain(() =>
-			runCommandSync(`${command} --noEmit --project ${checkTsConfigPath}`)
-		)
-	);
-};
-
+type RunCommandSync = typeof defaultRunCommandSync;
 export type Dependencies = Readonly<{
 	process: NodeJS.Process;
-	runCommandSync: typeof defaultRunCommandSync;
+	runCommandSync: RunCommandSync;
 }>;
+
+const createRunTypeCheck =
+	(runCommandSync: RunCommandSync) =>
+	(command: string, project: string): either.Either<Error, string> =>
+		runCommandSync(`${command} --noEmit --project ${project}`);
 
 export const execute = (
 	dependencies: Dependencies = {
@@ -57,13 +27,29 @@ export const execute = (
 	const { process, runCommandSync } = dependencies;
 	logger.info('Performing typescript type check');
 
+	const runTypeCheck = createRunTypeCheck(runCommandSync);
+
 	func.pipe(
 		findCommand(process, TSC),
 		either.bindTo('command'),
 		either.bind('controlFile', () => parseControlFile(process)),
-		either.chain(({ command, controlFile }) =>
-			runTypeCheck(process, runCommandSync, command, controlFile)
-		),
+		either.chainFirst(({ command, controlFile }) => {
+			const project = controlFile.directories.test
+				? path.join(process.cwd(), 'test', 'tsconfig.json')
+				: path.join(process.cwd(), 'tsconfig.json');
+			return runTypeCheck(command, project);
+		}),
+		either.chainFirst(({ command, controlFile }) => {
+			if (controlFile.directories.cypress) {
+				const project = path.join(
+					process.cwd(),
+					'cypress',
+					'tsconfig.json'
+				);
+				return runTypeCheck(command, project);
+			}
+			return either.right('');
+		}),
 		either.fold(terminate, terminate)
 	);
 };
