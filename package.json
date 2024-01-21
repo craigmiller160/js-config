@@ -1,11 +1,11 @@
 {
   "name": "@craigmiller160/js-config",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "craigmiller160",
   "license": "GPL",
   "type": "commonjs",
   "publishConfig": {
-    "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
+    "registry": "https://nexus.craigmiller160.us/repository/npm-private/"
   },
   "bin": {
     "c-build-lib": "./lib/cjs/bin/c-build-lib.js",
