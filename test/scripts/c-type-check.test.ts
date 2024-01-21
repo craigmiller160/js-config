@@ -7,7 +7,7 @@ import {
 	ControlFile,
 	parseControlFile
 } from '../../src/scripts/files/ControlFile';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { parseTsConfig, TsConfig } from '../../src/scripts/files/TsConfig';
 
 const WORKING_DIR = path.join(
@@ -33,14 +33,21 @@ type TypeCheckTestParams = Readonly<{
 	additionalDirectories: ReadonlyArray<TypeCheckAdditionalDirectory>;
 }>;
 
-const deleteControlFile = () => {
-	if (fs.existsSync(CONTROL_FILE)) {
-		fs.rmSync(CONTROL_FILE);
+const exists = (filePath: string): Promise<boolean> =>
+	fs
+		.access(filePath)
+		.then(() => true)
+		.catch(() => false);
+
+const deleteControlFile = async () => {
+	const controlFileExists = await exists(CONTROL_FILE);
+	if (controlFileExists) {
+		await fs.rm(CONTROL_FILE);
 	}
 };
 
-beforeEach(() => {
-	deleteControlFile();
+beforeEach(async () => {
+	await deleteControlFile();
 	vi.resetAllMocks();
 	runCommandSyncMock.mockReturnValue(either.right(''));
 });
@@ -52,7 +59,7 @@ test.each<TypeCheckTestParams>([
 	{ additionalDirectories: ['test', 'cypress'] }
 ])(
 	'c-type-check with additional directories $additionalDirectories',
-	({ additionalDirectories }) => {
+	async ({ additionalDirectories }) => {
 		const controlFile: ControlFile = {
 			workingDirectoryPath: '',
 			projectType: 'module',
@@ -69,7 +76,7 @@ test.each<TypeCheckTestParams>([
 				cypress: additionalDirectories.includes('cypress')
 			}
 		};
-		fs.writeFileSync(CONTROL_FILE, JSON.stringify(controlFile));
+		await fs.writeFile(CONTROL_FILE, JSON.stringify(controlFile));
 		parseControlFileMock.mockReturnValue(either.right(controlFile));
 		execute({
 			process: {
