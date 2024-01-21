@@ -90,6 +90,10 @@ describe('c-init', () => {
 		expect(terminate).toHaveBeenCalledWith('');
 	});
 
+	it('skips initialization if INIT_CWD equals cwd', async () => {
+		throw new Error();
+	});
+
 	it('performs full initialization successfully', async () => {
 		const packageJson: PackageJson = {
 			name: '',
