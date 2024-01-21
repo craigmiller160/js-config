@@ -90,6 +90,21 @@ describe('c-init', () => {
 		expect(terminate).toHaveBeenCalledWith('');
 	});
 
+	it('skips initialization if INIT_CWD equals cwd', async () => {
+		const cwd = 'cwd';
+		findCwdMock.mockReturnValue(either.right(cwd));
+		const testProcess: NodeJS.Process = {
+			...process,
+			env: {
+				...process.env,
+				INIT_CWD: 'abc'
+			}
+		};
+		await execute(testProcess);
+		expect(setupTypescriptMock).not.toHaveBeenCalled();
+		expect(terminate).toHaveBeenCalledWith('');
+	});
+
 	it('performs full initialization successfully', async () => {
 		const packageJson: PackageJson = {
 			name: '',
@@ -118,14 +133,21 @@ describe('c-init', () => {
 		setupViteMock.mockReturnValue(either.right(func.constVoid()));
 		setupGitHooksMock.mockReturnValue(either.right(func.constVoid()));
 		setupStylelintMock.mockReturnValue(either.right(func.constVoid()));
-		await execute(process);
+		const testProcess: NodeJS.Process = {
+			...process,
+			env: {
+				...process.env,
+				INIT_CWD: cwd
+			}
+		};
+		await execute(testProcess);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
 		);
 		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd, 'module');
 		expect(setupViteMock).toHaveBeenCalledWith(cwd, packageJson);
 		expect(setupEslintPluginsMock).toHaveBeenCalled();
-		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, process);
+		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, testProcess);
 		expect(setupStylelintMock).toHaveBeenCalledWith(cwd);
 		expect(generateControlFileMock).toHaveBeenCalledWith(
 			cwd,
@@ -133,7 +155,7 @@ describe('c-init', () => {
 			plugins,
 			false,
 			false,
-			process
+			testProcess
 		);
 		expect(terminate).toHaveBeenCalled();
 	});

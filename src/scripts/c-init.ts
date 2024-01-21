@@ -17,7 +17,14 @@ const performInitialization =
 	(process: NodeJS.Process) =>
 	(cwd: string): taskEither.TaskEither<Error, unknown> => {
 		if (cwd === '') {
-			logger.debug('Blank CWD found, aborting initialization');
+			logger.debug('Blank CWD found. Aborting initialization');
+			return taskEither.right(func.constVoid());
+		}
+
+		if (process.env.INIT_CWD !== cwd) {
+			logger.debug(
+				'INIT_CWD does not match process cwd. Aborting initialization because this script has been called from a dependency'
+			);
 			return taskEither.right(func.constVoid());
 		}
 
