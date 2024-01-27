@@ -15,7 +15,7 @@ describe('TsConfig', () => {
 		expect(result).toEqualRight({
 			extends: './configs/typescript/tsconfig.json',
 			compilerOptions: {
-				module: 'ES2022'
+				module: 'es2022'
 			},
 			include: ['scripts/**/*', 'vitest.config.mts'],
 			exclude: ['node_modules', 'build']
