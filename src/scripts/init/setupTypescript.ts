@@ -5,16 +5,16 @@ import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
-import {LibOrApp} from '../c-init';
+import { LibOrApp } from '../c-init';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
-	(packageJsonType: PackageJsonType): TsConfigCreator =>
+	(packageJsonType: PackageJsonType, libOrApp: LibOrApp): TsConfigCreator =>
 	(existingTsConfig?: TsConfig): TsConfig => {
 		const tsConfigFile =
 			packageJsonType === 'module'
-				? 'tsconfig.module.json'
+				? `tsconfig.module.${libOrApp}.json`
 				: 'tsconfig.commonjs.json';
 		return {
 			extends: `@craigmiller160/js-config/configs/typescript/${tsConfigFile}`,
@@ -125,7 +125,7 @@ export const setupTypescript = (
 	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig(packageJsonType)),
+		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (hasTestDir) {
