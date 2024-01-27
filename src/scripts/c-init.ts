@@ -12,10 +12,21 @@ import { setupGitHooks } from './init/setupGitHooks';
 import { setupVite } from './init/setupVite';
 import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
+import { getRealArgs } from './utils/process';
+
+type LibOrApp = 'lib' | 'app';
+
+type PerformInitializationArgs = Readonly<{
+	cwd: string;
+	libOrApp: LibOrApp;
+}>;
 
 const performInitialization =
 	(process: NodeJS.Process) =>
-	(cwd: string): taskEither.TaskEither<Error, unknown> => {
+	({
+		cwd,
+		libOrApp
+	}: PerformInitializationArgs): taskEither.TaskEither<Error, unknown> => {
 		if (cwd === '') {
 			logger.debug('Blank CWD found. Aborting initialization');
 			return taskEither.right(func.constVoid());
@@ -61,10 +72,36 @@ const performInitialization =
 		);
 	};
 
+const getLibOrApp = (
+	process: NodeJS.Process
+): either.Either<Error, LibOrApp> => {
+	const args = getRealArgs(process);
+	if (args.length > 1) {
+		return either.left(new Error('Too many arguments'));
+	}
+
+	if (args.length === 0) {
+		return either.left(new Error('Missing lib or app argument'));
+	}
+
+	if (args.includes('lib')) {
+		return either.right('lib');
+	}
+
+	if (args.includes('app')) {
+		return either.right('app');
+	}
+
+	return either.left(new Error('Invalid lib or app argument'));
+};
+
 export const execute = (process: NodeJS.Process): Promise<void> => {
 	logger.info('Initializing project');
+
 	return func.pipe(
 		findCwd(process),
+		either.bindTo('cwd'),
+		either.bind('libOrApp', () => getLibOrApp(process)),
 		taskEither.fromEither,
 		taskEither.chain(performInitialization(process)),
 		taskEither.fold(
