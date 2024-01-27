@@ -58,15 +58,45 @@ describe('setupTypescript', () => {
 	});
 
 	describe('base tsconfig.json', () => {
-		it('writes tsconfig.json to a project without one, with the esmodule type, and nothing else', () => {
-			const result = setupTypescript(WORKING_DIR_PATH, 'module');
+		it('writes tscofnig.json to a library project without one, with the esmodule type, and nothing else', () => {
+			const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(
 				JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))
 			).toEqual<TsConfig>({
 				extends:
-					'@craigmiller160/js-config/configs/typescript/tsconfig.module.json',
+					'@craigmiller160/js-config/configs/typescript/tsconfig.module.lib.json',
+				include: ['src/**/*'],
+				exclude: ['node_modules', 'build', 'lib']
+			});
+
+			expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
+			expect(
+				JSON.parse(fs.readFileSync(VITE_TSCONFIG, 'utf8'))
+			).toEqual<TsConfig>({
+				extends: './tsconfig.json',
+				compilerOptions: {
+					module: 'esnext',
+					moduleResolution: 'bundler',
+					verbatimModuleSyntax: true
+				},
+				include: ['./vite.config.ts']
+			});
+
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
+		});
+
+		it('writes tsconfig.json to an application project without one, with the esmodule type, and nothing else', () => {
+			const result = setupTypescript(WORKING_DIR_PATH, 'module', 'app');
+			expect(result).toBeRight();
+			expect(fs.existsSync(TSCONFIG)).toBe(true);
+			expect(
+				JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))
+			).toEqual<TsConfig>({
+				extends:
+					'@craigmiller160/js-config/configs/typescript/tsconfig.module.app.json',
 				include: ['src/**/*'],
 				exclude: ['node_modules', 'build', 'lib']
 			});
@@ -89,7 +119,7 @@ describe('setupTypescript', () => {
 		});
 
 		it('writes tsconfig.json to a project without one, with the commonjs type, and nothing else', () => {
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
@@ -126,7 +156,7 @@ describe('setupTypescript', () => {
 				})
 			);
 
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
 			expect(JSON.parse(fs.readFileSync(TSCONFIG, 'utf8'))).toEqual({
@@ -148,7 +178,7 @@ describe('setupTypescript', () => {
 
 		it('writes test/tsconfig.json to project without one', () => {
 			isLibraryPresentMock.mockReturnValue(false);
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
@@ -174,7 +204,7 @@ describe('setupTypescript', () => {
 			};
 			fs.writeFileSync(TEST_TSCONFIG, JSON.stringify(baseConfig));
 
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
@@ -193,7 +223,7 @@ describe('setupTypescript', () => {
 
 		it('writes test/tsconfig.json to project without one, adding support for jest-fp-ts', () => {
 			isLibraryPresentMock.mockReturnValue(true);
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(TEST_TSCONFIG)).toBe(true);
@@ -220,7 +250,7 @@ describe('setupTypescript', () => {
 		});
 
 		it('writes cypress/tsconfig.json to project without one', () => {
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
@@ -248,7 +278,7 @@ describe('setupTypescript', () => {
 			};
 			fs.writeFileSync(CYPRESS_TSCONFIG, JSON.stringify(baseConfig));
 
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs');
+			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
 			expect(result).toBeRight();
 
 			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);

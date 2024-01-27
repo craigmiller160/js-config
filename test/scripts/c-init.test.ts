@@ -1,9 +1,17 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import {
+	describe,
+	it,
+	expect,
+	beforeEach,
+	vi,
+	MockedFunction,
+	test
+} from 'vitest';
 import { setupTypescript } from '../../src/scripts/init/setupTypescript';
 import { findCwd } from '../../src/scripts/utils/cwd';
 import { terminate } from '../../src/scripts/utils/terminate';
 import { either, function as func, taskEither } from 'fp-ts';
-import { execute } from '../../src/scripts/c-init';
+import { execute, getLibOrApp, LibOrApp } from '../../src/scripts/c-init';
 import {
 	PackageJson,
 	parsePackageJson
@@ -78,6 +86,31 @@ vi.mock('../../src/scripts/utils/terminate', () => ({
 	terminate: vi.fn()
 }));
 
+type GetLibOrAppScenario = Readonly<{
+	args: ReadonlyArray<string>;
+	result: either.Either<Error, LibOrApp>;
+}>;
+
+test.each<GetLibOrAppScenario>([
+	{ args: ['lib'], result: either.right('lib') },
+	{ args: ['app'], result: either.right('app') },
+	{ args: [], result: either.left(new Error('Missing lib or app argument')) },
+	{
+		args: ['lib', 'abc'],
+		result: either.left(new Error('Too many arguments'))
+	},
+	{
+		args: ['abc'],
+		result: either.left(new Error('Invalid lib or app argument'))
+	}
+])('getLibOrApp with arguments $args', ({ args, result }) => {
+	const actualResult = getLibOrApp({
+		...process,
+		argv: ['', '', ...args]
+	});
+	expect(actualResult).toEqual(result);
+});
+
 describe('c-init', () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
@@ -85,7 +118,10 @@ describe('c-init', () => {
 
 	it('skips initialization if blank CWD found', async () => {
 		findCwdMock.mockReturnValue(either.right(''));
-		await execute(process);
+		await execute({
+			...process,
+			argv: ['', '', 'lib']
+		});
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
 		expect(terminate).toHaveBeenCalledWith('');
 	});
@@ -98,7 +134,8 @@ describe('c-init', () => {
 			env: {
 				...process.env,
 				INIT_CWD: 'abc'
-			}
+			},
+			argv: ['', '', 'lib']
 		};
 		await execute(testProcess);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
@@ -138,13 +175,14 @@ describe('c-init', () => {
 			env: {
 				...process.env,
 				INIT_CWD: cwd
-			}
+			},
+			argv: ['', '', 'lib']
 		};
 		await execute(testProcess);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
 		);
-		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd, 'module');
+		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd, 'module', 'lib');
 		expect(setupViteMock).toHaveBeenCalledWith(cwd, packageJson);
 		expect(setupEslintPluginsMock).toHaveBeenCalled();
 		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, testProcess);
