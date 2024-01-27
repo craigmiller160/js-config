@@ -5,6 +5,7 @@ import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
+import {LibOrApp} from '../c-init';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -113,7 +114,8 @@ const createViteTsconfig = (
 
 export const setupTypescript = (
 	cwd: string,
-	packageJsonType: PackageJsonType
+	packageJsonType: PackageJsonType,
+	libOrApp: LibOrApp
 ): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 

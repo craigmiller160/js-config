@@ -48,7 +48,7 @@ const performInitialization =
 			either.bindTo('packageJson'),
 			either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
 			either.chainFirst(({ packageJson }) =>
-				setupTypescript(cwd, packageJson.type)
+				setupTypescript(cwd, packageJson.type, libOrApp)
 			),
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
