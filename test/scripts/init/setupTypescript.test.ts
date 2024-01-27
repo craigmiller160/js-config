@@ -58,7 +58,11 @@ describe('setupTypescript', () => {
 	});
 
 	describe('base tsconfig.json', () => {
-		it('writes tsconfig.json to a project without one, with the esmodule type, and nothing else', () => {
+		it('writes tscofnig.json to a library project without one, with the esmodule type, and nothing else', () => {
+			throw new Error();
+		});
+
+		it('writes tsconfig.json to an application project without one, with the esmodule type, and nothing else', () => {
 			const result = setupTypescript(WORKING_DIR_PATH, 'module');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
