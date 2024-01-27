@@ -7,15 +7,15 @@ const compilerOptionsCodec = t.readonly(
 	t.partial({
 		types: t.readonlyArray(t.string),
 		module: t.union([
-			t.literal('AMD'),
-			t.literal('CommonJS'),
-			t.literal('ES2022'),
-			t.literal('ESNext'),
-			t.literal('Node16'),
-			t.literal('NodeNext'),
-			t.literal('System'),
-			t.literal('UMD'),
-			t.literal('None')
+			t.literal('amd'),
+			t.literal('commonjs'),
+			t.literal('es2022'),
+			t.literal('esnext'),
+			t.literal('node16'),
+			t.literal('nodenext'),
+			t.literal('system'),
+			t.literal('umd'),
+			t.literal('none')
 		]),
 		moduleResolution: t.union([
 			t.literal('node'),
