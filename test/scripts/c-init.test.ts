@@ -118,7 +118,10 @@ describe('c-init', () => {
 
 	it('skips initialization if blank CWD found', async () => {
 		findCwdMock.mockReturnValue(either.right(''));
-		await execute(process);
+		await execute({
+			...process,
+			argv: ['', '', 'lib']
+		});
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
 		expect(terminate).toHaveBeenCalledWith('');
 	});
@@ -131,7 +134,8 @@ describe('c-init', () => {
 			env: {
 				...process.env,
 				INIT_CWD: 'abc'
-			}
+			},
+			argv: ['', '', 'lib']
 		};
 		await execute(testProcess);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
@@ -171,7 +175,8 @@ describe('c-init', () => {
 			env: {
 				...process.env,
 				INIT_CWD: cwd
-			}
+			},
+			argv: ['', '', 'lib']
 		};
 		await execute(testProcess);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
