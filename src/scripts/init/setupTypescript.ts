@@ -98,7 +98,7 @@ const createViteTsconfig = (
 	const config: TsConfig = {
 		extends: './tsconfig.json',
 		compilerOptions: {
-			module: 'ESNext',
+			module: 'esnext',
 			moduleResolution: 'bundler',
 			verbatimModuleSyntax: true
 		},
