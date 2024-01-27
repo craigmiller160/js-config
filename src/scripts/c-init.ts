@@ -14,7 +14,7 @@ import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
 import { getRealArgs } from './utils/process';
 
-type LibOrApp = 'lib' | 'app';
+export type LibOrApp = 'lib' | 'app';
 
 type PerformInitializationArgs = Readonly<{
 	cwd: string;
@@ -72,7 +72,7 @@ const performInitialization =
 		);
 	};
 
-const getLibOrApp = (
+export const getLibOrApp = (
 	process: NodeJS.Process
 ): either.Either<Error, LibOrApp> => {
 	const args = getRealArgs(process);
