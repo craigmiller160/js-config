@@ -66,21 +66,26 @@ const createTsConfig = (
 	creator: TsConfigCreator
 ): either.Either<Error, void> => {
 	const tsConfigPath = path.join(dirPath, 'tsconfig.json');
-	let existingTsConfig: TsConfig | undefined = undefined;
+
+	let existingTsConfig: either.Either<Error, TsConfig | undefined> =
+		either.right(undefined);
 	if (fs.existsSync(tsConfigPath)) {
-		existingTsConfig = func.pipe(
-			parseTsConfig(tsConfigPath),
-			either.fold((error): TsConfig | undefined => {
-				logger.error(`Error parsing ${tsConfigPath}: ${error.message}`);
-				return undefined;
-			}, func.identity)
-		);
+		existingTsConfig = parseTsConfig(tsConfigPath);
 	}
 
-	const tsConfig = creator(existingTsConfig);
-	return either.tryCatch(
-		() => fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2)),
-		either.toError
+	return func.pipe(
+		existingTsConfig,
+		either.map(creator),
+		either.chain((tsConfig) =>
+			either.tryCatch(
+				() =>
+					fs.writeFileSync(
+						tsConfigPath,
+						JSON.stringify(tsConfig, null, 2)
+					),
+				either.toError
+			)
+		)
 	);
 };
 
@@ -93,7 +98,7 @@ const createViteTsconfig = (
 	const config: TsConfig = {
 		extends: './tsconfig.json',
 		compilerOptions: {
-			module: 'ESNext',
+			module: 'esnext',
 			moduleResolution: 'bundler',
 			verbatimModuleSyntax: true
 		},

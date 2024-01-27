@@ -72,7 +72,7 @@ describe('compile file extension utilities', () => {
 
 		it('.tsx', () => {
 			const result = fixFileExtension('file.tsx');
-			expect(result).toBe('file.jsx');
+			expect(result).toBe('file.js');
 		});
 
 		it('.js', () => {
@@ -92,7 +92,7 @@ describe('compile file extension utilities', () => {
 
 		it('.jsx', () => {
 			const result = fixFileExtension('file.jsx');
-			expect(result).toBe('file.jsx');
+			expect(result).toBe('file.js');
 		});
 	});
 

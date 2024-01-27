@@ -19,10 +19,18 @@ export const fixFileExtension = (filePath: string): string => {
 	const originalExtension = path.extname(filePath);
 	const newExtension = match(originalExtension)
 		.with(
-			P.union('.ts', '.mts', '.cts', '.js', '.cjs', '.mjs'),
+			P.union(
+				'.ts',
+				'.mts',
+				'.cts',
+				'.js',
+				'.cjs',
+				'.mjs',
+				'.tsx',
+				'.jsx'
+			),
 			() => '.js'
 		)
-		.with(P.union('.tsx', '.jsx'), () => '.jsx')
 		.otherwise(() => originalExtension);
 	return `${filePathWithoutExtension}${newExtension}`;
 };
