@@ -6,6 +6,7 @@ import { logger } from '../logger';
 import { isLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
+import { ControlFile } from '../files/ControlFile';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -115,29 +116,28 @@ const createViteTsconfig = (
 export const setupTypescript = (
 	cwd: string,
 	packageJsonType: PackageJsonType,
-	libOrApp: LibOrApp
+	libOrApp: LibOrApp,
+	directories: ControlFile['directories']
 ): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
-	const hasTestDir = fs.existsSync(testDirPath);
 	const cypressDirPath = path.join(cwd, 'cypress');
-	const hasCypressDir = fs.existsSync(cypressDirPath);
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
-			if (hasTestDir) {
+			if (directories.test) {
 				return func.pipe(
-					createTsConfig(testDirPath, createTestTsConfig),
+					createTsConfig(path.join(cwd, 'test'), createTestTsConfig),
 					either.chain(() => createTestSupportTypes(testDirPath))
 				);
 			}
 			return either.right(func.constVoid());
 		}),
 		either.chain(() => {
-			if (hasCypressDir) {
+			if (directories.cypress) {
 				return createTsConfig(cypressDirPath, createCypressTsConfig);
 			}
 			return either.right(func.constVoid());

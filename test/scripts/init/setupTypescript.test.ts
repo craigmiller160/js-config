@@ -18,7 +18,7 @@ import {
 } from '../../../src/scripts/files/TsConfig';
 import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
 import { LibOrApp } from '../../../src/scripts/c-init';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -127,7 +127,11 @@ test.each<BaseTsConfigScenario>([
 		const result = setupTypescript(
 			WORKING_DIR_PATH,
 			packageJsonType,
-			projectType
+			projectType,
+			{
+				test: false,
+				cypress: false
+			}
 		);
 		expect(result).toBeRight();
 		expect(fs.existsSync(TSCONFIG)).toBe(true);
@@ -186,6 +190,51 @@ test.each<BaseTsConfigScenario>([
 		expect(actualViteTsConfig).toEqual<TsConfig>(expectedViteTsConfig);
 	}
 );
+
+type Directory = 'present' | 'not present';
+
+type AltTsconfigScenario = Readonly<{
+	directory: Directory;
+	priorTsConfig?: PriorTsConfig;
+}>;
+
+test.each<AltTsconfigScenario>([
+	{ directory: 'present', priorTsConfig: 'exist' },
+	{ directory: 'present', priorTsConfig: 'not exist' },
+	{ directory: 'not present' }
+])(
+	'Writes test tsconfig when directory is $directory and prior tsconfig $priorTsConfig',
+	({ directory, priorTsConfig }) => {
+		const compilerOptions: TsConfigCompilerOptions | undefined = match(
+			priorTsConfig
+		)
+			.with('exist', () => writeExistingTsConfig())
+			.with(P.union('not exist', undefined), () => undefined)
+			.exhaustive();
+
+		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+			test: directory === 'present',
+			cypress: false
+		});
+		expect(result).toBeRight();
+		if (directory === 'not present') {
+			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
+			return;
+		}
+
+		const expectedTsConfig: TsConfig = {
+			extends: '../tsconfig.json',
+			compilerOptions,
+			include: ['../src/**/*', '**/*']
+		};
+		const actualTsConfig = JSON.parse(
+			fs.readFileSync(TEST_TSCONFIG, 'utf8')
+		) as unknown;
+		expect(actualTsConfig).toEqual(expectedTsConfig);
+	}
+);
+
+test.fails('writes test support types file');
 
 describe('setupTypescript', () => {
 	describe('test tsconfig.json', () => {
