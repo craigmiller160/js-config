@@ -327,3 +327,15 @@ test.each<AltTsconfigScenario>([
 		);
 	}
 );
+
+test('removes tsconfig.cypress.json when no cypress directory', () => {
+	writeExistingTsConfig(CYPRESS_CONFIG_TSCONFIG);
+	expect(fs.existsSync(CYPRESS_CONFIG_TSCONFIG)).toBe(true);
+	const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+		test: false,
+		cypress: false
+	});
+	expect(result).toBeRight();
+
+	expect(fs.existsSync(CYPRESS_CONFIG_TSCONFIG)).toBe(false);
+});
