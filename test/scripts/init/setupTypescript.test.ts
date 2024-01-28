@@ -71,7 +71,9 @@ type BaseTsConfigScenario = Readonly<{
 	priorTsConfig: PriorTsConfig;
 }>;
 
-const writeExistingTsConfig = (): TsConfigCompilerOptions => {
+const writeExistingTsConfig = (
+	tsconfigPath: string
+): TsConfigCompilerOptions => {
 	const compilerOptions: TsConfigCompilerOptions = {
 		module: 'es2022'
 	};
@@ -80,7 +82,12 @@ const writeExistingTsConfig = (): TsConfigCompilerOptions => {
 			'@craigmiller160/js-config/configs/typescript/tsconfig.wrong.json',
 		compilerOptions
 	};
-	fs.writeFileSync(TSCONFIG, JSON.stringify(tsConfig, null, 2));
+
+	fs.mkdirSync(path.dirname(tsconfigPath), {
+		recursive: true
+	});
+
+	fs.writeFileSync(tsconfigPath, JSON.stringify(tsConfig, null, 2));
 	return compilerOptions;
 };
 
@@ -121,7 +128,7 @@ test.each<BaseTsConfigScenario>([
 		const compilerOptions: TsConfigCompilerOptions | undefined = match(
 			priorTsConfig
 		)
-			.with('exist', () => writeExistingTsConfig())
+			.with('exist', () => writeExistingTsConfig(TSCONFIG))
 			.with('not exist', () => undefined)
 			.exhaustive();
 		const result = setupTypescript(
@@ -208,7 +215,7 @@ test.each<AltTsconfigScenario>([
 		const compilerOptions: TsConfigCompilerOptions | undefined = match(
 			priorTsConfig
 		)
-			.with('exist', () => writeExistingTsConfig())
+			.with('exist', () => writeExistingTsConfig(TEST_TSCONFIG))
 			.with(P.union('not exist', undefined), () => undefined)
 			.exhaustive();
 
