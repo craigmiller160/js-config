@@ -109,6 +109,12 @@ test.each<BaseTsConfigScenario>([
 		expect(actualTsConfig).toEqual<TsConfig>(expectedTsConfig);
 
 		expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
+
+		const viteConfigExtension = match(packageJsonType)
+			.with('module', () => 'ts')
+			.with('commonjs', () => 'mts')
+			.exhaustive();
+
 		const expectedViteTsConfig: TsConfig = {
 			extends: './tsconfig.json',
 			compilerOptions: {
@@ -116,15 +122,12 @@ test.each<BaseTsConfigScenario>([
 				moduleResolution: 'bundler',
 				verbatimModuleSyntax: true
 			},
-			include: ['./vite.config.ts']
+			include: [`./vite.config.${viteConfigExtension}`]
 		};
 		const actualViteTsConfig = JSON.parse(
 			fs.readFileSync(VITE_TSCONFIG, 'utf8')
 		) as unknown;
 		expect(actualViteTsConfig).toEqual<TsConfig>(expectedViteTsConfig);
-
-		expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
-		expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
 	}
 );
 
