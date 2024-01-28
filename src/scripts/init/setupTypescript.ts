@@ -3,11 +3,12 @@ import { either, function as func } from 'fp-ts';
 import path from 'path';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
-import { isLibraryPresent } from '../utils/library';
+import { isLibraryPresent as isLibraryPresentDefault } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
 
+type IsLibraryPresent = typeof isLibraryPresentDefault;
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
@@ -31,22 +32,22 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	include: ['../src/**/*', '**/*']
 });
 
-const createTestSupportTypes = (
-	testDirPath: string
-): either.Either<Error, unknown> => {
-	if (isLibraryPresent('@relmify/jest-fp-ts')) {
-		const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
-		return either.tryCatch(
-			() =>
-				fs.writeFileSync(
-					supportFilePath,
-					`import '@relmify/jest-fp-ts';\n`
-				),
-			either.toError
-		);
-	}
-	return either.right(func.constVoid());
-};
+const createTestSupportTypes =
+	(isLibraryPresent: IsLibraryPresent) =>
+	(testDirPath: string): either.Either<Error, unknown> => {
+		if (isLibraryPresent('@relmify/jest-fp-ts')) {
+			const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
+			return either.tryCatch(
+				() =>
+					fs.writeFileSync(
+						supportFilePath,
+						`import '@relmify/jest-fp-ts';\n`
+					),
+				either.toError
+			);
+		}
+		return either.right(func.constVoid());
+	};
 
 const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -117,12 +118,15 @@ export const setupTypescript = (
 	cwd: string,
 	packageJsonType: PackageJsonType,
 	libOrApp: LibOrApp,
-	directories: ControlFile['directories']
+	directories: ControlFile['directories'],
+	isLibraryPresent: IsLibraryPresent = isLibraryPresentDefault
 ): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
 	const cypressDirPath = path.join(cwd, 'cypress');
+
+	const doCreateTestSupportTypes = createTestSupportTypes(isLibraryPresent);
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
@@ -131,7 +135,7 @@ export const setupTypescript = (
 			if (directories.test) {
 				return func.pipe(
 					createTsConfig(path.join(cwd, 'test'), createTestTsConfig),
-					either.chain(() => createTestSupportTypes(testDirPath))
+					either.chain(() => doCreateTestSupportTypes(testDirPath))
 				);
 			}
 			return either.right(func.constVoid());

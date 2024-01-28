@@ -2,16 +2,15 @@ import {
 	afterEach,
 	beforeEach,
 	describe,
-	it,
 	expect,
-	vi,
+	it,
 	MockedFunction,
-	test
+	test,
+	vi
 } from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
-import { isLibraryPresent } from '../../../src/scripts/utils/library';
 import {
 	TsConfig,
 	TsConfigCompilerOptions
@@ -19,6 +18,7 @@ import {
 import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
 import { LibOrApp } from '../../../src/scripts/c-init';
 import { match } from 'ts-pattern';
+import { isLibraryPresent } from '../../../src/scripts/utils/library';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -33,14 +33,6 @@ const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
 const TEST_SUPPORT_TYPES_PATH = path.join(TEST_DIR, 'test-support.d.ts');
 const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
 const CYPRESS_TSCONFIG = path.join(CYPRESS_DIR, 'tsconfig.json');
-
-vi.mock('../../../src/scripts/utils/library', () => ({
-	isLibraryPresent: vi.fn()
-}));
-
-const isLibraryPresentMock = isLibraryPresent as MockedFunction<
-	typeof isLibraryPresent
->;
 
 const resetWorkingDirectory = () =>
 	fs
@@ -252,10 +244,22 @@ test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
 	'creates support types for %s',
 	(scenario) => {
 		createDirectoriesForFile(TEST_SUPPORT_TYPES_PATH);
-		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
-			test: true,
-			cypress: false
-		});
+		const isLibraryPresentMock: MockedFunction<typeof isLibraryPresent> =
+			vi.fn();
+		isLibraryPresentMock.mockImplementation(
+			(lib) => lib === '@relmify/jest-fp-ts' && scenario === 'jest-fp-ts'
+		);
+
+		const result = setupTypescript(
+			WORKING_DIR_PATH,
+			'module',
+			'lib',
+			{
+				test: true,
+				cypress: false
+			},
+			isLibraryPresentMock
+		);
 		expect(result).toBeRight();
 
 		if (scenario === 'none') {
