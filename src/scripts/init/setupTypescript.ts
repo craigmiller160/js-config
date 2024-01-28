@@ -114,6 +114,9 @@ const createViteTsconfig = (
 	);
 };
 
+const getCypressConfigTsconfigPath = (cwd: string): string =>
+	path.join(cwd, 'tsconfig.cypress.json');
+
 const createCypressConfigTsconfig = (
 	cwd: string
 ): either.Either<Error, void> => {
@@ -121,11 +124,21 @@ const createCypressConfigTsconfig = (
 		extends: './tsconfig.json',
 		include: ['./cypress.config.ts']
 	};
-	const tsConfigPath = path.join(cwd, 'tsconfig.cypress.json');
+	const tsConfigPath = getCypressConfigTsconfigPath(cwd);
 	return either.tryCatch(
 		() => fs.writeFileSync(tsConfigPath, JSON.stringify(config, null, 2)),
 		either.toError
 	);
+};
+
+const removeCypressConfigTsconfig = (
+	cwd: string
+): either.Either<Error, void> => {
+	const tsConfigPath = getCypressConfigTsconfigPath(cwd);
+	if (fs.existsSync(tsConfigPath)) {
+		return either.tryCatch(() => fs.rmSync(tsConfigPath), either.toError);
+	}
+	return either.right(func.constVoid());
 };
 
 export const setupTypescript = (
@@ -161,7 +174,7 @@ export const setupTypescript = (
 					either.chain(() => createCypressConfigTsconfig(cwd))
 				);
 			}
-			return either.right(func.constVoid());
+			return removeCypressConfigTsconfig(cwd);
 		})
 	);
 };
