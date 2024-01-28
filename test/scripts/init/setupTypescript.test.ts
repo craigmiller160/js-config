@@ -18,7 +18,7 @@ import {
 } from '../../../src/scripts/files/TsConfig';
 import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
 import { LibOrApp } from '../../../src/scripts/c-init';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -71,6 +71,15 @@ type BaseTsConfigScenario = Readonly<{
 	priorTsConfig: PriorTsConfig;
 }>;
 
+const createDirectoriesForExistingTsConfig = (
+	tsconfigPath: string
+): undefined => {
+	fs.mkdirSync(path.dirname(tsconfigPath), {
+		recursive: true
+	});
+	return undefined;
+};
+
 const writeExistingTsConfig = (
 	tsconfigPath: string
 ): TsConfigCompilerOptions => {
@@ -83,10 +92,7 @@ const writeExistingTsConfig = (
 		compilerOptions
 	};
 
-	fs.mkdirSync(path.dirname(tsconfigPath), {
-		recursive: true
-	});
-
+	createDirectoriesForExistingTsConfig(tsconfigPath);
 	fs.writeFileSync(tsconfigPath, JSON.stringify(tsConfig, null, 2));
 	return compilerOptions;
 };
@@ -216,7 +222,10 @@ test.each<AltTsconfigScenario>([
 			priorTsConfig
 		)
 			.with('exist', () => writeExistingTsConfig(TEST_TSCONFIG))
-			.with(P.union('not exist', undefined), () => undefined)
+			.with('not exist', () =>
+				createDirectoriesForExistingTsConfig(TEST_TSCONFIG)
+			)
+			.with(undefined, () => undefined)
 			.exhaustive();
 
 		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
