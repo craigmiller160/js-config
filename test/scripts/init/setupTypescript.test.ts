@@ -5,13 +5,17 @@ import {
 	it,
 	expect,
 	vi,
-	MockedFunction
+	MockedFunction,
+	test
 } from 'vitest';
 import path from 'path';
 import fs from 'fs';
 import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
 import { isLibraryPresent } from '../../../src/scripts/utils/library';
 import { TsConfig } from '../../../src/scripts/files/TsConfig';
+import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
+import { LibOrApp } from '../../../src/scripts/c-init';
+import { match } from 'ts-pattern';
 
 const WORKING_DIR_PATH = path.join(
 	process.cwd(),
@@ -47,18 +51,68 @@ const resetWorkingDirectory = () =>
 			});
 		});
 
+beforeEach(() => {
+	vi.resetAllMocks();
+	resetWorkingDirectory();
+});
+
+afterEach(() => {
+	resetWorkingDirectory();
+});
+
+type BaseTsConfigScenario = Readonly<{
+	packageJsonType: PackageJsonType;
+	projectType: LibOrApp;
+}>;
+
+test.each<BaseTsConfigScenario>([
+	{ packageJsonType: 'module', projectType: 'lib' },
+	{ packageJsonType: 'module', projectType: 'app' },
+	{ packageJsonType: 'commonjs', projectType: 'lib' }
+])(
+	'Setup base tsconfig.json when none exists for package.json type %packageJsonType and a $projectType project',
+	({ packageJsonType, projectType }) => {
+		const result = setupTypescript(
+			WORKING_DIR_PATH,
+			packageJsonType,
+			projectType
+		);
+		expect(result).toBeRight();
+		expect(fs.existsSync(TSCONFIG)).toBe(true);
+
+		const extendedTsConfigName = match<BaseTsConfigScenario, string>({
+			packageJsonType,
+			projectType
+		})
+			.with(
+				{ projectType: 'lib', packageJsonType: 'module' },
+				() => 'tsconfig.module.lib.json'
+			)
+			.with(
+				{ projectType: 'app', packageJsonType: 'module' },
+				() => 'tsconfig.module.app.json'
+			)
+			.with(
+				{ packageJsonType: 'commonjs' },
+				() => 'tsconfig.commonjs.json'
+			)
+			.run();
+
+		const expectedTsConfig: TsConfig = {
+			extends: `@craigmiller160/js-config/configs/typescript/${extendedTsConfigName}`,
+			include: ['src/**/*'],
+			exclude: ['node_modules', 'build', 'lib']
+		};
+		const actualTsConfig = JSON.parse(
+			fs.readFileSync(TSCONFIG, 'utf8')
+		) as unknown;
+		expect(actualTsConfig).toEqual<TsConfig>(expectedTsConfig);
+	}
+);
+
 describe('setupTypescript', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-		resetWorkingDirectory();
-	});
-
-	afterEach(() => {
-		resetWorkingDirectory();
-	});
-
 	describe('base tsconfig.json', () => {
-		it('writes tscofnig.json to a library project without one, with the esmodule type, and nothing else', () => {
+		it('writes tsconfig.json to a library project without one, with the esmodule type, and nothing else', () => {
 			const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib');
 			expect(result).toBeRight();
 			expect(fs.existsSync(TSCONFIG)).toBe(true);
