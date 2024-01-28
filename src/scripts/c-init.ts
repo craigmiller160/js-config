@@ -13,6 +13,7 @@ import { setupVite } from './init/setupVite';
 import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
 import { getRealArgs } from './utils/process';
+import { isLibraryPresent } from './utils/library';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -51,7 +52,7 @@ const performInitialization =
 				setupTypescript(cwd, packageJson.type, libOrApp, {
 					test: hasTestDirectory,
 					cypress: hasCypressDirectory
-				})
+				})(isLibraryPresent)
 			),
 			either.bind('eslintPlugins', () =>
 				either.right(setupEslintPlugins())
