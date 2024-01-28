@@ -3,10 +3,12 @@ import { either, function as func } from 'fp-ts';
 import path from 'path';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
-import { isLibraryPresent } from '../utils/library';
+import { isLibraryPresent as isLibraryPresentDefault } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
+import { ControlFile } from '../files/ControlFile';
 
+type IsLibraryPresent = typeof isLibraryPresentDefault;
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
@@ -30,22 +32,22 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	include: ['../src/**/*', '**/*']
 });
 
-const createTestSupportTypes = (
-	testDirPath: string
-): either.Either<Error, unknown> => {
-	if (isLibraryPresent('@relmify/jest-fp-ts')) {
-		const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
-		return either.tryCatch(
-			() =>
-				fs.writeFileSync(
-					supportFilePath,
-					`import '@relmify/jest-fp-ts';\n`
-				),
-			either.toError
-		);
-	}
-	return either.right(func.constVoid());
-};
+const createTestSupportTypes =
+	(isLibraryPresent: IsLibraryPresent) =>
+	(testDirPath: string): either.Either<Error, unknown> => {
+		if (isLibraryPresent('@relmify/jest-fp-ts')) {
+			const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
+			return either.tryCatch(
+				() =>
+					fs.writeFileSync(
+						supportFilePath,
+						`import '@relmify/jest-fp-ts';\n`
+					),
+				either.toError
+			);
+		}
+		return either.right(func.constVoid());
+	};
 
 const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 	extends: '../tsconfig.json',
@@ -112,35 +114,67 @@ const createViteTsconfig = (
 	);
 };
 
+const getCypressConfigTsconfigPath = (cwd: string): string =>
+	path.join(cwd, 'tsconfig.cypress.json');
+
+const createCypressConfigTsconfig = (
+	cwd: string
+): either.Either<Error, void> => {
+	const config: TsConfig = {
+		extends: './tsconfig.json',
+		include: ['./cypress.config.ts']
+	};
+	const tsConfigPath = getCypressConfigTsconfigPath(cwd);
+	return either.tryCatch(
+		() => fs.writeFileSync(tsConfigPath, JSON.stringify(config, null, 2)),
+		either.toError
+	);
+};
+
+const removeCypressConfigTsconfig = (
+	cwd: string
+): either.Either<Error, void> => {
+	const tsConfigPath = getCypressConfigTsconfigPath(cwd);
+	if (fs.existsSync(tsConfigPath)) {
+		return either.tryCatch(() => fs.rmSync(tsConfigPath), either.toError);
+	}
+	return either.right(func.constVoid());
+};
+
 export const setupTypescript = (
 	cwd: string,
 	packageJsonType: PackageJsonType,
-	libOrApp: LibOrApp
+	libOrApp: LibOrApp,
+	directories: ControlFile['directories'],
+	isLibraryPresent: IsLibraryPresent = isLibraryPresentDefault
 ): either.Either<Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
-	const hasTestDir = fs.existsSync(testDirPath);
 	const cypressDirPath = path.join(cwd, 'cypress');
-	const hasCypressDir = fs.existsSync(cypressDirPath);
+
+	const doCreateTestSupportTypes = createTestSupportTypes(isLibraryPresent);
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
-			if (hasTestDir) {
+			if (directories.test) {
 				return func.pipe(
-					createTsConfig(testDirPath, createTestTsConfig),
-					either.chain(() => createTestSupportTypes(testDirPath))
+					createTsConfig(path.join(cwd, 'test'), createTestTsConfig),
+					either.chain(() => doCreateTestSupportTypes(testDirPath))
 				);
 			}
 			return either.right(func.constVoid());
 		}),
 		either.chain(() => {
-			if (hasCypressDir) {
-				return createTsConfig(cypressDirPath, createCypressTsConfig);
+			if (directories.cypress) {
+				return func.pipe(
+					createTsConfig(cypressDirPath, createCypressTsConfig),
+					either.chain(() => createCypressConfigTsconfig(cwd))
+				);
 			}
-			return either.right(func.constVoid());
+			return removeCypressConfigTsconfig(cwd);
 		})
 	);
 };
