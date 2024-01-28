@@ -118,6 +118,7 @@ const createCypressConfigTsconfig = (
 	cwd: string
 ): either.Either<Error, void> => {
 	const config: TsConfig = {
+		extends: './tsconfig.json',
 		include: ['./cypress.config.ts']
 	};
 	const tsConfigPath = path.join(cwd, 'tsconfig.cypress.json');
