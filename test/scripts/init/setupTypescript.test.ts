@@ -273,7 +273,14 @@ test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
 		);
 	}
 );
-test.fails('writes cypress tsconfigs');
+
+test.each<AltTsconfigScenario>([
+	{ directory: 'present', priorTsConfig: 'exist' },
+	{ directory: 'present', priorTsConfig: 'not exist' },
+	{ directory: 'not present' }
+])('Writes cypress tsconfig when directory is $directory and prior tsconfig $priorTsConfig', () => {
+	throw new Error();
+});
 
 describe('setupTypescript', () => {
 	describe('cypress tsconfig.json', () => {
