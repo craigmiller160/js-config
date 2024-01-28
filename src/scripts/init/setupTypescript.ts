@@ -3,12 +3,14 @@ import { either, function as func, readerEither } from 'fp-ts';
 import path from 'path';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
-import { isLibraryPresent as isLibraryPresentDefault } from '../utils/library';
+import {
+	isLibraryPresent as isLibraryPresentDefault,
+	IsLibraryPresent
+} from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
 
-type IsLibraryPresent = typeof isLibraryPresentDefault;
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
@@ -147,9 +149,8 @@ export const setupTypescript = (
 	cwd: string,
 	packageJsonType: PackageJsonType,
 	libOrApp: LibOrApp,
-	directories: ControlFile['directories'],
-	isLibraryPresent: IsLibraryPresent = isLibraryPresentDefault
-): either.Either<Error, void> => {
+	directories: ControlFile['directories']
+): readerEither.ReaderEither<IsLibraryPresent, Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = path.join(cwd, 'test');
@@ -175,6 +176,13 @@ export const setupTypescript = (
 				);
 			}
 			return removeCypressConfigTsconfig(cwd);
+		}),
+		readerEither.fromEither,
+		readerEither.chain(() => {
+			if (directories.test) {
+				return createTestSupportTypes(testDirPath);
+			}
+			return readerEither.right(func.constVoid());
 		})
 	);
 };
