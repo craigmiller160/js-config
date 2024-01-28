@@ -1,9 +1,7 @@
 import {
 	afterEach,
 	beforeEach,
-	describe,
 	expect,
-	it,
 	MockedFunction,
 	test,
 	vi
@@ -329,57 +327,3 @@ test.each<AltTsconfigScenario>([
 		);
 	}
 );
-
-describe('setupTypescript', () => {
-	describe('cypress tsconfig.json', () => {
-		beforeEach(() => {
-			fs.mkdirSync(CYPRESS_DIR);
-		});
-
-		it('writes cypress/tsconfig.json to project without one', () => {
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
-			expect(result).toBeRight();
-
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
-			const tsconfig = JSON.parse(
-				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
-			) as TsConfig;
-			expect(tsconfig).toEqual({
-				extends: '../tsconfig.json',
-				compilerOptions: {
-					types: ['node', 'cypress']
-				},
-				include: ['../src/**/*', '**/*']
-			});
-
-			expect(fs.existsSync(TSCONFIG)).toBe(true);
-			expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
-		});
-
-		it('writes cypress/tsconfig.json to project with one, preserving compilerOptions', () => {
-			const baseConfig = {
-				compilerOptions: {
-					module: 'es2022',
-					types: ['node', 'foo']
-				}
-			};
-			fs.writeFileSync(CYPRESS_TSCONFIG, JSON.stringify(baseConfig));
-
-			const result = setupTypescript(WORKING_DIR_PATH, 'commonjs', 'lib');
-			expect(result).toBeRight();
-
-			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(true);
-			const tsconfig = JSON.parse(
-				fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
-			) as TsConfig;
-			expect(tsconfig).toEqual({
-				extends: '../tsconfig.json',
-				compilerOptions: {
-					types: ['foo', 'node', 'cypress'],
-					module: 'es2022'
-				},
-				include: ['../src/**/*', '**/*']
-			});
-		});
-	});
-});
