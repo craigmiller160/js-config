@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { either, function as func } from 'fp-ts';
+import { either, function as func, readerEither } from 'fp-ts';
 import path from 'path';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
@@ -33,8 +33,10 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 });
 
 const createTestSupportTypes =
-	(isLibraryPresent: IsLibraryPresent) =>
-	(testDirPath: string): either.Either<Error, unknown> => {
+	(
+		testDirPath: string
+	): readerEither.ReaderEither<IsLibraryPresent, Error, void> =>
+	(isLibraryPresent) => {
 		if (isLibraryPresent('@relmify/jest-fp-ts')) {
 			const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
 			return either.tryCatch(
