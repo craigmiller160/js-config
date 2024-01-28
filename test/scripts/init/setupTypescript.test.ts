@@ -70,7 +70,7 @@ test.each<BaseTsConfigScenario>([
 	{ packageJsonType: 'module', projectType: 'app' },
 	{ packageJsonType: 'commonjs', projectType: 'lib' }
 ])(
-	'Setup base tsconfig.json when none exists for package.json type %packageJsonType and a $projectType project',
+	'Setup base tsconfig.json when none exists for package.json type $packageJsonType and a $projectType project',
 	({ packageJsonType, projectType }) => {
 		const result = setupTypescript(
 			WORKING_DIR_PATH,
