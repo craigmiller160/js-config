@@ -251,6 +251,7 @@ test.each<AltTsconfigScenario>([
 );
 
 test.fails('writes test support types file');
+test.fails('writes cypress tsconfigs');
 
 describe('setupTypescript', () => {
 	describe('test tsconfig.json', () => {
