@@ -33,6 +33,10 @@ const TEST_TSCONFIG = path.join(TEST_DIR, 'tsconfig.json');
 const TEST_SUPPORT_TYPES_PATH = path.join(TEST_DIR, 'test-support.d.ts');
 const CYPRESS_DIR = path.join(WORKING_DIR_PATH, 'cypress');
 const CYPRESS_TSCONFIG = path.join(CYPRESS_DIR, 'tsconfig.json');
+const CYPRESS_CONFIG_TSCONFIG = path.join(
+	WORKING_DIR_PATH,
+	'tsconfig.cypress.json'
+);
 
 const resetWorkingDirectory = () =>
 	fs
@@ -278,9 +282,53 @@ test.each<AltTsconfigScenario>([
 	{ directory: 'present', priorTsConfig: 'exist' },
 	{ directory: 'present', priorTsConfig: 'not exist' },
 	{ directory: 'not present' }
-])('Writes cypress tsconfig when directory is $directory and prior tsconfig $priorTsConfig', () => {
-	throw new Error();
-});
+])(
+	'Writes cypress tsconfig when directory is $directory and prior tsconfig $priorTsConfig',
+	({ directory, priorTsConfig }) => {
+		const compilerOptions: TsConfigCompilerOptions | undefined = match(
+			priorTsConfig
+		)
+			.with('exist', () => writeExistingTsConfig(CYPRESS_TSCONFIG))
+			.with('not exist', () => createDirectoriesForFile(CYPRESS_TSCONFIG))
+			.with(undefined, () => undefined)
+			.exhaustive();
+
+		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+			test: false,
+			cypress: directory === 'present'
+		});
+		expect(result).toBeRight();
+		if (directory === 'not present') {
+			expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
+			expect(fs.existsSync(CYPRESS_CONFIG_TSCONFIG)).toBe(false);
+			return;
+		}
+
+		const expectedCypressTsconfig: TsConfig = {
+			extends: '../tsconfig.json',
+			compilerOptions: {
+				...(compilerOptions ?? {}),
+				types: ['node', 'cypress']
+			},
+			include: ['../src/**/*', '**/*']
+		};
+		const actualCypressTsconfig = JSON.parse(
+			fs.readFileSync(CYPRESS_TSCONFIG, 'utf8')
+		) as unknown;
+		expect(actualCypressTsconfig).toEqual(expectedCypressTsconfig);
+
+		const expectedCypressConfigTsconfig: TsConfig = {
+			extends: './tsconfig.json',
+			include: ['./cypress.config.ts']
+		};
+		const actualCypressConfigTsconfig = JSON.parse(
+			fs.readFileSync(CYPRESS_CONFIG_TSCONFIG, 'utf8')
+		) as unknown;
+		expect(actualCypressConfigTsconfig).toEqual(
+			expectedCypressConfigTsconfig
+		);
+	}
+);
 
 describe('setupTypescript', () => {
 	describe('cypress tsconfig.json', () => {
