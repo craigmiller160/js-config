@@ -71,9 +71,7 @@ type BaseTsConfigScenario = Readonly<{
 	priorTsConfig: PriorTsConfig;
 }>;
 
-const createDirectoriesForExistingTsConfig = (
-	tsconfigPath: string
-): undefined => {
+const createDirectoriesForFile = (tsconfigPath: string): undefined => {
 	fs.mkdirSync(path.dirname(tsconfigPath), {
 		recursive: true
 	});
@@ -92,7 +90,7 @@ const writeExistingTsConfig = (
 		compilerOptions
 	};
 
-	createDirectoriesForExistingTsConfig(tsconfigPath);
+	createDirectoriesForFile(tsconfigPath);
 	fs.writeFileSync(tsconfigPath, JSON.stringify(tsConfig, null, 2));
 	return compilerOptions;
 };
@@ -222,9 +220,7 @@ test.each<AltTsconfigScenario>([
 			priorTsConfig
 		)
 			.with('exist', () => writeExistingTsConfig(TEST_TSCONFIG))
-			.with('not exist', () =>
-				createDirectoriesForExistingTsConfig(TEST_TSCONFIG)
-			)
+			.with('not exist', () => createDirectoriesForFile(TEST_TSCONFIG))
 			.with(undefined, () => undefined)
 			.exhaustive();
 
@@ -250,7 +246,29 @@ test.each<AltTsconfigScenario>([
 	}
 );
 
-test.fails('writes test support types file');
+type SupportTypesScenario = 'jest-fp-ts' | 'none';
+
+test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
+	'creates support types for %s',
+	(scenario) => {
+		createDirectoriesForFile(TEST_SUPPORT_TYPES_PATH);
+		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+			test: true,
+			cypress: false
+		});
+		expect(result).toBeRight();
+
+		if (scenario === 'none') {
+			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
+			return;
+		}
+
+		expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(true);
+		expect(fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8')).toBe(
+			`import '@relmify/jest-fp-ts';\n`
+		);
+	}
+);
 test.fails('writes cypress tsconfigs');
 
 describe('setupTypescript', () => {
