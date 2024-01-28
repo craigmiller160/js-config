@@ -155,16 +155,14 @@ export const setupTypescript = (
 	const testDirPath = path.join(cwd, 'test');
 	const cypressDirPath = path.join(cwd, 'cypress');
 
-	const doCreateTestSupportTypes = createTestSupportTypes(isLibraryPresent);
-
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (directories.test) {
-				return func.pipe(
-					createTsConfig(path.join(cwd, 'test'), createTestTsConfig),
-					either.chain(() => doCreateTestSupportTypes(testDirPath))
+				return createTsConfig(
+					path.join(cwd, 'test'),
+					createTestTsConfig
 				);
 			}
 			return either.right(func.constVoid());
