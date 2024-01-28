@@ -107,6 +107,24 @@ test.each<BaseTsConfigScenario>([
 			fs.readFileSync(TSCONFIG, 'utf8')
 		) as unknown;
 		expect(actualTsConfig).toEqual<TsConfig>(expectedTsConfig);
+
+		expect(fs.existsSync(VITE_TSCONFIG)).toBe(true);
+		const expectedViteTsConfig: TsConfig = {
+			extends: './tsconfig.json',
+			compilerOptions: {
+				module: 'esnext',
+				moduleResolution: 'bundler',
+				verbatimModuleSyntax: true
+			},
+			include: ['./vite.config.ts']
+		};
+		const actualViteTsConfig = JSON.parse(
+			fs.readFileSync(VITE_TSCONFIG, 'utf8')
+		) as unknown;
+		expect(actualViteTsConfig).toEqual<TsConfig>(expectedViteTsConfig);
+
+		expect(fs.existsSync(TEST_TSCONFIG)).toBe(false);
+		expect(fs.existsSync(CYPRESS_TSCONFIG)).toBe(false);
 	}
 );
 
