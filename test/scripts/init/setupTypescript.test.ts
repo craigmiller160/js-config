@@ -12,7 +12,10 @@ import path from 'path';
 import fs from 'fs';
 import { setupTypescript } from '../../../src/scripts/init/setupTypescript';
 import { isLibraryPresent } from '../../../src/scripts/utils/library';
-import { TsConfig } from '../../../src/scripts/files/TsConfig';
+import {
+	TsConfig,
+	TsConfigCompilerOptions
+} from '../../../src/scripts/files/TsConfig';
 import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
 import { LibOrApp } from '../../../src/scripts/c-init';
 import { match } from 'ts-pattern';
@@ -60,18 +63,67 @@ afterEach(() => {
 	resetWorkingDirectory();
 });
 
+type PriorTsConfig = 'exist' | 'not exist';
+
 type BaseTsConfigScenario = Readonly<{
 	packageJsonType: PackageJsonType;
 	projectType: LibOrApp;
+	priorTsConfig: PriorTsConfig;
 }>;
 
+const writeExistingTsConfig = (): TsConfigCompilerOptions => {
+	const compilerOptions: TsConfigCompilerOptions = {
+		module: 'es2022'
+	};
+	const tsConfig: TsConfig = {
+		extends:
+			'@craigmiller160/js-config/configs/typescript/tsconfig.wrong.json',
+		compilerOptions
+	};
+	fs.writeFileSync(TSCONFIG, JSON.stringify(tsConfig, null, 2));
+	return compilerOptions;
+};
+
 test.each<BaseTsConfigScenario>([
-	{ packageJsonType: 'module', projectType: 'lib' },
-	{ packageJsonType: 'module', projectType: 'app' },
-	{ packageJsonType: 'commonjs', projectType: 'lib' }
+	{
+		packageJsonType: 'module',
+		projectType: 'lib',
+		priorTsConfig: 'not exist'
+	},
+	{
+		packageJsonType: 'module',
+		projectType: 'lib',
+		priorTsConfig: 'exist'
+	},
+	{
+		packageJsonType: 'module',
+		projectType: 'app',
+		priorTsConfig: 'not exist'
+	},
+	{
+		packageJsonType: 'module',
+		projectType: 'app',
+		priorTsConfig: 'exist'
+	},
+	{
+		packageJsonType: 'commonjs',
+		projectType: 'lib',
+		priorTsConfig: 'not exist'
+	},
+	{
+		packageJsonType: 'commonjs',
+		projectType: 'lib',
+		priorTsConfig: 'exist'
+	}
 ])(
-	'Setup base tsconfig.json when none exists for package.json type $packageJsonType and a $projectType project',
-	({ packageJsonType, projectType }) => {
+	'Setup base tsconfig.json for package.json type $packageJsonType, a $projectType project, where the prior tsconfig does $priorTsConfig',
+	({ packageJsonType, projectType, priorTsConfig }) => {
+		const compilerOptions: TsConfigCompilerOptions | undefined = match(
+			priorTsConfig
+		)
+			.with('exist', () => writeExistingTsConfig())
+			.with('not exist', () => undefined)
+			.exhaustive();
 		const result = setupTypescript(
 			WORKING_DIR_PATH,
 			packageJsonType,
@@ -80,7 +132,10 @@ test.each<BaseTsConfigScenario>([
 		expect(result).toBeRight();
 		expect(fs.existsSync(TSCONFIG)).toBe(true);
 
-		const extendedTsConfigName = match<BaseTsConfigScenario, string>({
+		const extendedTsConfigName = match<
+			Omit<BaseTsConfigScenario, 'priorTsConfig'>,
+			string
+		>({
 			packageJsonType,
 			projectType
 		})
@@ -101,7 +156,8 @@ test.each<BaseTsConfigScenario>([
 		const expectedTsConfig: TsConfig = {
 			extends: `@craigmiller160/js-config/configs/typescript/${extendedTsConfigName}`,
 			include: ['src/**/*'],
-			exclude: ['node_modules', 'build', 'lib']
+			exclude: ['node_modules', 'build', 'lib'],
+			compilerOptions
 		};
 		const actualTsConfig = JSON.parse(
 			fs.readFileSync(TSCONFIG, 'utf8')
