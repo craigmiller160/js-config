@@ -1,9 +1,15 @@
 import { findCwd } from './utils/cwd';
-import { function as func, either, taskEither, readerTaskEither } from 'fp-ts';
+import {
+	function as func,
+	either,
+	taskEither,
+	readerTaskEither,
+	reader
+} from 'fp-ts';
 import { logger } from './logger';
 import { terminate } from './utils/terminate';
 import { setupTypescript } from './init/setupTypescript';
-import { parsePackageJson } from './files/PackageJson';
+import { PackageJson, parsePackageJson } from './files/PackageJson';
 import path from 'path';
 import { generateControlFile } from './init/generateControlFile';
 import { setupEslintFiles } from './init/setupEslintFiles';
@@ -13,8 +19,8 @@ import { setupVite } from './init/setupVite';
 import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
 import { getRealArgs } from './utils/process';
-import { isLibraryPresent } from './utils/library';
-import { runCommandSync } from './utils/runCommand';
+import { IsLibraryPresent, isLibraryPresent } from './utils/library';
+import { RunCommandSync, runCommandSync } from './utils/runCommand';
 import {
 	getCypressDirectoryPath,
 	getPackageJsonPath,
@@ -30,6 +36,8 @@ type PerformInitializationArgs = Readonly<{
 
 type PerformInitializationDependencies = Readonly<{
 	process: NodeJS.Process;
+	runCommandSync: RunCommandSync;
+	isLibraryPresent: IsLibraryPresent;
 }>;
 
 const performInitialization = (
@@ -65,20 +73,29 @@ const performInitialization = (
 		taskEither.chainFirst(({ packageJson }) =>
 			setupEslintFiles(cwd, packageJson)
 		),
-		readerTaskEither.fromTaskEither,
-		readerTaskEither.chainFirstReaderK(() => setupEslintPlugins),
-		readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
-			setupTypescript(cwd, packageJson.type, libOrApp, {
-				test: hasTestDirectory,
-				cypress: hasCypressDirectory
-			})
-		),
-		readerTaskEither.chainFirstReaderEitherK(() => setupGitHooks(cwd))
-	)({
-		process,
-		isLibraryPresent,
-		runCommandSync
-	});
+		(te) =>
+			readerTaskEither.fromTaskEither<
+				Error,
+				{ packageJson: PackageJson },
+				PerformInitializationDependencies
+			>(te),
+		readerTaskEither.chainFirstReaderK(() =>
+			reader.local<
+				PerformInitializationDependencies,
+				{ isLibraryPresent: IsLibraryPresent }
+			>((d) => ({ isLibraryPresent: d.isLibraryPresent }))(
+				setupEslintPlugins
+			)
+		)
+		// readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
+		// 	setupTypescript(cwd, packageJson.type, libOrApp, {
+		// 		test: hasTestDirectory,
+		// 		cypress: hasCypressDirectory
+		// 	})
+		// ),
+		// readerTaskEither.chainFirstReaderEitherK(() => setupGitHooks(cwd)),
+		// readerTaskEither.run
+	);
 
 	throw new Error();
 };
