@@ -56,7 +56,18 @@ const performInitialization = (
 		parsePackageJson(getPackageJsonPath(cwd)),
 		either.bindTo('packageJson'),
 		either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
-	)
+		either.chainFirst(() => setupStylelint(cwd)),
+		taskEither.fromEither,
+		taskEither.chainFirst(({ packageJson }) =>
+			setupEslintFiles(cwd, packageJson)
+		)
+	);
+
+	// reader
+	// setupEslintPlugins
+	// readerEither
+	// setupTypescript
+	// setupGitHooks
 
 	throw new Error();
 };
