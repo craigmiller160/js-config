@@ -93,17 +93,12 @@ const performInitialization = (
 					cypress: hasCypressDirectory
 				})
 		),
-		readerTaskEither.chainFirstReaderEitherK(() =>
-			readerEither.local<
-				PerformInitializationDependencies,
-				Pick<
-					PerformInitializationDependencies,
-					'runCommandSync' | 'process'
-				>
-			>((d) => ({
+		readerTaskEitherUtils.narrowAndChainFirstReaderEitherK(
+			(d) => ({
 				runCommandSync: d.runCommandSync,
 				process: d.process
-			}))(setupGitHooks(cwd))
+			}),
+			() => setupGitHooks(cwd)
 		)
 	);
 
