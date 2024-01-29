@@ -98,15 +98,19 @@ const performInitialization = (
 					cypress: hasCypressDirectory
 				})
 			)
+		),
+		readerTaskEither.chainFirstReaderEitherK(() =>
+			readerEither.local<
+				PerformInitializationDependencies,
+				Pick<
+					PerformInitializationDependencies,
+					'runCommandSync' | 'process'
+				>
+			>((d) => ({
+				runCommandSync: d.runCommandSync,
+				process: d.process
+			}))(setupGitHooks(cwd))
 		)
-		// readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
-		// 	setupTypescript(cwd, packageJson.type, libOrApp, {
-		// 		test: hasTestDirectory,
-		// 		cypress: hasCypressDirectory
-		// 	})
-		// ),
-		// readerTaskEither.chainFirstReaderEitherK(() => setupGitHooks(cwd)),
-		// readerTaskEither.run
 	);
 
 	throw new Error();
