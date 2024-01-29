@@ -7,6 +7,4 @@ vi.mock('../src/scripts/utils/runCommand', () => ({
 	runCommandAsync: vi.fn()
 }));
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 process.env.NODE_PATH = path.join(process.cwd(), 'node_modules');
