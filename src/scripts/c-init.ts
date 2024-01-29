@@ -4,7 +4,8 @@ import {
 	either,
 	taskEither,
 	readerTaskEither,
-	reader
+	reader,
+	readerEither
 } from 'fp-ts';
 import { logger } from './logger';
 import { terminate } from './utils/terminate';
@@ -82,9 +83,20 @@ const performInitialization = (
 		readerTaskEither.chainFirstReaderK(() =>
 			reader.local<
 				PerformInitializationDependencies,
-				{ isLibraryPresent: IsLibraryPresent }
+				Pick<PerformInitializationDependencies, 'isLibraryPresent'>
 			>((d) => ({ isLibraryPresent: d.isLibraryPresent }))(
 				setupEslintPlugins
+			)
+		),
+		readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
+			readerEither.local<
+				PerformInitializationDependencies,
+				Pick<PerformInitializationDependencies, 'isLibraryPresent'>
+			>((d) => ({ isLibraryPresent: d.isLibraryPresent }))(
+				setupTypescript(cwd, packageJson.type, libOrApp, {
+					test: hasTestDirectory,
+					cypress: hasCypressDirectory
+				})
 			)
 		)
 		// readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
