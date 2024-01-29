@@ -1,13 +1,12 @@
-import {
-	IsLibraryPresent,
-	isLibraryPresent as realIsLibraryPresent
-} from '../utils/library';
+import { IsLibraryPresent } from '../utils/library';
 import { logger } from '../logger';
 import { EslintPlugins } from '../files/ControlFile';
+import { reader } from 'fp-ts';
 
-export const setupEslintPlugins = (
-	isLibraryPresent: IsLibraryPresent = realIsLibraryPresent
-): EslintPlugins => {
+export const setupEslintPlugins: reader.Reader<
+	IsLibraryPresent,
+	EslintPlugins
+> = (isLibraryPresent) => {
 	logger.info('Setting up eslint plugins');
 	return {
 		react: isLibraryPresent('react'),
