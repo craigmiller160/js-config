@@ -55,7 +55,7 @@ const performInitialization =
 				})(isLibraryPresent)
 			),
 			either.bind('eslintPlugins', () =>
-				either.right(setupEslintPlugins())
+				either.right(setupEslintPlugins(isLibraryPresent))
 			),
 			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() => setupGitHooks(cwd, process)),
