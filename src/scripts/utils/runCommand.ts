@@ -50,6 +50,8 @@ export const runCommandAsync = (
 	);
 };
 
+export type RunCommandAsync = typeof runCommandAsync;
+
 export const runCommandSync = (
 	command: string,
 	options?: Partial<SpawnOptions>
@@ -71,3 +73,5 @@ export const runCommandSync = (
 		new Error(`Command failed. Status: ${result.status} Message: ${stderr}`)
 	);
 };
+
+export type RunCommandSync = typeof runCommandSync;
