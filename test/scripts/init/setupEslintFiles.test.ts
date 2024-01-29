@@ -13,7 +13,7 @@ import {
 	either,
 	string
 } from 'fp-ts';
-import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherUtils';
+import { taskEitherUtils } from '../../../src/utils/fpTs';
 import {
 	ESLINT_CJS_CONTENT,
 	ESLINT_MJS_CONTENT,
@@ -56,7 +56,7 @@ const wipeWorkingDir = (): Promise<unknown> =>
 				taskEither.sequenceArray
 			)
 		),
-		taskEitherToPromiseCompatTask
+		taskEitherUtils.toPromiseCompatTask
 	)();
 
 type OutputFileType = 'eslint' | 'prettier';
@@ -69,7 +69,7 @@ const getOutputFiles = (type: OutputFileType): Promise<ReadonlyArray<string>> =>
 				readonlyArray.sort(string.Ord)
 			)
 		),
-		taskEitherToPromiseCompatTask
+		taskEitherUtils.toPromiseCompatTask
 	)();
 
 const writeControlFile = async (
