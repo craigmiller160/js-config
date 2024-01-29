@@ -3,10 +3,7 @@ import { either, function as func, readerEither } from 'fp-ts';
 import path from 'path';
 import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
-import {
-	isLibraryPresent as isLibraryPresentDefault,
-	IsLibraryPresent
-} from '../utils/library';
+import { IsLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
@@ -186,3 +183,5 @@ export const setupTypescript = (
 		})
 	);
 };
+
+export type SetupTypescript = typeof setupTypescript;
