@@ -13,7 +13,7 @@ import {
 	either,
 	string
 } from 'fp-ts';
-import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
+import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherUtils';
 import {
 	ESLINT_CJS_CONTENT,
 	ESLINT_MJS_CONTENT,
