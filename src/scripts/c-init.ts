@@ -27,6 +27,7 @@ import {
 	getPackageJsonPath,
 	getTestDirectoryPath
 } from '../utils/paths';
+import { readerTaskEitherUtils } from '../utils/fpTs';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -80,13 +81,9 @@ const performInitialization = (
 				{ packageJson: PackageJson },
 				PerformInitializationDependencies
 			>(te),
-		readerTaskEither.chainFirstReaderK(() =>
-			reader.local<
-				PerformInitializationDependencies,
-				Pick<PerformInitializationDependencies, 'isLibraryPresent'>
-			>((d) => ({ isLibraryPresent: d.isLibraryPresent }))(
-				setupEslintPlugins
-			)
+		readerTaskEitherUtils.narrowAndChainFirstReaderK(
+			(d) => ({ isLibraryPresent: d.isLibraryPresent }),
+			() => setupEslintPlugins
 		),
 		readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
 			readerEither.local<
