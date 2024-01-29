@@ -14,6 +14,7 @@ import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
 import { getRealArgs } from './utils/process';
 import { isLibraryPresent } from './utils/library';
+import { runCommandSync } from './utils/runCommand';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -58,7 +59,9 @@ const performInitialization =
 				either.right(setupEslintPlugins(isLibraryPresent))
 			),
 			either.chainFirst(() => setupStylelint(cwd)),
-			either.chainFirst(() => setupGitHooks(cwd, process)),
+			either.chainFirst(() =>
+				setupGitHooks(cwd)({ process, runCommandSync })
+			),
 			taskEither.fromEither,
 			taskEither.chainFirst(({ packageJson }) =>
 				setupEslintFiles(cwd, packageJson)

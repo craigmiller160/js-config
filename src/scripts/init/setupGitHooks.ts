@@ -63,8 +63,7 @@ const writePreCommitScript = (
 };
 
 export const setupGitHooks = (
-	cwd: string,
-	process: NodeJS.Process
+	cwd: string
 ): readerEither.ReaderEither<Dependencies, Error, unknown> => {
 	logger.info('Setting up git hooks');
 	const gitDir = path.join(cwd, '.git');
