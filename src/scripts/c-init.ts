@@ -1,5 +1,5 @@
 import { findCwd } from './utils/cwd';
-import { function as func, either, taskEither } from 'fp-ts';
+import { function as func, either, taskEither, readerTaskEither } from 'fp-ts';
 import { logger } from './logger';
 import { terminate } from './utils/terminate';
 import { setupTypescript } from './init/setupTypescript';
@@ -15,6 +15,7 @@ import fs from 'fs';
 import { getRealArgs } from './utils/process';
 import { isLibraryPresent } from './utils/library';
 import { runCommandSync } from './utils/runCommand';
+import {getCypressDirectoryPath, getTestDirectoryPath} from '../utils/directories';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -23,7 +24,37 @@ type PerformInitializationArgs = Readonly<{
 	libOrApp: LibOrApp;
 }>;
 
-const performInitialization =
+type PerformInitializationDependencies = Readonly<{
+	process: NodeJS.Process;
+}>;
+
+const performInitialization = (
+	cwd: string,
+	libOrApp: LibOrApp
+): readerTaskEither.ReaderTaskEither<
+	PerformInitializationDependencies,
+	Error,
+	unknown
+> => {
+	if (cwd === '') {
+		logger.debug('Blank CWD found. Aborting initialization');
+		return readerTaskEither.right(func.constVoid());
+	}
+
+	logger.debug(`INIT_CWD: ${process.env.INIT_CWD}`);
+	if (!!process.env.INIT_CWD && process.env.INIT_CWD !== cwd) {
+		logger.debug(
+			'INIT_CWD exists and does not match process cwd. Aborting initialization because this script has been called from a dependency'
+		);
+		return readerTaskEither.right(func.constVoid());
+	}
+
+	const hasTestDirectory = fs.existsSync(getTestDirectoryPath(cwd));
+	const hasCypressDirectory = fs.existsSync(getCypressDirectoryPath(cwd));
+	throw new Error();
+};
+
+const performInitialization2 =
 	(process: NodeJS.Process) =>
 	({
 		cwd,
@@ -110,7 +141,7 @@ export const execute = (process: NodeJS.Process): Promise<void> => {
 		either.bindTo('cwd'),
 		either.bind('libOrApp', () => getLibOrApp(process)),
 		taskEither.fromEither,
-		taskEither.chain(performInitialization(process)),
+		taskEither.chain(performInitialization2(process)),
 		taskEither.fold(
 			(ex) => () => {
 				terminate(ex);

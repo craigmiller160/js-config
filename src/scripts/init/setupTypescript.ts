@@ -7,6 +7,7 @@ import { IsLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
+import {getCypressDirectoryPath, getTestDirectoryPath} from '../../utils/directories';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
@@ -150,8 +151,8 @@ export const setupTypescript = (
 ): readerEither.ReaderEither<IsLibraryPresent, Error, void> => {
 	logger.info('Setting up TypeScript');
 
-	const testDirPath = path.join(cwd, 'test');
-	const cypressDirPath = path.join(cwd, 'cypress');
+	const testDirPath = getTestDirectoryPath(cwd);
+	const cypressDirPath = getCypressDirectoryPath(cwd);
 
 	return func.pipe(
 		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
