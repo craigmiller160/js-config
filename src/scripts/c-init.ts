@@ -99,6 +99,16 @@ const performInitialization = (
 				process: d.process
 			}),
 			() => setupGitHooks(cwd)
+		),
+		readerTaskEither.chain(({ packageJson, eslintPlugins }) =>
+			generateControlFile(
+				cwd,
+				packageJson,
+				eslintPlugins,
+				hasTestDirectory,
+				hasCypressDirectory,
+				process
+			)
 		)
 	);
 };
