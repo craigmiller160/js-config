@@ -85,16 +85,13 @@ const performInitialization = (
 			(d) => ({ isLibraryPresent: d.isLibraryPresent }),
 			() => setupEslintPlugins
 		),
-		readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
-			readerEither.local<
-				PerformInitializationDependencies,
-				Pick<PerformInitializationDependencies, 'isLibraryPresent'>
-			>((d) => ({ isLibraryPresent: d.isLibraryPresent }))(
+		readerTaskEitherUtils.narrowAndChainFirstReaderEitherK(
+			(d) => ({ isLibraryPresent: d.isLibraryPresent }),
+			({ packageJson }) =>
 				setupTypescript(cwd, packageJson.type, libOrApp, {
 					test: hasTestDirectory,
 					cypress: hasCypressDirectory
 				})
-			)
 		),
 		readerTaskEither.chainFirstReaderEitherK(() =>
 			readerEither.local<
