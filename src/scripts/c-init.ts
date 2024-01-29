@@ -66,7 +66,7 @@ const performInitialization = (
 	const hasTestDirectory = fs.existsSync(getTestDirectoryPath(cwd));
 	const hasCypressDirectory = fs.existsSync(getCypressDirectoryPath(cwd));
 
-	func.pipe(
+	return func.pipe(
 		parsePackageJson(getPackageJsonPath(cwd)),
 		either.bindTo('packageJson'),
 		either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
@@ -101,8 +101,6 @@ const performInitialization = (
 			() => setupGitHooks(cwd)
 		)
 	);
-
-	throw new Error();
 };
 
 const performInitialization2 =
