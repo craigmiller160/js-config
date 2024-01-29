@@ -74,7 +74,11 @@ const performInitialization = (
 			})
 		),
 		readerTaskEither.chainFirstReaderEitherK(() => setupGitHooks(cwd))
-	);
+	)({
+		process,
+		isLibraryPresent,
+		runCommandSync
+	});
 
 	throw new Error();
 };
