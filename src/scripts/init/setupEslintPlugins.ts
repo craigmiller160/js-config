@@ -3,10 +3,13 @@ import { logger } from '../logger';
 import { EslintPlugins } from '../files/ControlFile';
 import { reader } from 'fp-ts';
 
-export const setupEslintPlugins: reader.Reader<
-	IsLibraryPresent,
-	EslintPlugins
-> = (isLibraryPresent) => {
+type Dependencies = Readonly<{
+	isLibraryPresent: IsLibraryPresent;
+}>;
+
+export const setupEslintPlugins: reader.Reader<Dependencies, EslintPlugins> = ({
+	isLibraryPresent
+}) => {
 	logger.info('Setting up eslint plugins');
 	return {
 		react: isLibraryPresent('react'),

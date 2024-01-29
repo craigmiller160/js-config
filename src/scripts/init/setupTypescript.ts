@@ -7,9 +7,15 @@ import { IsLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
-import {getCypressDirectoryPath, getTestDirectoryPath} from '../../utils/paths';
+import {
+	getCypressDirectoryPath,
+	getTestDirectoryPath
+} from '../../utils/paths';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
+type Dependencies = Readonly<{
+	isLibraryPresent: IsLibraryPresent;
+}>;
 
 const createRootTsConfig =
 	(packageJsonType: PackageJsonType, libOrApp: LibOrApp): TsConfigCreator =>
@@ -35,8 +41,8 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 const createTestSupportTypes =
 	(
 		testDirPath: string
-	): readerEither.ReaderEither<IsLibraryPresent, Error, void> =>
-	(isLibraryPresent) => {
+	): readerEither.ReaderEither<Dependencies, Error, void> =>
+	({ isLibraryPresent }) => {
 		if (isLibraryPresent('@relmify/jest-fp-ts')) {
 			const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
 			return either.tryCatch(
@@ -148,7 +154,7 @@ export const setupTypescript = (
 	packageJsonType: PackageJsonType,
 	libOrApp: LibOrApp,
 	directories: ControlFile['directories']
-): readerEither.ReaderEither<IsLibraryPresent, Error, void> => {
+): readerEither.ReaderEither<Dependencies, Error, void> => {
 	logger.info('Setting up TypeScript');
 
 	const testDirPath = getTestDirectoryPath(cwd);

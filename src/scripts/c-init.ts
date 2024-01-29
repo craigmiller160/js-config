@@ -15,7 +15,11 @@ import fs from 'fs';
 import { getRealArgs } from './utils/process';
 import { isLibraryPresent } from './utils/library';
 import { runCommandSync } from './utils/runCommand';
-import {getCypressDirectoryPath, getPackageJsonPath, getTestDirectoryPath} from '../utils/paths';
+import {
+	getCypressDirectoryPath,
+	getPackageJsonPath,
+	getTestDirectoryPath
+} from '../utils/paths';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -60,14 +64,17 @@ const performInitialization = (
 		taskEither.fromEither,
 		taskEither.chainFirst(({ packageJson }) =>
 			setupEslintFiles(cwd, packageJson)
-		)
+		),
+		readerTaskEither.fromTaskEither,
+		readerTaskEither.chainFirstReaderK(() => setupEslintPlugins),
+		readerTaskEither.chainFirstReaderEitherK(({ packageJson }) =>
+			setupTypescript(cwd, packageJson.type, libOrApp, {
+				test: hasTestDirectory,
+				cypress: hasCypressDirectory
+			})
+		),
+		readerTaskEither.chainFirstReaderEitherK(() => setupGitHooks(cwd))
 	);
-
-	// reader
-	// setupEslintPlugins
-	// readerEither
-	// setupTypescript
-	// setupGitHooks
 
 	throw new Error();
 };
@@ -102,10 +109,10 @@ const performInitialization2 =
 				setupTypescript(cwd, packageJson.type, libOrApp, {
 					test: hasTestDirectory,
 					cypress: hasCypressDirectory
-				})(isLibraryPresent)
+				})({ isLibraryPresent })
 			),
 			either.bind('eslintPlugins', () =>
-				either.right(setupEslintPlugins(isLibraryPresent))
+				either.right(setupEslintPlugins({ isLibraryPresent }))
 			),
 			either.chainFirst(() => setupStylelint(cwd)),
 			either.chainFirst(() =>
