@@ -15,7 +15,7 @@ import fs from 'fs';
 import { getRealArgs } from './utils/process';
 import { isLibraryPresent } from './utils/library';
 import { runCommandSync } from './utils/runCommand';
-import {getCypressDirectoryPath, getTestDirectoryPath} from '../utils/directories';
+import {getCypressDirectoryPath, getPackageJsonPath, getTestDirectoryPath} from '../utils/paths';
 
 export type LibOrApp = 'lib' | 'app';
 
@@ -51,6 +51,13 @@ const performInitialization = (
 
 	const hasTestDirectory = fs.existsSync(getTestDirectoryPath(cwd));
 	const hasCypressDirectory = fs.existsSync(getCypressDirectoryPath(cwd));
+
+	func.pipe(
+		parsePackageJson(getPackageJsonPath(cwd)),
+		either.bindTo('packageJson'),
+		either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
+	)
+
 	throw new Error();
 };
 

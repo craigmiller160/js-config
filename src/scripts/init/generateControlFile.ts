@@ -8,12 +8,13 @@ import path from 'path';
 import { either, function as func, option } from 'fp-ts';
 import { PackageJson, parsePackageJson } from '../files/PackageJson';
 import { logger } from '../logger';
+import {getPackageJsonPath} from '../../utils/paths';
 
 const JS_CONFIG = '@craigmiller160/js-config';
 
 const checkDirectoryForJsConfig = (directory: string): boolean =>
 	func.pipe(
-		parsePackageJson(path.join(directory, 'package.json')),
+		parsePackageJson(getPackageJsonPath(directory)),
 		option.fromEither,
 		option.filter((packageJson) => JS_CONFIG === packageJson.name),
 		option.isSome

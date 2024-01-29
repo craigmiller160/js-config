@@ -4,6 +4,7 @@ import { parsePackageJson } from '../files/PackageJson';
 import { either, function as func } from 'fp-ts';
 import { match } from 'ts-pattern';
 import { logger } from '../logger';
+import {getPackageJsonPath} from '../../utils/paths';
 
 type CheckPathResult =
 	| 'js-config'
@@ -17,7 +18,7 @@ const JS_CONFIG_NAME = '@craigmiller160/js-config';
 const JS_CONFIG_PNPM_REGEX = /^.*@craigmiller160\+js-config.*$/;
 
 const performPathCheck = (theDirectoryPath: string): CheckPathResult => {
-	const packageJsonPath = path.join(theDirectoryPath, 'package.json');
+	const packageJsonPath = getPackageJsonPath(theDirectoryPath);
 
 	let result: CheckPathResult = 'invalid';
 	if (fs.existsSync(packageJsonPath)) {

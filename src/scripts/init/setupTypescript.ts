@@ -7,7 +7,7 @@ import { IsLibraryPresent } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
 import { LibOrApp } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
-import {getCypressDirectoryPath, getTestDirectoryPath} from '../../utils/directories';
+import {getCypressDirectoryPath, getTestDirectoryPath} from '../../utils/paths';
 
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
