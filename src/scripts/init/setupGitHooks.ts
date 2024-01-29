@@ -1,5 +1,5 @@
-import { either, function as func } from 'fp-ts';
-import { runCommandSync } from '../utils/runCommand';
+import { either, function as func, readerEither } from 'fp-ts';
+import { RunCommandSync } from '../utils/runCommand';
 import { logger } from '../logger';
 import { findCommand } from '../utils/command';
 import { HUSKY, LINT_STAGED } from '../commandPaths';
@@ -14,15 +14,22 @@ const createPreCommit = (commandPath: string): string =>
 ${commandPath} --config ./node_modules/@craigmiller160/js-config/configs/lintstaged/.lintstagedrc
 `.trim();
 
-const installHusky = (cwd: string, process: NodeJS.Process) =>
-	func.pipe(
-		findCommand(process, HUSKY),
-		either.chain((command) =>
-			runCommandSync(`${command} install`, {
-				cwd
-			})
-		)
-	);
+type Dependencies = Readonly<{
+	process: NodeJS.Process;
+	runCommandSync: RunCommandSync;
+}>;
+
+const installHusky =
+	(cwd: string): readerEither.ReaderEither<Dependencies, Error, unknown> =>
+	({ process, runCommandSync }) =>
+		func.pipe(
+			findCommand(process, HUSKY),
+			either.chain((command) =>
+				runCommandSync(`${command} install`, {
+					cwd
+				})
+			)
+		);
 
 const ensureRelativePrefix = (command: string): string => {
 	if (command.startsWith('./')) {
@@ -58,17 +65,19 @@ const writePreCommitScript = (
 export const setupGitHooks = (
 	cwd: string,
 	process: NodeJS.Process
-): either.Either<Error, unknown> => {
+): readerEither.ReaderEither<Dependencies, Error, unknown> => {
 	logger.info('Setting up git hooks');
 	const gitDir = path.join(cwd, '.git');
 	if (!fs.existsSync(gitDir)) {
 		logger.warn('Git is not setup in the project, skipping githook setup');
-		return either.right(func.constVoid());
+		return readerEither.right(func.constVoid());
 	}
 
 	return func.pipe(
-		installHusky(cwd, process),
-		either.chain(() => findCommand(process, LINT_STAGED)),
-		either.chain((command) => writePreCommitScript(command, cwd))
+		installHusky(cwd),
+		readerEither.chainEitherK(() => findCommand(process, LINT_STAGED)),
+		readerEither.chainEitherK((command) =>
+			writePreCommitScript(command, cwd)
+		)
 	);
 };
