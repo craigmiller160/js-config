@@ -5,10 +5,14 @@ import {
 } from '../files/ControlFile';
 import fs from 'fs';
 import path from 'path';
-import { either, function as func, option } from 'fp-ts';
+import { either, function as func, option, readerEither } from 'fp-ts';
 import { PackageJson, parsePackageJson } from '../files/PackageJson';
 import { logger } from '../logger';
-import {getPackageJsonPath} from '../../utils/paths';
+import { getPackageJsonPath } from '../../utils/paths';
+
+type Dependencies = Readonly<{
+	process: NodeJS.Process;
+}>;
 
 const JS_CONFIG = '@craigmiller160/js-config';
 
@@ -20,9 +24,11 @@ const checkDirectoryForJsConfig = (directory: string): boolean =>
 		option.isSome
 	);
 
-const findJsConfigDirectory = (
-	process: NodeJS.Process
-): either.Either<Error, string> => {
+const findJsConfigDirectory: readerEither.ReaderEither<
+	Dependencies,
+	Error,
+	string
+> = ({ process }) => {
 	if (checkDirectoryForJsConfig(process.cwd())) {
 		return either.right(process.cwd());
 	}
@@ -48,9 +54,8 @@ export const generateControlFile = (
 	packageJson: PackageJson,
 	eslintPlugins: EslintPlugins,
 	hasTestDirectory: boolean,
-	hasCypressDirectory: boolean,
-	process: NodeJS.Process
-): either.Either<Error, void> => {
+	hasCypressDirectory: boolean
+): readerEither.ReaderEither<Dependencies, Error, void> => {
 	logger.info('Generating control file');
 	const controlFile: ControlFile = {
 		workingDirectoryPath: cwd,
@@ -64,12 +69,18 @@ export const generateControlFile = (
 
 	const controlFileJson = JSON.stringify(controlFile, null, 2);
 	return func.pipe(
-		findJsConfigDirectory(process),
-		either.map(getLocalControlFile),
-		either.chain((controlFilePath) =>
-			either.tryCatch(
-				() => fs.writeFileSync(controlFilePath, controlFileJson),
-				either.toError
+		findJsConfigDirectory,
+		readerEither.chainEitherK(
+			func.flow(
+				getLocalControlFile,
+				either.right,
+				either.chain((controlFilePath) =>
+					either.tryCatch(
+						() =>
+							fs.writeFileSync(controlFilePath, controlFileJson),
+						either.toError
+					)
+				)
 			)
 		)
 	);
