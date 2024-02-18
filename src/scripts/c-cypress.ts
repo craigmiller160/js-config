@@ -14,9 +14,7 @@ export const execute = (process: NodeJS.Process): Promise<void> => {
 		taskEither.bindTo('command'),
 		taskEither.bind('config', () => compileAndGetCypressConfig(process)),
 		taskEither.chainEitherK(({ command, config }) =>
-			runCommandSync(
-				`${command} run --component -b electron -C ${config}`
-			)
+			runCommandSync(`${command} run --component -b chrome -C ${config}`)
 		),
 		taskEither.fold(
 			(ex) => () => {

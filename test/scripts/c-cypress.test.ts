@@ -33,7 +33,7 @@ describe('c-cypress', () => {
 		await execute(process);
 
 		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${COMMAND} run --component -b electron -C ${CONFIG}`
+			`${COMMAND} run --component -b chrome -C ${CONFIG}`
 		);
 	});
 });
