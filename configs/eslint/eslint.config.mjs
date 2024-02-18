@@ -50,9 +50,6 @@ const eslintConfigs = [
 			sonarjs: eslintSonar,
 			import: eslintImport
 		},
-		linterOptions: {
-			reportUnusedDisableDirectives: true
-		},
 		rules: {
 			...eslintJs.configs.recommended.rules,
 			...eslintSonar.configs.recommended.rules,
