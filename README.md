@@ -5,7 +5,22 @@ A library that automatically sets up preferred configuration for any JavaScript 
 ## Usage
 
 1. Add this project with `pnpm add -D @craigmiller160/js-config`.
-2. Add `c-init` as the `postinstall` script in the `package.json` of the consuming project.
+2. Add the following `postinstall` script to the `package.json`:
+
+```json
+{
+  "scripts": {
+    "postinstall": "c-init {arg} || echo 'No c-init'"
+  }
+}
+```
+
+### c-init Arguments
+
+| Argument | Description                                   |
+|----------|-----------------------------------------------|
+| app      | Initializes configuration for an application. |
+| lib      | Initializes configuration for a library.      |
 
 ## What This Provides
 
