@@ -11,7 +11,11 @@ import { setupTypescript } from '../../src/scripts/init/setupTypescript';
 import { findCwd } from '../../src/scripts/utils/cwd';
 import { terminate } from '../../src/scripts/utils/terminate';
 import { either, function as func, taskEither } from 'fp-ts';
-import { execute, getNodeOrBrowser, LibOrApp } from '../../src/scripts/c-init';
+import {
+	execute,
+	getNodeOrBrowser,
+	NodeOrBrowser
+} from '../../src/scripts/c-init';
 import {
 	PackageJson,
 	parsePackageJson
@@ -88,20 +92,23 @@ vi.mock('../../src/scripts/utils/terminate', () => ({
 
 type GetLibOrAppScenario = Readonly<{
 	args: ReadonlyArray<string>;
-	result: either.Either<Error, LibOrApp>;
+	result: either.Either<Error, NodeOrBrowser>;
 }>;
 
 test.each<GetLibOrAppScenario>([
-	{ args: ['lib'], result: either.right('lib') },
-	{ args: ['app'], result: either.right('app') },
-	{ args: [], result: either.left(new Error('Missing lib or app argument')) },
+	{ args: ['node'], result: either.right('node') },
+	{ args: ['browser'], result: either.right('browser') },
 	{
-		args: ['lib', 'abc'],
+		args: [],
+		result: either.left(new Error('Missing node or browser argument'))
+	},
+	{
+		args: ['node', 'abc'],
 		result: either.left(new Error('Too many arguments'))
 	},
 	{
 		args: ['abc'],
-		result: either.left(new Error('Invalid lib or app argument'))
+		result: either.left(new Error('Invalid node or browser argument'))
 	}
 ])('getLibOrApp with arguments $args', ({ args, result }) => {
 	const actualResult = getNodeOrBrowser({
