@@ -35,6 +35,7 @@ test.each<Pick<ControlFile, 'directories'>>([
 		}
 	};
 	parseControlFileMock.mockReturnValue(either.right(controlFile));
+	runCommandSyncMock.mockReturnValue(either.right(''));
 	execute(process, parseControlFileMock);
 
 	const numberOfCalls = match(directories)
