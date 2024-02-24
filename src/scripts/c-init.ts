@@ -14,18 +14,18 @@ import { setupStylelint } from './init/setupStylelint';
 import fs from 'fs';
 import { getRealArgs } from './utils/process';
 
-export type LibOrApp = 'lib' | 'app';
+export type NodeOrBrowser = 'node' | 'browser';
 
 type PerformInitializationArgs = Readonly<{
 	cwd: string;
-	libOrApp: LibOrApp;
+	nodeOrBrowser: NodeOrBrowser;
 }>;
 
 const performInitialization =
 	(process: NodeJS.Process) =>
 	({
 		cwd,
-		libOrApp
+		nodeOrBrowser
 	}: PerformInitializationArgs): taskEither.TaskEither<Error, unknown> => {
 		if (cwd === '') {
 			logger.debug('Blank CWD found. Aborting initialization');
@@ -48,7 +48,7 @@ const performInitialization =
 			either.bindTo('packageJson'),
 			either.chainFirst(({ packageJson }) => setupVite(cwd, packageJson)),
 			either.chainFirst(({ packageJson }) =>
-				setupTypescript(cwd, packageJson.type, libOrApp, {
+				setupTypescript(cwd, packageJson.type, nodeOrBrowser, {
 					test: hasTestDirectory,
 					cypress: hasCypressDirectory
 				})
@@ -75,27 +75,27 @@ const performInitialization =
 		);
 	};
 
-export const getLibOrApp = (
+export const getNodeOrBrowser = (
 	process: NodeJS.Process
-): either.Either<Error, LibOrApp> => {
+): either.Either<Error, NodeOrBrowser> => {
 	const args = getRealArgs(process);
 	if (args.length > 1) {
 		return either.left(new Error('Too many arguments'));
 	}
 
 	if (args.length === 0) {
-		return either.left(new Error('Missing lib or app argument'));
+		return either.left(new Error('Missing node or browser argument'));
 	}
 
-	if (args.includes('lib')) {
-		return either.right('lib');
+	if (args.includes('node')) {
+		return either.right('node');
 	}
 
-	if (args.includes('app')) {
-		return either.right('app');
+	if (args.includes('browser')) {
+		return either.right('browser');
 	}
 
-	return either.left(new Error('Invalid lib or app argument'));
+	return either.left(new Error('Invalid node or browser argument'));
 };
 
 export const execute = (process: NodeJS.Process): Promise<void> => {
@@ -104,7 +104,7 @@ export const execute = (process: NodeJS.Process): Promise<void> => {
 	return func.pipe(
 		findCwd(process),
 		either.bindTo('cwd'),
-		either.bind('libOrApp', () => getLibOrApp(process)),
+		either.bind('nodeOrBrowser', () => getNodeOrBrowser(process)),
 		taskEither.fromEither,
 		taskEither.chain(performInitialization(process)),
 		taskEither.fold(

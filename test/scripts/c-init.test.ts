@@ -11,7 +11,7 @@ import { setupTypescript } from '../../src/scripts/init/setupTypescript';
 import { findCwd } from '../../src/scripts/utils/cwd';
 import { terminate } from '../../src/scripts/utils/terminate';
 import { either, function as func, taskEither } from 'fp-ts';
-import { execute, getLibOrApp, LibOrApp } from '../../src/scripts/c-init';
+import { execute, getNodeOrBrowser, LibOrApp } from '../../src/scripts/c-init';
 import {
 	PackageJson,
 	parsePackageJson
@@ -104,7 +104,7 @@ test.each<GetLibOrAppScenario>([
 		result: either.left(new Error('Invalid lib or app argument'))
 	}
 ])('getLibOrApp with arguments $args', ({ args, result }) => {
-	const actualResult = getLibOrApp({
+	const actualResult = getNodeOrBrowser({
 		...process,
 		argv: ['', '', ...args]
 	});
