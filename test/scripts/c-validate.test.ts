@@ -1,53 +1,73 @@
-import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
-import path from 'path';
+import { beforeEach, expect, MockedFunction, vi, test } from 'vitest';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
 import { execute } from '../../src/scripts/c-validate';
 import { either } from 'fp-ts';
+import {
+	parseControlFile,
+	ControlFile
+} from '../../src/scripts/files/ControlFile';
+import { match, P } from 'ts-pattern';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
 	typeof runCommandSync
 >;
 
-const WORKING_DIR = path.join(
-	process.cwd(),
-	'test',
-	'__working_directories__',
-	'validate'
-);
+const parseControlFileMock: MockedFunction<typeof parseControlFile> = vi.fn();
 
-describe('c-validate', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
+beforeEach(() => {
+	vi.resetAllMocks();
+});
 
-	it('runs for project without cypress', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		const cwd = path.join(WORKING_DIR, 'base');
-		execute({
-			...process,
-			cwd: () => cwd
-		});
+test.each<Pick<ControlFile, 'directories'>>([
+	{ directories: { test: false, cypress: false } }
+])('c-validate with $directories', ({ directories }) => {
+	const controlFile: ControlFile = {
+		directories,
+		workingDirectoryPath: '',
+		projectType: 'module',
+		eslintPlugins: {
+			cypress: false,
+			vitest: false,
+			jestDom: false,
+			tanstackQuery: false,
+			testingLibraryReact: false,
+			react: false
+		}
+	};
+	parseControlFileMock.mockReturnValue(either.right(controlFile));
+	execute(process, parseControlFileMock);
 
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(4);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(1, 'c-type-check');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(2, 'c-eslint');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(3, 'c-stylelint');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(4, 'c-test');
-	});
+	const numberOfCalls = match(directories)
+		.with({ test: false, cypress: false }, () => 3)
+		.with(
+			P.union(
+				{ test: true, cypress: false },
+				{ test: false, cypress: true }
+			),
+			() => 4
+		)
+		.with({ test: true, cypress: true }, () => 5)
+		.exhaustive();
 
-	it('runs for project with cypress', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		const cwd = path.join(WORKING_DIR, 'withCypress');
-		execute({
-			...process,
-			cwd: () => cwd
-		});
+	expect(runCommandSyncMock).toHaveBeenCalledTimes(numberOfCalls);
+	expect(runCommandSyncMock).toHaveBeenNthCalledWith(1, 'c-type-check');
+	expect(runCommandSyncMock).toHaveBeenNthCalledWith(2, 'c-eslint');
+	expect(runCommandSyncMock).toHaveBeenNthCalledWith(3, 'c-stylelint');
 
-		expect(runCommandSyncMock).toHaveBeenCalledTimes(5);
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(1, 'c-type-check');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(2, 'c-eslint');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(3, 'c-stylelint');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(4, 'c-test');
-		expect(runCommandSyncMock).toHaveBeenNthCalledWith(5, 'c-cypress');
-	});
+	let callCounter = 3;
+	if (directories.test) {
+		callCounter++;
+		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
+			callCounter,
+			'c-test'
+		);
+	}
+
+	if (directories.cypress) {
+		callCounter++;
+		expect(runCommandSyncMock).toHaveBeenNthCalledWith(
+			callCounter,
+			'c-cypress'
+		);
+	}
 });

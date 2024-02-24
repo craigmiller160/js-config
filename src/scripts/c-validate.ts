@@ -2,12 +2,13 @@ import { logger } from './logger';
 import { either, function as func } from 'fp-ts';
 import { runCommandSync } from './utils/runCommand';
 import { terminate } from './utils/terminate';
-import { parseControlFile } from './files/ControlFile';
+import { parseControlFile as defaultParseControlFile } from './files/ControlFile';
 
-export const execute = (process: NodeJS.Process) => {
+export const execute = (
+	process: NodeJS.Process,
+	parseControlFile: typeof defaultParseControlFile = defaultParseControlFile
+) => {
 	logger.info('Running full validation');
-
-	parseControlFile(process);
 
 	func.pipe(
 		parseControlFile(process),
