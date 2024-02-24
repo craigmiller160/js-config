@@ -19,7 +19,10 @@ beforeEach(() => {
 });
 
 test.each<Pick<ControlFile, 'directories'>>([
-	{ directories: { test: false, cypress: false } }
+	{ directories: { test: false, cypress: false } },
+	{ directories: { test: true, cypress: false } },
+	{ directories: { test: false, cypress: true } },
+	{ directories: { test: true, cypress: true } }
 ])('c-validate with $directories', ({ directories }) => {
 	const controlFile: ControlFile = {
 		directories,
