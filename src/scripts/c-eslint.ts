@@ -7,6 +7,7 @@ import { ESLINT } from './commandPaths';
 import { logger } from './logger';
 import { ControlFile, parseControlFile } from './files/ControlFile';
 import path from 'path';
+import { match, P } from 'ts-pattern';
 
 const getTargetPaths =
 	(args: ReadonlyArray<string>) =>
@@ -19,10 +20,13 @@ const getTargetPaths =
 			'src',
 			controlFile.directories.test ? 'test' : undefined,
 			controlFile.directories.cypress ? 'cypress' : undefined
-		]
-			.filter((dir): dir is string => !!dir)
-			.join(',');
-		return `{${rootDirs}}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`;
+		].filter((dir): dir is string => !!dir);
+
+		const rootDirString = match(rootDirs)
+			.with([P.string], (_) => _[0])
+			.otherwise((_) => `{${_.join(',')}}`);
+
+		return `${rootDirString}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`;
 	};
 
 export const execute = (process: NodeJS.Process) => {

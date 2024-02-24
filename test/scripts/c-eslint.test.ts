@@ -7,7 +7,7 @@ import {
 	vi
 } from 'vitest';
 import { runCommandSync } from '../../src/scripts/utils/runCommand';
-import { either, function as func } from 'fp-ts';
+import { either } from 'fp-ts';
 import { execute } from '../../src/scripts/c-eslint';
 import path from 'path';
 import fs from 'fs/promises';
@@ -129,12 +129,22 @@ test.each<EslintPathArgs>([
 		]
 			.filter((dir): dir is string => !!dir)
 			.join(',');
-		const targetPath = match(customPath)
+
+		const commonPath = '/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}';
+
+		const targetPath = match({
+			customPath,
+			multiDirectory: directories.cypress || directories.test
+		})
 			.with(
-				P.nullish,
-				() => `{${rootDirs}}/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}`
+				{ customPath: P.nullish, multiDirectory: true },
+				() => `{${rootDirs}}${commonPath}`
 			)
-			.otherwise(func.identity);
+			.with(
+				{ customPath: P.nullish, multiDirectory: false },
+				() => `${rootDirs}${commonPath}`
+			)
+			.otherwise(({ customPath }) => customPath);
 		const configPath = path.join(WORKING_DIR, 'eslint.config.js');
 
 		execute({
