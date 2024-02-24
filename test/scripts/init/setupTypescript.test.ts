@@ -14,7 +14,7 @@ import {
 	TsConfigCompilerOptions
 } from '../../../src/scripts/files/TsConfig';
 import { PackageJsonType } from '../../../src/scripts/files/PackageJson';
-import { LibOrApp } from '../../../src/scripts/c-init';
+import { NodeOrBrowser } from '../../../src/scripts/c-init';
 import { match } from 'ts-pattern';
 import { isLibraryPresent } from '../../../src/scripts/utils/library';
 
@@ -61,7 +61,7 @@ type PriorTsConfig = 'exist' | 'not exist';
 
 type BaseTsConfigScenario = Readonly<{
 	packageJsonType: PackageJsonType;
-	projectType: LibOrApp;
+	projectType: NodeOrBrowser;
 	priorTsConfig: PriorTsConfig;
 }>;
 
@@ -92,32 +92,32 @@ const writeExistingTsConfig = (
 test.each<BaseTsConfigScenario>([
 	{
 		packageJsonType: 'module',
-		projectType: 'lib',
+		projectType: 'node',
 		priorTsConfig: 'not exist'
 	},
 	{
 		packageJsonType: 'module',
-		projectType: 'lib',
+		projectType: 'node',
 		priorTsConfig: 'exist'
 	},
 	{
 		packageJsonType: 'module',
-		projectType: 'app',
+		projectType: 'browser',
 		priorTsConfig: 'not exist'
 	},
 	{
 		packageJsonType: 'module',
-		projectType: 'app',
+		projectType: 'browser',
 		priorTsConfig: 'exist'
 	},
 	{
 		packageJsonType: 'commonjs',
-		projectType: 'lib',
+		projectType: 'node',
 		priorTsConfig: 'not exist'
 	},
 	{
 		packageJsonType: 'commonjs',
-		projectType: 'lib',
+		projectType: 'node',
 		priorTsConfig: 'exist'
 	}
 ])(
@@ -149,11 +149,11 @@ test.each<BaseTsConfigScenario>([
 			projectType
 		})
 			.with(
-				{ projectType: 'lib', packageJsonType: 'module' },
+				{ projectType: 'node', packageJsonType: 'module' },
 				() => 'tsconfig.module.node.json'
 			)
 			.with(
-				{ projectType: 'app', packageJsonType: 'module' },
+				{ projectType: 'browser', packageJsonType: 'module' },
 				() => 'tsconfig.module.browser.json'
 			)
 			.with(
@@ -218,7 +218,7 @@ test.each<AltTsconfigScenario>([
 			.with(undefined, () => undefined)
 			.exhaustive();
 
-		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'node', {
 			test: directory === 'present',
 			cypress: false
 		});
@@ -255,7 +255,7 @@ test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
 		const result = setupTypescript(
 			WORKING_DIR_PATH,
 			'module',
-			'lib',
+			'node',
 			{
 				test: true,
 				cypress: false
@@ -291,7 +291,7 @@ test.each<AltTsconfigScenario>([
 			.with(undefined, () => undefined)
 			.exhaustive();
 
-		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+		const result = setupTypescript(WORKING_DIR_PATH, 'module', 'node', {
 			test: false,
 			cypress: directory === 'present'
 		});
@@ -331,7 +331,7 @@ test.each<AltTsconfigScenario>([
 test('removes tsconfig.cypress.json when no cypress directory', () => {
 	writeExistingTsConfig(CYPRESS_CONFIG_TSCONFIG);
 	expect(fs.existsSync(CYPRESS_CONFIG_TSCONFIG)).toBe(true);
-	const result = setupTypescript(WORKING_DIR_PATH, 'module', 'lib', {
+	const result = setupTypescript(WORKING_DIR_PATH, 'module', 'node', {
 		test: false,
 		cypress: false
 	});
