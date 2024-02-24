@@ -5,18 +5,21 @@ import { parseTsConfig, TsConfig } from '../files/TsConfig';
 import { logger } from '../logger';
 import { isLibraryPresent as isLibraryPresentDefault } from '../utils/library';
 import { PackageJsonType } from '../files/PackageJson';
-import { LibOrApp } from '../c-init';
+import { NodeOrBrowser } from '../c-init';
 import { ControlFile } from '../files/ControlFile';
 
 type IsLibraryPresent = typeof isLibraryPresentDefault;
 type TsConfigCreator = (existingTsConfig?: TsConfig) => TsConfig;
 
 const createRootTsConfig =
-	(packageJsonType: PackageJsonType, libOrApp: LibOrApp): TsConfigCreator =>
+	(
+		packageJsonType: PackageJsonType,
+		nodeOrBrowser: NodeOrBrowser
+	): TsConfigCreator =>
 	(existingTsConfig?: TsConfig): TsConfig => {
 		const tsConfigFile =
 			packageJsonType === 'module'
-				? `tsconfig.module.${libOrApp}.json`
+				? `tsconfig.module.${nodeOrBrowser}.json`
 				: 'tsconfig.commonjs.json';
 		return {
 			extends: `@craigmiller160/js-config/configs/typescript/${tsConfigFile}`,
@@ -144,7 +147,7 @@ const removeCypressConfigTsconfig = (
 export const setupTypescript = (
 	cwd: string,
 	packageJsonType: PackageJsonType,
-	libOrApp: LibOrApp,
+	nodeOrBrowser: NodeOrBrowser,
 	directories: ControlFile['directories'],
 	isLibraryPresent: IsLibraryPresent = isLibraryPresentDefault
 ): either.Either<Error, void> => {
@@ -156,7 +159,7 @@ export const setupTypescript = (
 	const doCreateTestSupportTypes = createTestSupportTypes(isLibraryPresent);
 
 	return func.pipe(
-		createTsConfig(cwd, createRootTsConfig(packageJsonType, libOrApp)),
+		createTsConfig(cwd, createRootTsConfig(packageJsonType, nodeOrBrowser)),
 		either.chain(() => createViteTsconfig(cwd, packageJsonType)),
 		either.chain(() => {
 			if (directories.test) {
