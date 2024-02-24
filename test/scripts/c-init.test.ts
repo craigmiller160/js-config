@@ -127,7 +127,7 @@ describe('c-init', () => {
 		findCwdMock.mockReturnValue(either.right(''));
 		await execute({
 			...process,
-			argv: ['', '', 'lib']
+			argv: ['', '', 'node']
 		});
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
 		expect(terminate).toHaveBeenCalledWith('');
@@ -142,7 +142,7 @@ describe('c-init', () => {
 				...process.env,
 				INIT_CWD: 'abc'
 			},
-			argv: ['', '', 'lib']
+			argv: ['', '', 'node']
 		};
 		await execute(testProcess);
 		expect(setupTypescriptMock).not.toHaveBeenCalled();
@@ -183,16 +183,21 @@ describe('c-init', () => {
 				...process.env,
 				INIT_CWD: cwd
 			},
-			argv: ['', '', 'lib']
+			argv: ['', '', 'node']
 		};
 		await execute(testProcess);
 		expect(parsePackageJsonMock).toHaveBeenCalledWith(
 			path.join(cwd, 'package.json')
 		);
-		expect(setupTypescriptMock).toHaveBeenCalledWith(cwd, 'module', 'lib', {
-			cypress: false,
-			test: false
-		});
+		expect(setupTypescriptMock).toHaveBeenCalledWith(
+			cwd,
+			'module',
+			'node',
+			{
+				cypress: false,
+				test: false
+			}
+		);
 		expect(setupViteMock).toHaveBeenCalledWith(cwd, packageJson);
 		expect(setupEslintPluginsMock).toHaveBeenCalled();
 		expect(setupGitHooksMock).toHaveBeenCalledWith(cwd, testProcess);
