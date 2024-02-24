@@ -150,11 +150,11 @@ test.each<BaseTsConfigScenario>([
 		})
 			.with(
 				{ projectType: 'lib', packageJsonType: 'module' },
-				() => 'tsconfig.module.lib.json'
+				() => 'tsconfig.module.node.json'
 			)
 			.with(
 				{ projectType: 'app', packageJsonType: 'module' },
-				() => 'tsconfig.module.app.json'
+				() => 'tsconfig.module.browser.json'
 			)
 			.with(
 				{ packageJsonType: 'commonjs' },
