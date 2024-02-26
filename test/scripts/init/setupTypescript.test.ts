@@ -240,17 +240,31 @@ test.each<AltTsconfigScenario>([
 	}
 );
 
-type SupportTypesScenario = 'jest-fp-ts' | 'none';
+type SupportTypesScenario = Readonly<{
+	jestFpTs: boolean;
+	jestDom: boolean;
+}>;
 
-test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
-	'creates support types for %s',
-	(scenario) => {
+test.each<SupportTypesScenario>([
+	{ jestDom: false, jestFpTs: false },
+	{ jestDom: true, jestFpTs: false },
+	{ jestDom: true, jestFpTs: false },
+	{ jestDom: true, jestFpTs: true }
+])(
+	'creates support types, with jest-dom $jestDom and jest-fp-ts $jestFpTs',
+	({ jestDom, jestFpTs }) => {
 		createDirectoriesForFile(TEST_SUPPORT_TYPES_PATH);
 		const isLibraryPresentMock: MockedFunction<typeof isLibraryPresent> =
 			vi.fn();
 		isLibraryPresentMock.mockImplementation(
-			(lib) => lib === '@relmify/jest-fp-ts' && scenario === 'jest-fp-ts'
+			(lib) =>
+				(lib === '@relmify/jest-fp-ts' && jestFpTs) ||
+				(lib === '@testing-library/jest-dom' && jestDom)
 		);
+
+		if (!jestFpTs && !jestDom) {
+			fs.writeFileSync(TEST_SUPPORT_TYPES_PATH, '');
+		}
 
 		const result = setupTypescript(
 			WORKING_DIR_PATH,
@@ -264,15 +278,19 @@ test.each<SupportTypesScenario>(['jest-fp-ts', 'none'])(
 		);
 		expect(result).toBeRight();
 
-		if (scenario === 'none') {
+		if (!jestFpTs && !jestDom) {
 			expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(false);
 			return;
 		}
 
 		expect(fs.existsSync(TEST_SUPPORT_TYPES_PATH)).toBe(true);
-		expect(fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8')).toBe(
-			`import '@relmify/jest-fp-ts';\n`
-		);
+		const content = fs.readFileSync(TEST_SUPPORT_TYPES_PATH, 'utf8');
+		if (jestFpTs) {
+			expect(content).toMatch(/import '@relmify\/jest-fp-ts';/);
+		}
+		if (jestDom) {
+			expect(content).toMatch(/import '@testing-library\/jest-dom';/);
+		}
 	}
 );
 
