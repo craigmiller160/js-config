@@ -248,7 +248,7 @@ type SupportTypesScenario = Readonly<{
 test.each<SupportTypesScenario>([
 	{ jestDom: false, jestFpTs: false },
 	{ jestDom: true, jestFpTs: false },
-	{ jestDom: true, jestFpTs: false },
+	{ jestDom: false, jestFpTs: true },
 	{ jestDom: true, jestFpTs: true }
 ])(
 	'creates support types, with jest-dom $jestDom and jest-fp-ts $jestFpTs',
