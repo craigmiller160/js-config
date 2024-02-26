@@ -38,18 +38,24 @@ const createTestTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
 const createTestSupportTypes =
 	(isLibraryPresent: IsLibraryPresent) =>
 	(testDirPath: string): either.Either<Error, unknown> => {
-		if (isLibraryPresent('@relmify/jest-fp-ts')) {
-			const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
-			return either.tryCatch(
-				() =>
-					fs.writeFileSync(
-						supportFilePath,
-						`import '@relmify/jest-fp-ts';\n`
-					),
-				either.toError
-			);
-		}
-		return either.right(func.constVoid());
+		const supportFilePath = path.join(testDirPath, 'test-support.d.ts');
+		const jestFpTsImport = isLibraryPresent('@relmify/jest-fp-ts')
+			? "import '@relmify/jest-fp-ts';"
+			: undefined;
+		const jestDomImport = isLibraryPresent('@testing-library/jest-dom')
+			? "import '@testing-library/jest-dom';"
+			: undefined;
+		const fileContent = [jestFpTsImport, jestDomImport]
+			.filter((item): item is string => !!item)
+			.join('\n');
+
+		return either.tryCatch(() => {
+			if (fileContent.trim().length > 0) {
+				fs.writeFileSync(supportFilePath, fileContent);
+			} else if (fs.existsSync(supportFilePath)) {
+				fs.rmSync(supportFilePath);
+			}
+		}, either.toError);
 	};
 
 const createCypressTsConfig = (existingTsConfig?: TsConfig): TsConfig => ({
