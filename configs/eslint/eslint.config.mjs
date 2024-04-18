@@ -26,15 +26,6 @@ const controlFilePath = path.join(
 );
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
 
-const disableImportPluginRulesForFastLint = fastEslint
-	? {
-			'import/no-named-as-default': 0,
-			'import/no-cycle': 0,
-			'import/no-unused-modules': 0,
-			'import/no-deprecated': 0
-	  }
-	: {};
-
 const eslintConfigs = [
 	{
 		files: ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'],
@@ -48,13 +39,12 @@ const eslintConfigs = [
 		plugins: {
 			prettier: eslintPrettier,
 			sonarjs: eslintSonar,
-			import: eslintImport
+			import: fastEslint ? {} : eslintImport
 		},
 		rules: {
 			...eslintJs.configs.recommended.rules,
 			...eslintSonar.configs.recommended.rules,
-			...eslintImport.configs.recommended.rules,
-			...disableImportPluginRulesForFastLint,
+			...(fastEslint ? {} : eslintImport.configs.recommended.rules),
 			'no-console': [
 				'error',
 				{
