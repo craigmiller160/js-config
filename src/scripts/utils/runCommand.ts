@@ -71,3 +71,5 @@ export const runCommandSync = (
 		new Error(`Command failed. Status: ${result.status} Message: ${stderr}`)
 	);
 };
+
+export type RunCommandSync = typeof runCommandSync;

@@ -1,11 +1,13 @@
-import { runCommandSync as defaultRunCommandSync } from './utils/runCommand';
+import {
+	RunCommandSync,
+	runCommandSync as defaultRunCommandSync
+} from './utils/runCommand';
 import { logger } from './logger';
 import { function as func, either } from 'fp-ts';
 import { findCommand } from './utils/command';
 import { TYPED_CSS_MODULES, TYPED_SCSS_MODULES } from './commandPaths';
 import { terminate } from './utils/terminate';
 
-type RunCommandSync = typeof defaultRunCommandSync;
 export type Dependencies = Readonly<{
 	process: NodeJS.Process;
 	runCommandSync: RunCommandSync;
