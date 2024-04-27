@@ -15,7 +15,7 @@ export type Dependencies = Readonly<{
 }>;
 
 const createPathPattern = (ext: string): string =>
-	path.join(process.cwd(), 'src', '**', `*.module.${ext}`);
+	path.join('src', '**', `*.module.${ext}`);
 
 export const execute = (
 	dependencies: Dependencies = {

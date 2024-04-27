@@ -31,10 +31,10 @@ test('generates types for css & scss files', () => {
 	expect(mockRunCommandSync).toHaveBeenCalledTimes(2);
 	expect(mockRunCommandSync).toHaveBeenNthCalledWith(
 		1,
-		`${cssCmd} -p 'src/**/*.module.css'`
+		`${cssCmd} -p src/**/*.module.css`
 	);
 	expect(mockRunCommandSync).toHaveBeenNthCalledWith(
 		2,
-		`${scssCmd} 'src/**/*.module.scss'`
+		`${scssCmd} src/**/*.module.scss`
 	);
 });
