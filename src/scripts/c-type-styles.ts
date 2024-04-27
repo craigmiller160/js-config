@@ -32,7 +32,9 @@ export const execute = (
 	const runTypeScssModules = () =>
 		func.pipe(
 			findCommand(process, TYPED_SCSS_MODULES),
-			either.chain((cmd) => runCommandSync(`${cmd} 'src/**/*.scss'`))
+			either.chain((cmd) =>
+				runCommandSync(`${cmd} 'src/**/*.module.scss'`)
+			)
 		);
 
 	func.pipe(
