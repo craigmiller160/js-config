@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import {
 	ControlFile,
-	getLocalControlFile
+	getControlFilePath
 } from '../../../src/scripts/files/ControlFile';
 import { generateControlFile } from '../../../src/scripts/init/generateControlFile';
 import { PackageJson } from '../../../src/scripts/files/PackageJson';
@@ -20,8 +20,7 @@ const JS_CONFIG_WORKING_DIR = path.join(
 	'@craigmiller160',
 	'js-config'
 );
-const ROOT_CONTROL_FILE = getLocalControlFile(WORKING_DIR);
-const JS_CONFIG_CONTROL_FILE = getLocalControlFile(JS_CONFIG_WORKING_DIR);
+const ROOT_CONTROL_FILE = getControlFilePath(WORKING_DIR);
 const ROOT_PACKAGE_JSON = path.join(WORKING_DIR, 'package.json');
 const JS_CONFIG_PACKAGE_JSON = path.join(JS_CONFIG_WORKING_DIR, 'package.json');
 
@@ -34,16 +33,13 @@ const packageJson: PackageJson = {
 };
 
 const cleanup = () => {
-	[
-		JS_CONFIG_CONTROL_FILE,
-		ROOT_CONTROL_FILE,
-		ROOT_PACKAGE_JSON,
-		JS_CONFIG_PACKAGE_JSON
-	].forEach((file) => {
-		if (fs.existsSync(file)) {
-			fs.rmSync(file);
+	[ROOT_CONTROL_FILE, ROOT_PACKAGE_JSON, JS_CONFIG_PACKAGE_JSON].forEach(
+		(file) => {
+			if (fs.existsSync(file)) {
+				fs.rmSync(file);
+			}
 		}
-	});
+	);
 };
 
 const writePackageJson = (filePath: string) =>
@@ -56,58 +52,6 @@ describe('generateControlFile', () => {
 
 	afterEach(() => {
 		cleanup();
-	});
-
-	it('generates control file with data for node_modules path', () => {
-		writePackageJson(JS_CONFIG_PACKAGE_JSON);
-		const cwd = '/hello/world';
-		const appPackageJson: PackageJson = {
-			name: '',
-			version: '',
-			type: 'module',
-			dependencies: {},
-			devDependencies: {}
-		};
-		const result = generateControlFile(
-			cwd,
-			appPackageJson,
-			{
-				react: true,
-				cypress: false,
-				vitest: true,
-				jestDom: false,
-				tanstackQuery: true,
-				testingLibraryReact: false
-			},
-			false,
-			false,
-			{
-				...process,
-				cwd: () => WORKING_DIR
-			}
-		);
-		expect(result).toBeRight();
-
-		expect(fs.existsSync(JS_CONFIG_CONTROL_FILE)).toBe(true);
-		const controlFile = JSON.parse(
-			fs.readFileSync(JS_CONFIG_CONTROL_FILE, 'utf8')
-		) as ControlFile;
-		expect(controlFile).toEqual<ControlFile>({
-			workingDirectoryPath: cwd,
-			projectType: 'module',
-			eslintPlugins: {
-				react: true,
-				cypress: false,
-				vitest: true,
-				jestDom: false,
-				tanstackQuery: true,
-				testingLibraryReact: false
-			},
-			directories: {
-				test: false,
-				cypress: false
-			}
-		});
 	});
 
 	it('generates control file with data for root path', () => {
