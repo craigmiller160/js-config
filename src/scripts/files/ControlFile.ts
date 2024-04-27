@@ -4,7 +4,6 @@ import fs from 'fs';
 import { decode } from '../utils/decode';
 import path from 'path';
 import { packageJsonTypeCodec } from './PackageJson';
-import { match } from 'ts-pattern';
 
 const directoryCodec = t.readonly(
 	t.type({
@@ -36,36 +35,18 @@ export const controlFileCodec = t.readonly(
 export type EslintPlugins = t.TypeOf<typeof eslintPluginsCodec>;
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
-export const getLocalControlFile = (cwd: string): string =>
-	path.join(cwd, 'control-file.json');
-
 export const getControlFilePath = (cwd: string): string =>
-	path.join(
-		cwd,
-		'node_modules',
-		'@craigmiller160',
-		'js-config',
-		'control-file.json'
-	);
+	path.join(cwd, '.js-config.json');
 
 const findControlFile = (
 	process: NodeJS.Process
-): either.Either<Error, string> =>
-	match({
-		local: getLocalControlFile(process.cwd()),
-		main: getControlFilePath(process.cwd())
-	})
-		.when(
-			({ local }) => fs.existsSync(local),
-			({ local }) => either.right(local)
-		)
-		.when(
-			({ main }) => fs.existsSync(main),
-			({ main }) => either.right(main)
-		)
-		.otherwise(() =>
-			either.left(new Error('Cannot find valid control file'))
-		);
+): either.Either<Error, string> => {
+	const controlFilePath = getControlFilePath(process.cwd());
+	if (fs.existsSync(controlFilePath)) {
+		return either.right(controlFilePath);
+	}
+	return either.left(new Error('Cannot find valid control file'));
+};
 
 export const parseControlFile = (
 	process: NodeJS.Process
