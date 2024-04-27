@@ -14,10 +14,8 @@ export type Dependencies = Readonly<{
 	runCommandSync: RunCommandSync;
 }>;
 
-const createPathPattern = (cmd: string, ext: string): string => {
-	const relativeRoot = path.relative(cmd, process.cwd());
-	return path.join(relativeRoot, 'src', '**', `*.module.${ext}`);
-};
+const createPathPattern = (ext: string): string =>
+	path.join(process.cwd(), 'src', '**', `*.module.${ext}`);
 
 export const execute = (
 	dependencies: Dependencies = {
@@ -32,22 +30,22 @@ export const execute = (
 		func.pipe(
 			findCommand(process, TYPED_CSS_MODULES),
 			either.bindTo('cmd'),
-			either.bind('pathPattern', ({ cmd }) =>
-				either.right(createPathPattern(cmd, 'css'))
+			either.bind('pathPattern', () =>
+				either.right(createPathPattern('css'))
 			),
 			either.chain(({ cmd, pathPattern }) =>
-				runCommandSync(`${cmd} -p '${pathPattern}'`)
+				runCommandSync(`${cmd} -p ${pathPattern}`)
 			)
 		);
 	const runTypeScssModules = () =>
 		func.pipe(
 			findCommand(process, TYPED_SCSS_MODULES),
 			either.bindTo('cmd'),
-			either.bind('pathPattern', ({ cmd }) =>
-				either.right(createPathPattern(cmd, 'scss'))
+			either.bind('pathPattern', () =>
+				either.right(createPathPattern('scss'))
 			),
 			either.chain(({ cmd, pathPattern }) =>
-				runCommandSync(`${cmd} '${pathPattern}'`)
+				runCommandSync(`${cmd} ${pathPattern}`)
 			)
 		);
 
