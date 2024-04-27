@@ -21,7 +21,7 @@ const createRunTypeCheck =
 export const execute = (
 	dependencies: Dependencies = {
 		process,
-			runCommandSync: defaultRunCommandSync
+		runCommandSync: defaultRunCommandSync
 	}
 ) => {
 	const { process, runCommandSync } = dependencies;
