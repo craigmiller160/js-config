@@ -59,7 +59,8 @@
     "fp-ts": "^2.16.1",
     "io-ts": "^2.2.20",
     "ts-pattern": "^5.0.5",
-    "vitest": "^1.5.2"
+    "vitest": "^1.5.2",
+    "vite": "^5.2.10"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
