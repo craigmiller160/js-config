@@ -17,10 +17,10 @@ A library that automatically sets up preferred configuration for any JavaScript 
 
 ### c-init Arguments
 
-| Argument | Description                                   |
-|----------|-----------------------------------------------|
-| app      | Initializes configuration for an application. |
-| lib      | Initializes configuration for a library.      |
+| Argument | Description                                                          |
+|----------|----------------------------------------------------------------------|
+| browser  | Initializes configuration for code running in the browser.           |
+| node     | Initializes configuration for code running on node or an NPM ibrary. |
 
 ## What This Provides
 
@@ -33,6 +33,7 @@ A library that automatically sets up preferred configuration for any JavaScript 
 - SWC
 - NPM Scripts
   - With Cypress Scripts, Not Cypress
+- Auto-Typing for CSS/SCSS Modules
 
 ## Test Support
 
@@ -62,3 +63,4 @@ Before each commit, eslint & stylelint will be run on the appropriate files.
 | c-test        | None                               | Run the vitest suite                                               |
 | c-type-check  | None                               | Perform TypeScript type checking on the codebase.                  |
 | c-validate    | None                               | Run all validation scripts for the project.                        |
+| c-type-styles | None                               | Generate types for CSS & SCSS Modules                              |
