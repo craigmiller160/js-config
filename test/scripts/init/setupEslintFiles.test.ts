@@ -92,7 +92,7 @@ const writeControlFile = async (
 		workingDirectoryPath: WORKING_DIR
 	};
 	await fs.writeFile(
-		path.join(JS_CONFIG_DIR, 'control-file.json'),
+		path.join(JS_CONFIG_DIR, '.js-config.json'),
 		JSON.stringify(controlFile, null, 2)
 	);
 };

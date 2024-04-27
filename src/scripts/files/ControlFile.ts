@@ -36,7 +36,7 @@ export type EslintPlugins = t.TypeOf<typeof eslintPluginsCodec>;
 export type ControlFile = t.TypeOf<typeof controlFileCodec>;
 
 export const getControlFilePath = (cwd: string): string =>
-	path.join(cwd, 'control-file.json');
+	path.join(cwd, '.js-config.json');
 
 const findControlFile = (
 	process: NodeJS.Process

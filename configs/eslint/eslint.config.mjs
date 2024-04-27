@@ -18,12 +18,7 @@ import eslintImport from 'eslint-plugin-import';
 
 const fastEslint = process.env.ESLINT_FAST === 'true';
 
-const controlFilePath = path.join(
-	import.meta.dirname,
-	'..',
-	'..',
-	'control-file.json'
-);
+const controlFilePath = path.join(process.cwd(), '.js-config.json');
 const controlFile = JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
 
 const eslintConfigs = [

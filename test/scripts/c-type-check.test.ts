@@ -15,7 +15,7 @@ const WORKING_DIR = path.join(
 	'__working_directories__',
 	'typeCheck'
 );
-const CONTROL_FILE = path.join(WORKING_DIR, 'control-file.json');
+const CONTROL_FILE = path.join(WORKING_DIR, '.js-config.json');
 const TSC = path.join(
 	process.cwd(),
 	'node_modules',
