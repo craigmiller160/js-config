@@ -14,6 +14,11 @@ export type Dependencies = Readonly<{
 	runCommandSync: RunCommandSync;
 }>;
 
+const createPathPattern = (cmd: string, ext: string): string => {
+	const relativeRoot = path.relative(cmd, process.cwd());
+	return path.join(relativeRoot, 'src', '**', `*.module.${ext}`);
+};
+
 export const execute = (
 	dependencies: Dependencies = {
 		process,
@@ -23,21 +28,27 @@ export const execute = (
 	const { process, runCommandSync } = dependencies;
 	logger.info('Generating types for CSS/SCSS modules');
 
-	const basePathPattern = path.join(process.cwd(), 'src', '**');
-	const cssPathPattern = path.join(basePathPattern, '*.module.css');
-	const scssPathPattern = path.join(basePathPattern, '*.module.scss');
-
 	const runTypeCssModules = () =>
 		func.pipe(
 			findCommand(process, TYPED_CSS_MODULES),
-			either.chain((cmd) =>
-				runCommandSync(`${cmd} -p '${cssPathPattern}'`)
+			either.bindTo('cmd'),
+			either.bind('pathPattern', ({ cmd }) =>
+				either.right(createPathPattern(cmd, 'css'))
+			),
+			either.chain(({ cmd, pathPattern }) =>
+				runCommandSync(`${cmd} -p '${pathPattern}'`)
 			)
 		);
 	const runTypeScssModules = () =>
 		func.pipe(
 			findCommand(process, TYPED_SCSS_MODULES),
-			either.chain((cmd) => runCommandSync(`${cmd} '${scssPathPattern}'`))
+			either.bindTo('cmd'),
+			either.bind('pathPattern', ({ cmd }) =>
+				either.right(createPathPattern(cmd, 'scss'))
+			),
+			either.chain(({ cmd, pathPattern }) =>
+				runCommandSync(`${cmd} '${pathPattern}'`)
+			)
 		);
 
 	func.pipe(
