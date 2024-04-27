@@ -20,7 +20,8 @@
     "c-cypress": "./lib/cjs/bin/c-cypress.js",
     "c-cypress-dev": "./lib/cjs/bin/c-cypress-dev.js",
     "c-validate": "./lib/cjs/bin/c-validate.js",
-    "c-control-file": "./lib/cjs/bin/c-control-file.js"
+    "c-control-file": "./lib/cjs/bin/c-control-file.js",
+    "c-type-styles": "./lib/cjs/bin/c-type-styles.js"
   },
   "exports": {
     "./*": {
