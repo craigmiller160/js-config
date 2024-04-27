@@ -20,7 +20,8 @@
     "c-cypress": "./lib/cjs/bin/c-cypress.js",
     "c-cypress-dev": "./lib/cjs/bin/c-cypress-dev.js",
     "c-validate": "./lib/cjs/bin/c-validate.js",
-    "c-control-file": "./lib/cjs/bin/c-control-file.js"
+    "c-control-file": "./lib/cjs/bin/c-control-file.js",
+    "c-type-styles": "./lib/cjs/bin/c-type-styles.js"
   },
   "exports": {
     "./*": {
@@ -59,8 +60,8 @@
     "fp-ts": "^2.16.1",
     "io-ts": "^2.2.20",
     "ts-pattern": "^5.0.5",
-    "vitest": "^1.5.2",
-    "vite": "^5.2.10"
+    "vite": "^5.2.10",
+    "vitest": "^1.5.2"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^2.1.1",
@@ -103,6 +104,8 @@
     "stylelint-config-css-modules": "^4.4.0",
     "stylelint-config-standard-scss": "^13.1.0",
     "ts-pattern": "^5.0.5",
+    "typed-css-modules": "^0.9.1",
+    "typed-scss-modules": "^8.0.1",
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "vitest": "^1.5.2",

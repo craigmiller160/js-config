@@ -7,3 +7,5 @@ export const LINT_STAGED = 'lint-staged/bin/lint-staged.js';
 export const STYLELINT = 'stylelint/bin/stylelint.mjs';
 export const VITE = 'vite/bin/vite.js';
 export const CYPRESS = 'cypress/bin/cypress';
+export const TYPED_CSS_MODULES = 'typed-css-modules/lib/cli.js';
+export const TYPED_SCSS_MODULES = 'typed-scss-modules/dist/lib/cli.js';
