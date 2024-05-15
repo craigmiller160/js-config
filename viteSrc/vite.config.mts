@@ -6,8 +6,9 @@ import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
 import type { ServerOptions } from 'https';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const getProjectRoot = (): string => {
     if (__dirname.endsWith('viteSrc')) {
