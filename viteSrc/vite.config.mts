@@ -6,7 +6,6 @@ import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
 import type { ServerOptions } from 'https';
 import fs from 'fs';
-import { getProjectRoot } from '../root.js';
 
 const hasLibrary = (name: string): Promise<boolean> =>
     func.pipe(
