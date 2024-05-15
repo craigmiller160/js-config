@@ -6,7 +6,6 @@ import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
 import type { ServerOptions } from 'https';
 import fs from 'fs';
-import { getProjectRoot } from '../root.js';
 
 const hasLibrary = (name: string): Promise<boolean> =>
     func.pipe(
@@ -30,30 +29,29 @@ const https: ServerOptions = {
     key
 };
 
-const getJestFpTsPath = () => {
-    const root = getProjectRoot();
-    return path.join(root, 'configs', 'test-support', 'jest-fp-ts.mts');
-};
+const getJestFpTsPath = () =>
+    path.join(
+        path.dirname(import.meta.url),
+        '..',
+        'test-support',
+        'jest-fp-ts.mts'
+    );
 
-const getTestingLibraryJestDomPath = () => {
-    const root = getProjectRoot();
-    return path.join(
-        root,
-        'configs',
+const getTestingLibraryJestDomPath = () =>
+    path.join(
+        path.dirname(import.meta.url),
+        '..',
         'test-support',
         'testing-library-jest-dom.mts'
     );
-};
 
-const getTestingLibraryReactPath = () => {
-    const root = getProjectRoot();
-    return path.join(
-        root,
-        'configs',
+const getTestingLibraryReactPath = () =>
+    path.join(
+        path.dirname(import.meta.url),
+        '..',
         'test-support',
         'testing-library-react.mts'
     );
-};
 
 const noop = path.join(__dirname, 'noop.js');
 
