@@ -7,24 +7,24 @@ import { terminate } from './utils/terminate';
 import { compileAndGetCypressConfig } from './cypress';
 
 export const execute = (process: NodeJS.Process): Promise<void> => {
-	logger.info('Running cypress dev server');
-	return func.pipe(
-		findCommand(process, CYPRESS),
-		taskEither.fromEither,
-		taskEither.bindTo('command'),
-		taskEither.bind('config', () => compileAndGetCypressConfig(process)),
-		taskEither.chainEitherK(({ command, config }) =>
-			runCommandSync(`${command} open -C ${config}`)
-		),
-		taskEither.fold(
-			(ex) => () => {
-				terminate(ex);
-				return Promise.resolve();
-			},
-			() => () => {
-				terminate('');
-				return Promise.resolve();
-			}
-		)
-	)();
+    logger.info('Running cypress dev server');
+    return func.pipe(
+        findCommand(process, CYPRESS),
+        taskEither.fromEither,
+        taskEither.bindTo('command'),
+        taskEither.bind('config', () => compileAndGetCypressConfig(process)),
+        taskEither.chainEitherK(({ command, config }) =>
+            runCommandSync(`${command} open -C ${config}`)
+        ),
+        taskEither.fold(
+            (ex) => () => {
+                terminate(ex);
+                return Promise.resolve();
+            },
+            () => () => {
+                terminate('');
+                return Promise.resolve();
+            }
+        )
+    )();
 };

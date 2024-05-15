@@ -7,24 +7,24 @@ import { terminate } from './utils/terminate';
 import { compileAndGetCypressConfig } from './cypress';
 
 export const execute = (process: NodeJS.Process): Promise<void> => {
-	logger.info('Running all cypress tests');
-	return func.pipe(
-		findCommand(process, CYPRESS),
-		taskEither.fromEither,
-		taskEither.bindTo('command'),
-		taskEither.bind('config', () => compileAndGetCypressConfig(process)),
-		taskEither.chainEitherK(({ command, config }) =>
-			runCommandSync(`${command} run --component -b chrome -C ${config}`)
-		),
-		taskEither.fold(
-			(ex) => () => {
-				terminate(ex);
-				return Promise.resolve();
-			},
-			() => () => {
-				terminate('');
-				return Promise.resolve();
-			}
-		)
-	)();
+    logger.info('Running all cypress tests');
+    return func.pipe(
+        findCommand(process, CYPRESS),
+        taskEither.fromEither,
+        taskEither.bindTo('command'),
+        taskEither.bind('config', () => compileAndGetCypressConfig(process)),
+        taskEither.chainEitherK(({ command, config }) =>
+            runCommandSync(`${command} run --component -b chrome -C ${config}`)
+        ),
+        taskEither.fold(
+            (ex) => () => {
+                terminate(ex);
+                return Promise.resolve();
+            },
+            () => () => {
+                terminate('');
+                return Promise.resolve();
+            }
+        )
+    )();
 };

@@ -6,18 +6,18 @@ import path from 'path';
 import { VITE } from '../../src/scripts/commandPaths';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
-	typeof runCommandSync
+    typeof runCommandSync
 >;
 const COMMAND = path.join(process.cwd(), 'node_modules', VITE);
 
 describe('c-build-app', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
-	it('runs vite build', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		execute(process);
+    beforeEach(() => {
+        vi.resetAllMocks();
+    });
+    it('runs vite build', () => {
+        runCommandSyncMock.mockReturnValue(either.right(''));
+        execute(process);
 
-		expect(runCommandSyncMock).toHaveBeenCalledWith(`${COMMAND} build`);
-	});
+        expect(runCommandSyncMock).toHaveBeenCalledWith(`${COMMAND} build`);
+    });
 });

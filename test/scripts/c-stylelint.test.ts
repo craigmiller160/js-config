@@ -6,34 +6,34 @@ import path from 'path';
 import { STYLELINT } from '../../src/scripts/commandPaths';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
-	typeof runCommandSync
+    typeof runCommandSync
 >;
 
 const STYLELINT_PATH = path.join(process.cwd(), 'node_modules', STYLELINT);
 
 describe('c-stylelint', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
+    beforeEach(() => {
+        vi.resetAllMocks();
+    });
 
-	it('runs command for all files', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		execute(process);
+    it('runs command for all files', () => {
+        runCommandSyncMock.mockReturnValue(either.right(''));
+        execute(process);
 
-		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/**/*.{css,scss}`
-		);
-	});
+        expect(runCommandSyncMock).toHaveBeenCalledWith(
+            `${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/**/*.{css,scss}`
+        );
+    });
 
-	it('runs command for single file', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		execute({
-			...process,
-			argv: ['', '', 'src/foo.scss']
-		});
+    it('runs command for single file', () => {
+        runCommandSyncMock.mockReturnValue(either.right(''));
+        execute({
+            ...process,
+            argv: ['', '', 'src/foo.scss']
+        });
 
-		expect(runCommandSyncMock).toHaveBeenCalledWith(
-			`${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/foo.scss`
-		);
-	});
+        expect(runCommandSyncMock).toHaveBeenCalledWith(
+            `${STYLELINT_PATH} --fix --max-warnings=0 --allow-empty-input src/foo.scss`
+        );
+    });
 });

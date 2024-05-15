@@ -6,19 +6,19 @@ import path from 'path';
 import { VITEST } from '../../src/scripts/commandPaths';
 
 const runCommandSyncMock = runCommandSync as MockedFunction<
-	typeof runCommandSync
+    typeof runCommandSync
 >;
 
 const VITEST_PATH = path.join(process.cwd(), 'node_modules', VITEST);
 
 describe('c-test', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
+    beforeEach(() => {
+        vi.resetAllMocks();
+    });
 
-	it('runs command for tests', () => {
-		runCommandSyncMock.mockReturnValue(either.right(''));
-		execute(process);
-		expect(runCommandSyncMock).toHaveBeenCalledWith(`${VITEST_PATH} run`);
-	});
+    it('runs command for tests', () => {
+        runCommandSyncMock.mockReturnValue(either.right(''));
+        execute(process);
+        expect(runCommandSyncMock).toHaveBeenCalledWith(`${VITEST_PATH} run`);
+    });
 });

@@ -6,10 +6,10 @@ import { VITE } from './commandPaths';
 import { logger } from './logger';
 
 export const execute = (process: NodeJS.Process) => {
-	logger.info('Running application build');
-	func.pipe(
-		findCommand(process, VITE),
-		either.chain((command) => runCommandSync(`${command} build`)),
-		either.fold(terminate, terminate)
-	);
+    logger.info('Running application build');
+    func.pipe(
+        findCommand(process, VITE),
+        either.chain((command) => runCommandSync(`${command} build`)),
+        either.fold(terminate, terminate)
+    );
 };
