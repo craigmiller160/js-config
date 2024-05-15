@@ -28,6 +28,9 @@
       "commonjs": "./lib/cjs/*",
       "types": "./lib/types/*"
     },
+    "./vite.config": {
+      "default": "./lib/esm/vite.config."
+    },
     "./configs/*": {
       "default": "./configs/*"
     }

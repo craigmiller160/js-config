@@ -7,6 +7,20 @@ import react from '@vitejs/plugin-react-swc';
 import type { ServerOptions } from 'https';
 import fs from 'fs';
 
+const __dirname = path.dirname(import.meta.url);
+
+const getProjectRoot = (): string => {
+    if (__dirname.endsWith('viteSrc')) {
+        return path.join(__dirname, '..');
+    }
+
+    if (__dirname.endsWith(path.join('lib', 'esm'))) {
+        return path.join(__dirname, '..', '..');
+    }
+
+    throw new Error(`Unable to find project root from directory: ${__dirname}`);
+};
+
 const hasLibrary = (name: string): Promise<boolean> =>
     func.pipe(
         taskEither.tryCatch(() => import(name), func.identity),
