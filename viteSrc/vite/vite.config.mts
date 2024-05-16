@@ -6,7 +6,21 @@ import { task, taskEither, function as func } from 'fp-ts';
 import react from '@vitejs/plugin-react-swc';
 import type { ServerOptions } from 'https';
 import fs from 'fs';
-import { getProjectRoot } from '../root.js';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const getProjectRoot = (): string => {
+    if (__dirname.endsWith('viteSrc')) {
+        return path.join(__dirname, '..');
+    }
+
+    if (__dirname.endsWith(path.join('lib', 'cjs', 'vite'))) {
+        return path.join(__dirname, '..', '..', '..');
+    }
+
+    throw new Error(`Unable to find project root from directory: ${__dirname}`);
+};
 
 const hasLibrary = (name: string): Promise<boolean> =>
     func.pipe(
@@ -55,7 +69,7 @@ const getTestingLibraryReactPath = () => {
     );
 };
 
-const noop = path.join(__dirname, 'noop.js');
+const noop = path.join(__dirname, 'noop.mjs');
 
 const createDefaultConfig = async (): Promise<UserConfig> => {
     const hasJestFpTs = await hasLibrary(
