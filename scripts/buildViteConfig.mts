@@ -18,6 +18,7 @@ const handleFiles = (files: ReadonlyArray<string>): Promise<unknown> =>
         readonlyArray.filter(
             (file) => file.endsWith('js') || file.endsWith('ts')
         ),
+        readonlyArray.map((file) => path.join(SRC_DIR, file)),
         readonlyArray.map((file) => compile(file)),
         taskEither.sequenceArray
     )();
