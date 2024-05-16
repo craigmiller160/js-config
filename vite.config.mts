@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from './viteSrc/vite.config.mjs';
+import { defineConfig } from './viteSrc/vite/vite.config.mjs';
 import path from 'path';
 
 export default defineConfig({
