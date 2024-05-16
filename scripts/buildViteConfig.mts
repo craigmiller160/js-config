@@ -2,9 +2,11 @@ import path from 'path';
 import compileFunctions from '../src/scripts/compile/index.js';
 import typesFunctions from '../src/scripts/compile/generateTypes.js';
 import fs from 'fs/promises';
+import { either, function as func, readonlyArray, taskEither } from 'fp-ts';
+import { Stats } from 'node:fs';
+
 const { createCompile } = compileFunctions;
 const { generateTypes } = typesFunctions;
-import { function as func, taskEither, readonlyArray, either } from 'fp-ts';
 
 const SRC_DIR = path.join(process.cwd(), 'viteSrc');
 const DEST_DIR = path.join(process.cwd(), 'lib', 'cjs');
@@ -62,15 +64,49 @@ const prepareFilePaths = (file: string): [string, string] => [
     path.join(DEST_DIR, file)
 ];
 
+type FileType = 'code-file' | 'non-code-file' | 'directory';
+type FileAndType = Readonly<{
+    file: string;
+    type: FileType;
+}>;
+const getFileType = (file: string, stats: Stats): FileType => {
+    if (stats.isDirectory()) {
+        return 'directory';
+    }
+
+    if (CODE_FILE_EXT_REGEX.test(file)) {
+        return 'code-file';
+    }
+
+    return 'non-code-file';
+};
+const addFileType = (file: string): taskEither.TaskEither<Error, FileAndType> =>
+    func.pipe(
+        taskEither.tryCatch(() => fs.lstat(file), either.toError),
+        taskEither.map(
+            (stats): FileAndType => ({
+                file,
+                type: getFileType(file, stats)
+            })
+        )
+    );
+
 const copyNonCodeFiles = (
     files: ReadonlyArray<string>
 ): taskEither.TaskEither<Error, ReadonlyArray<string>> =>
     func.pipe(
         files,
-        readonlyArray.filter((file) => !CODE_FILE_EXT_REGEX.test(file)),
-        readonlyArray.map(prepareFilePaths),
-        readonlyArray.map(copyFile),
+        readonlyArray.map(addFileType),
         taskEither.sequenceArray,
+        taskEither.chain(
+            func.flow(
+                readonlyArray.filter(({ type }) => 'non-code-file' === type),
+                readonlyArray.map(({ file }) => file),
+                readonlyArray.map(prepareFilePaths),
+                readonlyArray.map(copyFile),
+                taskEither.sequenceArray
+            )
+        ),
         taskEither.map(() => files)
     );
 
