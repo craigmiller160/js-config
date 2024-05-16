@@ -82,7 +82,10 @@ const getFileType = (file: string, stats: Stats): FileType => {
 };
 const addFileType = (file: string): taskEither.TaskEither<Error, FileAndType> =>
     func.pipe(
-        taskEither.tryCatch(() => fs.lstat(file), either.toError),
+        taskEither.tryCatch(
+            () => fs.lstat(path.join(SRC_DIR, file)),
+            either.toError
+        ),
         taskEither.map(
             (stats): FileAndType => ({
                 file,
