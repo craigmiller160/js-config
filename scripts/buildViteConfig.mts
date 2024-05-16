@@ -43,8 +43,9 @@ void func.pipe(
             }),
         either.toError
     ),
-    taskEither.chain((files) => handleFiles(files)),
-    taskEither.chainEitherK(() =>
+    taskEither.bindTo('files'),
+    taskEither.chainFirst(({ files }) => handleFiles(files)),
+    taskEither.chainFirstEitherK(() =>
         generateTypes(process, DEST_TYPES_DIR, SRC_DIR)
     ),
     taskEither.fold(
