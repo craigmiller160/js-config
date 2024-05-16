@@ -16,7 +16,7 @@ const getProjectRoot = (): string => {
     }
 
     if (__dirname.endsWith(path.join('lib', 'cjs', 'vite'))) {
-        return path.join(__dirname, '..', '..');
+        return path.join(__dirname, '..', '..', '..');
     }
 
     throw new Error(`Unable to find project root from directory: ${__dirname}`);
