@@ -8,7 +8,7 @@ import { function as func, taskEither, readonlyArray, either } from 'fp-ts';
 
 const SRC_DIR = path.join(process.cwd(), 'viteSrc');
 const DEST_DIR = path.join(process.cwd(), 'lib', 'esm');
-const DEST_TYPES_DIR = path.join(process.cwd(), 'lib', 'types');
+const DEST_TYPES_DIR = path.join(process.cwd(), 'lib', 'types', 'vite');
 
 const compile = createCompile(SRC_DIR, DEST_DIR, 'es6');
 
