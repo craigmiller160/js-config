@@ -15,7 +15,7 @@ const getProjectRoot = (): string => {
         return path.join(__dirname, '..');
     }
 
-    if (__dirname.endsWith(path.join('lib', 'esm'))) {
+    if (__dirname.endsWith(path.join('lib', 'cjs', 'vite'))) {
         return path.join(__dirname, '..', '..');
     }
 
