@@ -13,7 +13,7 @@ const DEST_TYPES_DIR = path.join(process.cwd(), 'lib', 'types', 'vite');
 const compile = createCompile(SRC_DIR, DEST_DIR, 'es6');
 
 const fixExtension = (file: string): taskEither.TaskEither<Error, string> => {
-    const newFile = file.replace(/.js$/, '.mjs$');
+    const newFile = file.replace(/.js$/, '.mjs');
     return func.pipe(
         taskEither.tryCatch(() => fs.rename(file, newFile), either.toError),
         taskEither.map(() => newFile)
@@ -22,12 +22,10 @@ const fixExtension = (file: string): taskEither.TaskEither<Error, string> => {
 
 const handleFiles = (
     files: ReadonlyArray<string>
-): taskEither.TaskEither<Error, ReadonlyArray<string>> =>
-    func.pipe(
+): taskEither.TaskEither<Error, ReadonlyArray<string>> => {
+    return func.pipe(
         files,
-        readonlyArray.filter(
-            (file) => file.endsWith('js') || file.endsWith('ts')
-        ),
+        readonlyArray.filter((file) => /\.[mc][jt]s$/.test(file)),
         readonlyArray.map((file) => path.join(SRC_DIR, file)),
         readonlyArray.map((file) => compile(file)),
         taskEither.sequenceArray,
@@ -35,6 +33,7 @@ const handleFiles = (
             func.flow(readonlyArray.map(fixExtension), taskEither.sequenceArray)
         )
     );
+};
 
 void func.pipe(
     taskEither.tryCatch(
