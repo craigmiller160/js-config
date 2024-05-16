@@ -20,7 +20,7 @@ const fixExtension = (file: string): taskEither.TaskEither<Error, string> => {
     );
 };
 
-const handleFiles = (
+const compileCodeFiles = (
     files: ReadonlyArray<string>
 ): taskEither.TaskEither<Error, ReadonlyArray<string>> => {
     return func.pipe(
@@ -35,6 +35,10 @@ const handleFiles = (
     );
 };
 
+const moveNonCodeFiles = (
+    files: ReadonlyArray<string>
+): taskEither.TaskEither<Error, ReadonlyArray<string>> => {};
+
 void func.pipe(
     taskEither.tryCatch(
         () =>
@@ -44,7 +48,8 @@ void func.pipe(
         either.toError
     ),
     taskEither.bindTo('files'),
-    taskEither.chainFirst(({ files }) => handleFiles(files)),
+    taskEither.chainFirst(({ files }) => compileCodeFiles(files)),
+    taskEither.chainFirst(({ files }) => moveNonCodeFiles(files)),
     taskEither.chainFirstEitherK(() =>
         generateTypes(process, DEST_TYPES_DIR, SRC_DIR)
     ),
