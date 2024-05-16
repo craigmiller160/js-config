@@ -69,7 +69,7 @@ const getTestingLibraryReactPath = () => {
     );
 };
 
-const noop = path.join(__dirname, 'noop.js');
+const noop = path.join(__dirname, 'noop.mjs');
 
 const createDefaultConfig = async (): Promise<UserConfig> => {
     const hasJestFpTs = await hasLibrary(

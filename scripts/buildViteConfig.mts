@@ -7,10 +7,18 @@ const { generateTypes } = typesFunctions;
 import { function as func, taskEither, readonlyArray, either } from 'fp-ts';
 
 const SRC_DIR = path.join(process.cwd(), 'viteSrc');
-const DEST_DIR = path.join(process.cwd(), 'lib', 'esm');
+const DEST_DIR = path.join(process.cwd(), 'lib', 'cjs');
 const DEST_TYPES_DIR = path.join(process.cwd(), 'lib', 'types', 'vite');
 
 const compile = createCompile(SRC_DIR, DEST_DIR, 'es6');
+
+const fixExtension = (file: string): taskEither.TaskEither<Error, string> => {
+    const newFile = file.replace(/.js$/, '.mjs$');
+    return func.pipe(
+        taskEither.tryCatch(() => fs.rename(file, newFile), either.toError),
+        taskEither.map(() => newFile)
+    );
+};
 
 const handleFiles = (
     files: ReadonlyArray<string>
@@ -23,7 +31,9 @@ const handleFiles = (
         readonlyArray.map((file) => path.join(SRC_DIR, file)),
         readonlyArray.map((file) => compile(file)),
         taskEither.sequenceArray,
-        taskEither.map(() => files)
+        taskEither.chain(
+            func.flow(readonlyArray.map(fixExtension), taskEither.sequenceArray)
+        )
     );
 
 void func.pipe(
