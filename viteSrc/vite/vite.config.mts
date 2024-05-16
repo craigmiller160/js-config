@@ -11,8 +11,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const getProjectRoot = (): string => {
-    if (__dirname.endsWith('viteSrc')) {
-        return path.join(__dirname, '..');
+    if (__dirname.endsWith(path.join('viteSrc', 'vite'))) {
+        return path.join(__dirname, '..', '..');
     }
 
     if (__dirname.endsWith(path.join('lib', 'cjs', 'vite'))) {
