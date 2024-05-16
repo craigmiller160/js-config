@@ -1,19 +1,17 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { logger } from './logger';
-import { function as func, readonlyArray, taskEither, either } from 'fp-ts';
+import { either, function as func, readonlyArray, taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { walk } from './utils/files';
 import { terminate } from './utils/terminate';
-import { runCommandSync } from './utils/runCommand';
-import { findCommand } from './utils/command';
-import { TSC } from './commandPaths';
 import { getRealArgs } from './utils/process';
 import { createCompile } from './compile';
 import {
     fixFileExtension,
     fixTypeFileExtensions
 } from './compile/fileExtensions';
+import { generateTypes } from './compile/generateTypes';
 
 const SOURCE_RESOURCES = /^.*\.(css|scss|png|jpg|pem)$/;
 const TYPE_RESOURCES = /^.*\.d\.(ts|mts|cts|tsx)$/;
@@ -26,24 +24,6 @@ const compileFiles =
             readonlyArray.map(compileFn),
             taskEither.sequenceArray
         );
-
-const generateTypes = (
-    process: NodeJS.Process,
-    destDir: string
-): either.Either<Error, unknown> => {
-    logger.debug('Generating type declarations');
-    return func.pipe(
-        findCommand(process, TSC),
-        either.chain((command) =>
-            runCommandSync(
-                `${command} --declaration --emitDeclarationOnly --outDir ${destDir}`,
-                {
-                    cwd: process.cwd()
-                }
-            )
-        )
-    );
-};
 
 const copyFile = async (
     file: string,
