@@ -10,6 +10,7 @@ export const generateTypes = (
     cwd?: string
 ): either.Either<Error, unknown> => {
     logger.debug('Generating type declarations');
+    console.log('TYPES', destDir, cwd);
     return func.pipe(
         findCommand(process, TSC),
         either.chain((command) =>
