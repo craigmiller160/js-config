@@ -188,7 +188,9 @@ test.each<EslintFilesArgs>([
     { existingEslintFile: 'none', projectType: 'module' },
     { existingEslintFile: 'legacy', projectType: 'commonjs' },
     { existingEslintFile: 'invalid', projectType: 'commonjs' },
-    { existingEslintFile: 'valid', projectType: 'commonjs' }
+    { existingEslintFile: 'valid', projectType: 'commonjs' },
+    { existingEslintFile: 'valid-wrong-type', projectType: 'commonjs' },
+    { existingEslintFile: 'valid-wrong-type', projectType: 'module' }
 ])(
     'writes eslint file for project type $projectType with existing eslint file $existingEslintFile',
     async ({ projectType, existingEslintFile }) => {
@@ -244,7 +246,9 @@ test.each<PrettierFilesArgs>([
     { existingPrettierFile: 'none', projectType: 'commonjs' },
     { existingPrettierFile: 'none', projectType: 'module' },
     { existingPrettierFile: 'invalid', projectType: 'commonjs' },
-    { existingPrettierFile: 'valid', projectType: 'commonjs' }
+    { existingPrettierFile: 'valid', projectType: 'commonjs' },
+    { existingPrettierFile: 'valid-wrong-type', projectType: 'commonjs' },
+    { existingPrettierFile: 'valid-wrong-type', projectType: 'module' }
 ])(
     'writes prettier file for project type $projectType with existing prettier file $existingPrettierFile',
     async ({ projectType, existingPrettierFile }) => {
