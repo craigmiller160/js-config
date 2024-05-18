@@ -11,7 +11,8 @@ import {
     readonlyArray,
     taskEither,
     either,
-    string
+    string,
+    task
 } from 'fp-ts';
 import { taskEitherToPromiseCompatTask } from '../../../src/utils/taskEitherPromiseCompat';
 import {
@@ -19,6 +20,7 @@ import {
     ESLINT_MJS_CONTENT,
     setupEslintFiles
 } from '../../../src/scripts/init/setupEslintFiles';
+import { match } from 'ts-pattern';
 
 const WORKING_DIR = path.join(
     process.cwd(),
@@ -146,10 +148,10 @@ const writeExistingPrettierFile = async (
 };
 
 const writeExistingEslintFile = async (
-    type: ExistingEslintFile,
+    existingEslintFile: ExistingEslintFile,
     projectType: PackageJsonType
 ): Promise<unknown> => {
-    if (type === 'none') {
+    if (existingEslintFile === 'none') {
         return;
     }
 
@@ -157,22 +159,35 @@ const writeExistingEslintFile = async (
     const content =
         projectType === 'commonjs' ? ESLINT_CJS_CONTENT : ESLINT_MJS_CONTENT;
 
-    if (type === 'invalid') {
-        await fs.writeFile(
-            path.join(WORKING_DIR, 'eslint.config.js'),
-            `const foobar = 'hello'`
+    const eslintFileCreator = match<EslintFilesArgs, task.Task<void>>({
+        existingEslintFile,
+        projectType
+    })
+        .with(
+            { existingEslintFile: 'invalid' },
+            () => () =>
+                fs.writeFile(
+                    path.join(WORKING_DIR, 'eslint.config.js'),
+                    `const foobar = 'hello'`
+                )
+        )
+        .with(
+            { existingEslintFile: 'legacy' },
+            () => () =>
+                fs.writeFile(
+                    path.join(WORKING_DIR, `.eslintrc.${extension}`),
+                    `const foobar = 'hello'`
+                )
+        )
+        .otherwise(
+            () => () =>
+                fs.writeFile(
+                    path.join(WORKING_DIR, 'eslint.config.js'),
+                    `// Hello\n${content}`
+                )
         );
-    } else if (type === 'legacy') {
-        await fs.writeFile(
-            path.join(WORKING_DIR, `.eslintrc.${extension}`),
-            `const foobar = 'hello'`
-        );
-    } else {
-        await fs.writeFile(
-            path.join(WORKING_DIR, 'eslint.config.js'),
-            `// Hello\n${content}`
-        );
-    }
+
+    await eslintFileCreator();
 };
 
 beforeEach(async () => {
