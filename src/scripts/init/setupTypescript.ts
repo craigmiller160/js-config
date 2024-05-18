@@ -47,6 +47,7 @@ const createTestSupportTypes =
             : undefined;
         const fileContent = [jestFpTsImport, jestDomImport]
             .filter((item): item is string => !!item)
+            .concat(['\n'])
             .join('\n');
 
         return either.tryCatch(() => {
