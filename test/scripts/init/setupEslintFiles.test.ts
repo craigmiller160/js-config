@@ -105,8 +105,13 @@ const createPackageJson = (projectType: PackageJsonType): PackageJson => ({
     devDependencies: {}
 });
 
-type ExistingEslintFile = 'none' | 'legacy' | 'invalid' | 'valid';
-type ExistingPrettierFile = 'none' | 'invalid' | 'valid';
+type ExistingEslintFile =
+    | 'none'
+    | 'legacy'
+    | 'invalid'
+    | 'valid'
+    | 'valid-wrong-type';
+type ExistingPrettierFile = 'none' | 'invalid' | 'valid' | 'valid-wrong-type';
 type EslintFilesArgs = Readonly<{
     existingEslintFile: ExistingEslintFile;
     projectType: PackageJsonType;
