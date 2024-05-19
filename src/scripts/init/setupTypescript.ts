@@ -48,10 +48,11 @@ const createTestSupportTypes =
         const fileContent = [jestFpTsImport, jestDomImport]
             .filter((item): item is string => !!item)
             .join('\n');
+        const formattedFileContent = `${fileContent}\n`;
 
         return either.tryCatch(() => {
             if (fileContent.trim().length > 0) {
-                fs.writeFileSync(supportFilePath, fileContent);
+                fs.writeFileSync(supportFilePath, formattedFileContent);
             } else if (fs.existsSync(supportFilePath)) {
                 fs.rmSync(supportFilePath);
             }
